@@ -1,5 +1,6 @@
 // by Antonio Bruno, Giacomo Ignesti and Massimo Martinelli
 
+import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:survey_kit/src/answer_format/answer_format.dart';
 
@@ -9,10 +10,12 @@ part 'double_answer_format.g.dart';
 class DoubleAnswerFormat implements AnswerFormat {
   final double? defaultValue;
   final String hint;
+  final TextEditingController? controller;
 
   const DoubleAnswerFormat({
     this.defaultValue,
     this.hint = '',
+    this.controller,
   }) : super();
 
   factory DoubleAnswerFormat.fromJson(Map<String, dynamic> json) =>
