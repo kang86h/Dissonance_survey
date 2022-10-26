@@ -75,7 +75,7 @@ class _MyAppState extends State<MyApp> {
                             Size(150.0, 60.0),
                           ),
                           side: MaterialStateProperty.resolveWith(
-                            (Set<MaterialState> state) {
+                                (Set<MaterialState> state) {
                               if (state.contains(MaterialState.disabled)) {
                                 return BorderSide(
                                   color: Colors.grey,
@@ -92,21 +92,21 @@ class _MyAppState extends State<MyApp> {
                             ),
                           ),
                           textStyle: MaterialStateProperty.resolveWith(
-                            (Set<MaterialState> state) {
+                                (Set<MaterialState> state) {
                               if (state.contains(MaterialState.disabled)) {
                                 return Theme.of(context)
                                     .textTheme
                                     .button
                                     ?.copyWith(
-                                      color: Colors.grey,
-                                    );
+                                  color: Colors.grey,
+                                );
                               }
                               return Theme.of(context)
                                   .textTheme
                                   .button
                                   ?.copyWith(
-                                    color: Colors.cyan,
-                                  );
+                                color: Colors.cyan,
+                              );
                             },
                           ),
                         ),
@@ -115,8 +115,8 @@ class _MyAppState extends State<MyApp> {
                         style: ButtonStyle(
                           textStyle: MaterialStateProperty.all(
                             Theme.of(context).textTheme.button?.copyWith(
-                                  color: Colors.cyan,
-                                ),
+                              color: Colors.cyan,
+                            ),
                           ),
                         ),
                       ),
@@ -187,7 +187,7 @@ class _MyAppState extends State<MyApp> {
         QuestionStep(
           title: 'Tell us about you',
           text:
-              'Tell us about yourself and why you want to improve your health.',
+          'Tell us about yourself and why you want to improve your health.',
           answerFormat: TextAnswerFormat(
             maxLines: 5,
             validationRegEx: "^(?!\s*\$).+",
