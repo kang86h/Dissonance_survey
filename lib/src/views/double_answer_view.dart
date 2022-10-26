@@ -8,11 +8,13 @@ import 'package:survey_kit/src/views/widget/step_view.dart';
 class DoubleAnswerView extends StatefulWidget {
   final QuestionStep questionStep;
   final DoubleQuestionResult? result;
+  TextEditingController? controller;
 
-  const DoubleAnswerView({
+  DoubleAnswerView({
     Key? key,
     required this.questionStep,
     required this.result,
+    this.controller,
   }) : super(key: key);
 
   @override
@@ -21,7 +23,6 @@ class DoubleAnswerView extends StatefulWidget {
 
 class _DoubleAnswerViewState extends State<DoubleAnswerView> {
   late final DoubleAnswerFormat _doubleAnswerFormat;
-  late final TextEditingController _controller;
   late final DateTime _startDate;
 
   bool _isValid = false;
@@ -29,18 +30,10 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
   @override
   void initState() {
     super.initState();
-    _doubleAnswerFormat =
-        widget.questionStep.answerFormat as DoubleAnswerFormat;
-    _controller = TextEditingController();
-    _controller.text = widget.result?.result?.toString() ?? '';
-    _checkValidation(_controller.text);
+    _doubleAnswerFormat = widget.questionStep.answerFormat as DoubleAnswerFormat;
+    widget.controller?.text = widget.result?.result?.toString() ?? '';
+    _checkValidation(widget.controller?.text ?? '');
     _startDate = DateTime.now();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 
   void _checkValidation(String text) {
@@ -57,10 +50,8 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
         id: widget.questionStep.stepIdentifier,
         startDate: _startDate,
         endDate: DateTime.now(),
-        valueIdentifier: _controller.text,
-        result: double.tryParse(_controller.text) ??
-            _doubleAnswerFormat.defaultValue ??
-            null,
+        valueIdentifier: widget.controller?.text ?? '',
+        result: double.tryParse(widget.controller?.text ?? '') ?? _doubleAnswerFormat.defaultValue ?? null,
       ),
       isValid: _isValid || widget.questionStep.isOptional,
       title: widget.questionStep.title.isNotEmpty
@@ -78,10 +69,7 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
             decoration: textFieldInputDecoration(
               hint: _doubleAnswerFormat.hint,
             ),
-            controller: _controller,
-            onChanged: (String value) {
-              _checkValidation(value);
-            },
+            controller: widget.controller!,
             keyboardType: TextInputType.number,
             textAlign: TextAlign.center,
           ),

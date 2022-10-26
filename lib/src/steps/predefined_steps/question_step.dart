@@ -83,6 +83,7 @@ class QuestionStep extends Step {
           key: key,
           questionStep: this,
           result: questionResult as DoubleQuestionResult?,
+          controller: (answerFormat as DoubleAnswerFormat).controller,
         );
       case TextAnswerFormat:
         return TextAnswerView(
