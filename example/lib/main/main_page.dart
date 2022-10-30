@@ -1,3 +1,5 @@
+import 'dart:js';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +20,9 @@ class MainPage extends GetView<MainPageController> {
         child: FutureBuilder<Task>(
           future: getSampleTask(),
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done && snapshot.hasData && snapshot.data != null) {
+            if (snapshot.connectionState == ConnectionState.done &&
+                snapshot.hasData &&
+                snapshot.data != null) {
               final task = snapshot.data!;
               return SurveyKit(
                 onResult: (SurveyResult result) {
@@ -140,67 +144,226 @@ class MainPage extends GetView<MainPageController> {
     );
   }
 
-  QuestionStep getFirstStep() {
+  InstructionStep getStart() {
+    return InstructionStep(
+      title: '이 설문조사는 화음을 듣고 불협화도 점수를 매기는 조사입니다',
+      text: '참여자분들께서는 약 3초간 화음을 듣고 화음의 불협화도 점수를 매겨주시면 됩니다\n'
+          '협화적인 화음일수록 낮은 점수를, 불협화적인 화음일수록 높은 점수를 매기세요\n'
+          '점수는 숫자로 기입하시거나, 슬라이더에서 위치를 조절하셔서 매기세요\n'
+          '화음에 사용된 음의 갯수에따라 최고점이 다릅니다\n'
+          '(2음화음 최대 60점, 3음화음 최대 100점, 4음화음 최대 140점)\n',
+      buttonText: '시작',
+    );
+  }
+
+  QuestionStep getGenderStep() {
     return QuestionStep(
-      content: Column(
-        children: [
-          Text(
-            '지금 들려주는 화음을 듣고 점수를 매겨주세요',
-            style: TextStyle(
-              fontSize: 30,
-              color: Colors.black,
-            ),
-          ),
-          DecoratedBox(
-            decoration: BoxDecoration(
-                border: Border.all(
-              width: 2,
-              color: Colors.black,
-            )),
-            child: Row(
-              children: [
-                ObxValue<Rx<PlayerState>>((rx) {
-                  return InkWell(
-                    onTap: () => controller.onPressedState(rx.value),
-                    child: Icon(
-                      rx.value == PlayerState.playing ? Icons.pause_circle_outline : Icons.play_circle_outline,
-                      size: 32,
-                    ),
-                  );
-                }, controller.playerState),
-                ObxValue<Rx<double>>((rx) {
-                  return Slider(
-                    onChanged: controller.onChangedVolume,
-                    min: 0,
-                    max: 1,
-                    value: rx.value,
-                  ); // score
-                }, controller.volume),
-              ],
-            ),
-          ),
-          ObxValue<Rx<double>>((rx) {
-            return Slider(
-              onChanged: controller.onChangedScore,
-              min: 0,
-              max: 1000,
-              value: rx.value,
-            ); // score
-          }, controller.score),
+      title: '당신의 성별은 무엇인가요?',
+      isOptional: false,
+      answerFormat: SingleChoiceAnswerFormat(
+        textChoices: [
+          TextChoice(text: '남성', value: 'Male'),
+          TextChoice(text: '여성', value: 'Female'),
         ],
+      ),
+    );
+  }
+
+  QuestionStep getAgeStep() {
+    return QuestionStep(
+        title: '당신의 나이는 어떻게 되십니까?',
+        answerFormat: IntegerAnswerFormat(),
+        isOptional: false);
+  }
+
+  QuestionStep getVolume() {
+    return QuestionStep(
+      content: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 128),
+        child: Column(
+          children: [
+            Text(
+              '테스트에 적절한 볼륨으로 조절해주세요',
+              style: TextStyle(
+                fontSize: 30,
+                color: Colors.black,
+              ),
+            ),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                  border: Border.all(
+                width: 2,
+                color: Colors.cyan,
+              )),
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Row(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text('재생',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.black,
+                            )),
+                        ObxValue<Rx<PlayerState>>((rx) {
+                          return InkWell(
+                            onTap: () => controller.onPressedState(rx.value),
+                            child: Icon(
+                              rx.value == PlayerState.playing
+                                  ? Icons.pause_circle_outline
+                                  : Icons.play_circle_outline,
+                              size: 48,
+                            ),
+                          );
+                        }, controller.playerState),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                          '볼륨조절',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.black,
+                          ),
+                        ),
+                        Icon(
+                          Icons.volume_up_rounded,
+                          size: 48,
+                        ),
+                        ObxValue<Rx<double>>((rx) {
+                          return Slider(
+                            onChanged: controller.onChangedVolume,
+                            min: 0,
+                            max: 1,
+                            value: rx.value,
+                          ); // score
+                        }, controller.volume),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
       answerFormat: DoubleAnswerFormat(
         controller: controller.textEditingController,
       ),
-      buttonText: '다음으로',
     );
+  }
+
+  QuestionStep getMainStep() {
+    return QuestionStep(
+        content: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 128),
+          child: Column(
+            children: [
+              Text(
+                '지금 들려주는 화음을 듣고 점수를 매겨주세요',
+                style: TextStyle(
+                  fontSize: 30,
+                  color: Colors.black,
+                ),
+              ),
+              DecoratedBox(
+                decoration: BoxDecoration(
+                    border: Border.all(
+                  width: 2,
+                  color: Colors.black,
+                )),
+                child: Padding(
+                  padding: const EdgeInsets.all(24.0),
+                  child: Row(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text('재생',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.black,
+                              )),
+                          ObxValue<Rx<PlayerState>>((rx) {
+                            return InkWell(
+                              onTap: () => controller.onPressedState(rx.value),
+                              child: Icon(
+                                rx.value == PlayerState.playing
+                                    ? Icons.pause_circle_outline
+                                    : Icons.play_circle_outline,
+                                size: 48,
+                              ),
+                            );
+                          }, controller.playerState),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text(
+                            '볼륨조절',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.black,
+                            ),
+                          ),
+                          Icon(
+                            Icons.volume_up_rounded,
+                            size: 48,
+                          ),
+                          ObxValue<Rx<double>>((rx) {
+                            return Slider(
+                              onChanged: controller.onChangedVolume,
+                              min: 0,
+                              max: 1,
+                              value: rx.value,
+                            ); // score
+                          }, controller.volume),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Column(
+                children: [
+                  Text('불협화도 점수',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.black,
+                      )),
+                  ObxValue<Rx<double>>((rx) {
+                    return Slider(
+                      onChanged: controller.onChangedScore,
+                      min: 0,
+                      max: 100,
+                      value: rx.value,
+                    ); // score
+                  }, controller.score),
+                ],
+              ),
+            ],
+          ),
+        ),
+        answerFormat: DoubleAnswerFormat(
+          controller: controller.textEditingController,
+        ),
+        isOptional: true);
   }
 
   Future<Task> getSampleTask() async {
     return NavigableTask(
       id: TaskIdentifier(),
       steps: [
-        getFirstStep(),
+        getStart(),
+        getGenderStep(),
+        getAgeStep(),
+        getVolume(),
+        getMainStep(),
       ],
     );
   }
@@ -239,7 +402,7 @@ class _MyAppState extends State<App> {
     build(context);
     dispose();
     */
-    audioPlayer.setSourceAsset('first.wav');
+    audioPlayer.setSourceAsset('Q1.wav');
     textEditingController.addListener(onListenText);
     playerState.bindStream(audioPlayer.onPlayerStateChanged);
   }

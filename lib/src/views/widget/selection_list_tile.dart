@@ -19,7 +19,9 @@ class SelectionListTile extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14.0),
           child: ListTile(
+            contentPadding: EdgeInsets.only(left: 40),
             title: Text(
+              textAlign: TextAlign.center,
               text,
               style: Theme.of(context).textTheme.headline5?.copyWith(
                     color: isSelected
@@ -43,7 +45,7 @@ class SelectionListTile extends StatelessWidget {
           ),
         ),
         Divider(
-          color: Colors.grey,
+          color: Colors.cyan,
         ),
       ],
     );

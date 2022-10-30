@@ -19,7 +19,7 @@ class MainPageController extends GetController<MainPageModel> {
   final Rx<double> volume = 1.0.obs;
 
   // 여러개
-  final Iterable<String> files = ['first.wav', 'second.wav'];
+  final Iterable<String> files = ['volume.mp3', 'Q2-1.wav'];
 
   final TextEditingController textEditingController = TextEditingController();
   final Rx<double> score = 0.0.obs;

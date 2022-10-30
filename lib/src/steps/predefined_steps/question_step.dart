@@ -53,7 +53,7 @@ class QuestionStep extends Step {
 
   QuestionStep({
     bool isOptional = false,
-    String buttonText = 'Next',
+    String buttonText = '다음으로',
     StepIdentifier? stepIdentifier,
     bool showAppBar = true,
     this.title = '',

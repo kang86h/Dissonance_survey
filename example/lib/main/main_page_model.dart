@@ -30,4 +30,13 @@ class MainPageModel extends GetModel {
 
   @override
   String toString() => 'index: $index';
+
+  static Iterable<MainPageModel> values() => [
+        MainPageModel.Q1(),
+        MainPageModel.Q2(),
+      ];
+
+  factory MainPageModel.Q1() => MainPageModel(index: 0);
+
+  factory MainPageModel.Q2() => MainPageModel(index: 1);
 }

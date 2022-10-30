@@ -73,7 +73,10 @@ class _IntegerAnswerViewState extends State<IntegerAnswerView> {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 32.0),
         child: Container(
-          width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.cyan, width: 2.0),
+          ),
+          width: MediaQuery.of(context).size.width * 0.2,
           child: TextField(
             decoration: textFieldInputDecoration(
               hint: _integerAnswerFormat.hint,
