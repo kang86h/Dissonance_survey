@@ -43,6 +43,7 @@ part 'question_step.g.dart';
 
 @JsonSerializable()
 class QuestionStep extends Step {
+  // 멤버변수 -> 클래스 안에 있는 변수
   @JsonKey(defaultValue: '')
   final String title;
   @JsonKey(defaultValue: '')
@@ -50,8 +51,13 @@ class QuestionStep extends Step {
   @JsonKey(ignore: true)
   final Widget content;
   final AnswerFormat answerFormat;
+  // int: 0
+  // boolean: false
+  // String: ''
+  // Widget: SizedBox(width: 0, height: 0)
 
   QuestionStep({
+    // 지역변수 -> 함수 안에 있는 변수
     bool isOptional = false,
     String buttonText = '다음으로',
     StepIdentifier? stepIdentifier,

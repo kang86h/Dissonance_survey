@@ -11,10 +11,17 @@ part 'instruction_step.g.dart';
 class InstructionStep extends Step {
   final String title;
   final String text;
+  final Widget content;
+
+  // const, final, static
+  // const: 컴파일 이전에 값이 정해짐
+  // final: 컴파일 이후에 값이 정해짐
+  // static: 어디서든지 공유 가능한 전역변수
 
   InstructionStep({
     required this.title,
-    required this.text,
+    this.text = '',
+    this.content = const SizedBox.shrink(),
     bool isOptional = false,
     String buttonText = 'Next',
     StepIdentifier? stepIdentifier,

@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   get: ^4.6.5
+  rxdart: ^0.27.5
   audioplayers: ^1.1.1
   survey_kit:
     path: ../
@@ -23,4 +24,7 @@ flutter:
   uses-material-design: true
   assets:
   - assets/
+  - assets/Q2/
+  - assets/Q3/
+  - assets/Q4/
   - assets/example_json.json

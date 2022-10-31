@@ -59,7 +59,6 @@ class SurveyController {
   ) {
     if (onNextStep != null) {
       onNextStep!(context, resultFunction);
-      return;
     }
     BlocProvider.of<SurveyPresenter>(context).add(
       NextStep(

@@ -1,5 +1,3 @@
-import 'dart:js';
-
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -20,11 +18,10 @@ class MainPage extends GetView<MainPageController> {
         child: FutureBuilder<Task>(
           future: getSampleTask(),
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done &&
-                snapshot.hasData &&
-                snapshot.data != null) {
+            if (snapshot.connectionState == ConnectionState.done && snapshot.hasData && snapshot.data != null) {
               final task = snapshot.data!;
               return SurveyKit(
+                surveyController: controller.surveyController,
                 onResult: (SurveyResult result) {
                   print(result.finishReason);
                   Navigator.pushNamed(context, '/');
@@ -170,16 +167,13 @@ class MainPage extends GetView<MainPageController> {
   }
 
   QuestionStep getAgeStep() {
-    return QuestionStep(
-        title: '당신의 나이는 어떻게 되십니까?',
-        answerFormat: IntegerAnswerFormat(),
-        isOptional: false);
+    return QuestionStep(title: '당신의 나이는 어떻게 되십니까?', answerFormat: IntegerAnswerFormat(), isOptional: false);
   }
 
   QuestionStep getVolume() {
     return QuestionStep(
-      content: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 128),
+      content: FractionallySizedBox(
+        widthFactor: 0.7,
         child: Column(
           children: [
             Text(
@@ -191,10 +185,92 @@ class MainPage extends GetView<MainPageController> {
             ),
             DecoratedBox(
               decoration: BoxDecoration(
-                  border: Border.all(
-                width: 2,
-                color: Colors.cyan,
-              )),
+                border: Border.all(
+                  width: 2,
+                  color: Colors.cyan,
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '재생',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.black,
+                      ),
+                    ),
+                    ObxValue<Rx<PlayerState>>((rx) {
+                      return InkWell(
+                        onTap: () => controller.onPressedState(rx.value),
+                        child: Icon(
+                          rx.value == PlayerState.playing ? Icons.pause_circle_outline : Icons.play_circle_outline,
+                          size: 48,
+                        ),
+                      );
+                    }, controller.playerState),
+                    Text(
+                      '볼륨조절',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.black,
+                      ),
+                    ),
+                    Icon(
+                      Icons.volume_up_rounded,
+                      size: 48,
+                    ),
+                    Expanded(
+                      child: ObxValue<Rx<double>>((rx) {
+                        return Slider(
+                          onChanged: controller.onChangedVolume,
+                          min: 0,
+                          max: 1,
+                          value: rx.value,
+                        ); // score
+                      }, controller.volume),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+      answerFormat: DoubleAnswerFormat(
+        controller: controller.textEditingController,
+      ),
+    );
+  }
+
+  QuestionStep getMainStep() {
+    return QuestionStep(
+      content: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 128),
+        child: Column(
+          children: [
+            ObxValue<Rx<QuestionType>>((rxQuestionType) {
+              final name = rxQuestionType.value.name;
+
+              return ObxValue<Rx<int>>((rx) {
+                return Text(
+                  '지금 들려주는 $name의 ${rx.value + 1}번째 화음을 듣고 점수를 매겨주세요',
+                  style: TextStyle(
+                    fontSize: 30,
+                    color: Colors.black,
+                  ),
+                );
+              }, controller.index);
+            }, controller.questionType),
+            DecoratedBox(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  width: 2,
+                  color: Colors.black,
+                ),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Row(
@@ -203,18 +279,18 @@ class MainPage extends GetView<MainPageController> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text('재생',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.black,
-                            )),
+                        Text(
+                          '재생',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.black,
+                          ),
+                        ),
                         ObxValue<Rx<PlayerState>>((rx) {
                           return InkWell(
                             onTap: () => controller.onPressedState(rx.value),
                             child: Icon(
-                              rx.value == PlayerState.playing
-                                  ? Icons.pause_circle_outline
-                                  : Icons.play_circle_outline,
+                              rx.value == PlayerState.playing ? Icons.pause_circle_outline : Icons.play_circle_outline,
                               size: 48,
                             ),
                           );
@@ -248,6 +324,23 @@ class MainPage extends GetView<MainPageController> {
                 ),
               ),
             ),
+            Column(
+              children: [
+                Text('불협화도 점수',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.black,
+                    )),
+                ObxValue<Rx<double>>((rx) {
+                  return Slider(
+                    onChanged: controller.onChangedScore,
+                    min: 0,
+                    max: 100,
+                    value: rx.value,
+                  ); // score
+                }, controller.score),
+              ],
+            ),
           ],
         ),
       ),
@@ -257,112 +350,21 @@ class MainPage extends GetView<MainPageController> {
     );
   }
 
-  QuestionStep getMainStep() {
-    return QuestionStep(
-        content: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 128),
-          child: Column(
-            children: [
-              Text(
-                '지금 들려주는 화음을 듣고 점수를 매겨주세요',
-                style: TextStyle(
-                  fontSize: 30,
-                  color: Colors.black,
-                ),
-              ),
-              DecoratedBox(
-                decoration: BoxDecoration(
-                    border: Border.all(
-                  width: 2,
-                  color: Colors.black,
-                )),
-                child: Padding(
-                  padding: const EdgeInsets.all(24.0),
-                  child: Row(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text('재생',
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.black,
-                              )),
-                          ObxValue<Rx<PlayerState>>((rx) {
-                            return InkWell(
-                              onTap: () => controller.onPressedState(rx.value),
-                              child: Icon(
-                                rx.value == PlayerState.playing
-                                    ? Icons.pause_circle_outline
-                                    : Icons.play_circle_outline,
-                                size: 48,
-                              ),
-                            );
-                          }, controller.playerState),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            '볼륨조절',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.black,
-                            ),
-                          ),
-                          Icon(
-                            Icons.volume_up_rounded,
-                            size: 48,
-                          ),
-                          ObxValue<Rx<double>>((rx) {
-                            return Slider(
-                              onChanged: controller.onChangedVolume,
-                              min: 0,
-                              max: 1,
-                              value: rx.value,
-                            ); // score
-                          }, controller.volume),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Column(
-                children: [
-                  Text('불협화도 점수',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.black,
-                      )),
-                  ObxValue<Rx<double>>((rx) {
-                    return Slider(
-                      onChanged: controller.onChangedScore,
-                      min: 0,
-                      max: 100,
-                      value: rx.value,
-                    ); // score
-                  }, controller.score),
-                ],
-              ),
-            ],
-          ),
-        ),
-        answerFormat: DoubleAnswerFormat(
-          controller: controller.textEditingController,
-        ),
-        isOptional: true);
-  }
-
   Future<Task> getSampleTask() async {
     return NavigableTask(
       id: TaskIdentifier(),
       steps: [
+        /*
         getStart(),
         getGenderStep(),
         getAgeStep(),
+        */
         getVolume(),
+        getMainStep(),
+        getMainStep(),
+        getMainStep(),
+        getMainStep(),
+        getMainStep(),
         getMainStep(),
       ],
     );

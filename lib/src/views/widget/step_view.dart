@@ -11,12 +11,14 @@ class StepView extends StatelessWidget {
   final QuestionResult Function() resultFunction;
   final bool isValid;
   final SurveyController? controller;
+  final TextEditingController? textEditingController;
 
   const StepView({
     required this.step,
     required this.child,
     required this.title,
     required this.resultFunction,
+    this.textEditingController,
     this.controller,
     this.isValid = true,
   });
@@ -47,19 +49,15 @@ class StepView extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 32.0),
                   child: OutlinedButton(
                     onPressed: isValid || step.isOptional
-                        ? () =>
-                            surveyController.nextStep(context, resultFunction)
+                        ? () {
+                            textEditingController?.text = '0.0';
+                            surveyController.nextStep(context, resultFunction);
+                          }
                         : null,
                     child: Text(
-                      step.buttonText?.toUpperCase() ??
-                          context
-                              .read<Map<String, String>?>()?['next']
-                              ?.toUpperCase() ??
-                          'Next',
+                      step.buttonText?.toUpperCase() ?? context.read<Map<String, String>?>()?['next']?.toUpperCase() ?? 'Next',
                       style: TextStyle(
-                        color: isValid
-                            ? Theme.of(context).primaryColor
-                            : Colors.grey,
+                        color: isValid ? Theme.of(context).primaryColor : Colors.grey,
                       ),
                     ),
                   ),

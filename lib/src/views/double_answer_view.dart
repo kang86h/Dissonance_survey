@@ -46,6 +46,7 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
   Widget build(BuildContext context) {
     return StepView(
       step: widget.questionStep,
+      textEditingController: widget.controller,
       resultFunction: () => DoubleQuestionResult(
         id: widget.questionStep.stepIdentifier,
         startDate: _startDate,
@@ -70,6 +71,9 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
               hint: _doubleAnswerFormat.hint,
             ),
             controller: widget.controller!,
+            onChanged: (value) {
+              _checkValidation(value);
+            },
             keyboardType: TextInputType.number,
             textAlign: TextAlign.center,
           ),
