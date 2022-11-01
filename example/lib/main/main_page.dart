@@ -18,7 +18,9 @@ class MainPage extends GetView<MainPageController> {
         child: FutureBuilder<Task>(
           future: getSampleTask(),
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done && snapshot.hasData && snapshot.data != null) {
+            if (snapshot.connectionState == ConnectionState.done &&
+                snapshot.hasData &&
+                snapshot.data != null) {
               final task = snapshot.data!;
               return SurveyKit(
                 surveyController: controller.surveyController,
@@ -167,22 +169,20 @@ class MainPage extends GetView<MainPageController> {
   }
 
   QuestionStep getAgeStep() {
-    return QuestionStep(title: '당신의 나이는 어떻게 되십니까?', answerFormat: IntegerAnswerFormat(), isOptional: false);
+    return QuestionStep(
+        title: '당신의 나이는 어떻게 되십니까?',
+        answerFormat: IntegerAnswerFormat(),
+        isOptional: false);
   }
 
-  QuestionStep getVolume() {
-    return QuestionStep(
+  InstructionStep getVolume() {
+    return InstructionStep(
+      title: '테스트에 적절한 볼륨으로 조절해주세요',
+      text: '',
       content: FractionallySizedBox(
         widthFactor: 0.7,
         child: Column(
           children: [
-            Text(
-              '테스트에 적절한 볼륨으로 조절해주세요',
-              style: TextStyle(
-                fontSize: 30,
-                color: Colors.black,
-              ),
-            ),
             DecoratedBox(
               decoration: BoxDecoration(
                 border: Border.all(
@@ -206,7 +206,9 @@ class MainPage extends GetView<MainPageController> {
                       return InkWell(
                         onTap: () => controller.onPressedState(rx.value),
                         child: Icon(
-                          rx.value == PlayerState.playing ? Icons.pause_circle_outline : Icons.play_circle_outline,
+                          rx.value == PlayerState.playing
+                              ? Icons.pause_circle_outline
+                              : Icons.play_circle_outline,
                           size: 48,
                         ),
                       );
@@ -239,9 +241,6 @@ class MainPage extends GetView<MainPageController> {
           ],
         ),
       ),
-      answerFormat: DoubleAnswerFormat(
-        controller: controller.textEditingController,
-      ),
     );
   }
 
@@ -256,7 +255,8 @@ class MainPage extends GetView<MainPageController> {
 
               return ObxValue<Rx<int>>((rx) {
                 return Text(
-                  '지금 들려주는 $name의 ${rx.value + 1}번째 화음을 듣고 점수를 매겨주세요',
+                  '$name ${rx.value + 1}번문항. \n'
+                  '지금 들려주는 화음을 듣고 점수를 매겨주세요',
                   style: TextStyle(
                     fontSize: 30,
                     color: Colors.black,
@@ -290,7 +290,9 @@ class MainPage extends GetView<MainPageController> {
                           return InkWell(
                             onTap: () => controller.onPressedState(rx.value),
                             child: Icon(
-                              rx.value == PlayerState.playing ? Icons.pause_circle_outline : Icons.play_circle_outline,
+                              rx.value == PlayerState.playing
+                                  ? Icons.pause_circle_outline
+                                  : Icons.play_circle_outline,
                               size: 48,
                             ),
                           );
@@ -354,12 +356,24 @@ class MainPage extends GetView<MainPageController> {
     return NavigableTask(
       id: TaskIdentifier(),
       steps: [
-        /*
         getStart(),
         getGenderStep(),
         getAgeStep(),
-        */
         getVolume(),
+        getMainStep(),
+        getMainStep(),
+        getMainStep(),
+        getMainStep(),
+        getMainStep(),
+        getMainStep(),
+        getMainStep(),
+        getMainStep(),
+        getMainStep(),
+        getMainStep(),
+        getMainStep(),
+        getMainStep(),
+        getMainStep(),
+        getMainStep(),
         getMainStep(),
         getMainStep(),
         getMainStep(),
