@@ -68,7 +68,7 @@ class MainPage extends GetView<MainPageController> {
                         Size(150.0, 60.0),
                       ),
                       side: MaterialStateProperty.resolveWith(
-                        (Set<MaterialState> state) {
+                            (Set<MaterialState> state) {
                           if (state.contains(MaterialState.disabled)) {
                             return BorderSide(
                               color: Colors.grey,
@@ -85,15 +85,15 @@ class MainPage extends GetView<MainPageController> {
                         ),
                       ),
                       textStyle: MaterialStateProperty.resolveWith(
-                        (Set<MaterialState> state) {
+                            (Set<MaterialState> state) {
                           if (state.contains(MaterialState.disabled)) {
                             return Theme.of(context).textTheme.button?.copyWith(
-                                  color: Colors.grey,
-                                );
+                              color: Colors.grey,
+                            );
                           }
                           return Theme.of(context).textTheme.button?.copyWith(
-                                color: Colors.cyan,
-                              );
+                            color: Colors.cyan,
+                          );
                         },
                       ),
                     ),
@@ -102,8 +102,8 @@ class MainPage extends GetView<MainPageController> {
                     style: ButtonStyle(
                       textStyle: MaterialStateProperty.all(
                         Theme.of(context).textTheme.button?.copyWith(
-                              color: Colors.cyan,
-                            ),
+                          color: Colors.cyan,
+                        ),
                       ),
                     ),
                   ),
@@ -256,7 +256,7 @@ class MainPage extends GetView<MainPageController> {
               return ObxValue<Rx<int>>((rx) {
                 return Text(
                   '$name ${rx.value + 1}번문항. \n'
-                  '지금 들려주는 화음을 듣고 점수를 매겨주세요',
+                      '지금 들려주는 화음을 듣고 점수를 매겨주세요',
                   style: TextStyle(
                     fontSize: 30,
                     color: Colors.black,
@@ -385,12 +385,10 @@ class MainPage extends GetView<MainPageController> {
   }
 }
 /*
-
 class _MyAppState extends State<App> {
   @override
   void initState() {
     super.initState();
-
     final first = TextStyle(
       fontSize: 20,
       fontWeight: FontWeight.bold,
@@ -399,22 +397,18 @@ class _MyAppState extends State<App> {
       fontSize: 15,
     );
     // fontsize: 15, fontWeight: bold
-
     /*
     final bool? a = null;
     final bool b = true;
-
     final c = a.elvis;
     final d = a ?? false;
     final e = a ?? false;
-
     final int a = 10;
     final int? b = null;
     final int c = a + b.elvis;
     final int d = a + (b ?? 0);
     final int e = a + (b ?? 0);
     final int f = a + (b ?? 0);
-
     build(context);
     dispose();
     */
@@ -422,7 +416,6 @@ class _MyAppState extends State<App> {
     textEditingController.addListener(onListenText);
     playerState.bindStream(audioPlayer.onPlayerStateChanged);
   }
-
   @override
   void dispose() {
     audioPlayer.dispose();
@@ -430,22 +423,18 @@ class _MyAppState extends State<App> {
     [playerState, volume, score].forEach((x) => x.close());
     super.dispose();
   }
-
   void onListenVideo() {
     /*
     final isPlaying = videoPlayerController.value.isPlaying;
     this.isPlaying.value = isPlaying;
-
     final volume = videoPlayerController.value.volume;
     this.volume.value = volume;
     */
   }
-
   void onListenText() {
     final score = double.tryParse(textEditingController.value.text) ?? 0;
     this.score.value = min(1000, score);
   }
-
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
@@ -584,7 +573,6 @@ class _MyAppState extends State<App> {
       ),
     );
   }
-
   // 페이지 안에 스텝이 여러개
   //
   Future<Task> getSampleTask() {
@@ -737,5 +725,4 @@ class _MyAppState extends State<App> {
     return Future.value(task);
   }
 }
-
 */

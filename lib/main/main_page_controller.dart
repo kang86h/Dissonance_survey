@@ -19,9 +19,9 @@ enum QuestionType {
 extension QuestionTypeEx on QuestionType {
   String get name =>
       {
-        QuestionType.q2: 'ㅇㅇㅇ',
-        QuestionType.q3: 'ㅁㅁㅁ',
-        QuestionType.q4: 'ㅅㅅㅅ',
+        QuestionType.q2: '2음화음(최대60점)',
+        QuestionType.q3: '3음화음(최대100점)',
+        QuestionType.q4: '4음화음(최대140점)',
       }[this] ??
       '';
 }
@@ -43,15 +43,17 @@ class MainPageController extends GetController<MainPageModel> {
 
   // 여러개
   final Map<QuestionType, Iterable<String>> files = {
-    QuestionType.none: ['volume.mp3'],
-    QuestionType.q2: Iterable.generate(2, (i) => 'Q2/Q2-${i + 1}.wav'),
+    QuestionType.none: ['','','','volume.mp3'],
+    QuestionType.q2: Iterable.generate(8, (i) => 'Q2/Q2-${i + 1}.wav'),
     QuestionType.q3: Iterable.generate(6, (i) => 'Q3/Q3-${i + 1}.wav'),
     QuestionType.q4: Iterable.generate(6, (i) => 'Q4/Q4-${i + 1}.wav'),
   };
 
   final Map<QuestionType, Iterable<double>> maxScores = {
     QuestionType.none: [100],
-    QuestionType.q2: [100, 0],
+    QuestionType.q2: [60, 0],
+    QuestionType.q3: [100, 0],
+    QuestionType.q4: [140, 0],
   };
 
   final Rx<QuestionType> questionType = QuestionType.none.obs;
