@@ -242,8 +242,8 @@ class MainPage extends GetView<MainPageController> {
 
   QuestionStep getMainStep() {
     return QuestionStep(
-      content: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 128),
+      content: FractionallySizedBox(
+        widthFactor: 0.7,
         child: Column(
           children: [
             ObxValue<Rx<QuestionType>>((rxQuestionType) {

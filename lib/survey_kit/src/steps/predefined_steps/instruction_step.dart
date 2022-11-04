@@ -30,8 +30,8 @@ class InstructionStep extends Step {
           stepIdentifier: stepIdentifier,
           isOptional: isOptional,
           buttonText: buttonText,
-          canGoBack: canGoBack ?? false,
-          showProgress: showProgress ?? false,
+          canGoBack: canGoBack ?? true,
+          showProgress: showProgress ?? true,
           showAppBar: showAppBar,
         );
 
