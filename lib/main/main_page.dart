@@ -1,10 +1,12 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:surveykit_example/getx/extension.dart';
 
 import '../getx/get_rx_impl.dart';
 import '../survey_kit/survey_kit.dart';
 import 'main_page_controller.dart';
+import 'model/question_type.dart';
 
 class MainPage extends GetView<MainPageController> {
   const MainPage({
@@ -18,9 +20,7 @@ class MainPage extends GetView<MainPageController> {
         child: FutureBuilder<Task>(
           future: getSampleTask(),
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done &&
-                snapshot.hasData &&
-                snapshot.data != null) {
+            if (snapshot.connectionState == ConnectionState.done && snapshot.hasData && snapshot.data != null) {
               final task = snapshot.data!;
               return SurveyKit(
                 surveyController: controller.surveyController,
@@ -68,7 +68,7 @@ class MainPage extends GetView<MainPageController> {
                         Size(150.0, 60.0),
                       ),
                       side: MaterialStateProperty.resolveWith(
-                            (Set<MaterialState> state) {
+                        (Set<MaterialState> state) {
                           if (state.contains(MaterialState.disabled)) {
                             return BorderSide(
                               color: Colors.grey,
@@ -85,15 +85,15 @@ class MainPage extends GetView<MainPageController> {
                         ),
                       ),
                       textStyle: MaterialStateProperty.resolveWith(
-                            (Set<MaterialState> state) {
+                        (Set<MaterialState> state) {
                           if (state.contains(MaterialState.disabled)) {
                             return Theme.of(context).textTheme.button?.copyWith(
-                              color: Colors.grey,
-                            );
+                                  color: Colors.grey,
+                                );
                           }
                           return Theme.of(context).textTheme.button?.copyWith(
-                            color: Colors.cyan,
-                          );
+                                color: Colors.cyan,
+                              );
                         },
                       ),
                     ),
@@ -102,8 +102,8 @@ class MainPage extends GetView<MainPageController> {
                     style: ButtonStyle(
                       textStyle: MaterialStateProperty.all(
                         Theme.of(context).textTheme.button?.copyWith(
-                          color: Colors.cyan,
-                        ),
+                              color: Colors.cyan,
+                            ),
                       ),
                     ),
                   ),
@@ -169,10 +169,7 @@ class MainPage extends GetView<MainPageController> {
   }
 
   QuestionStep getAgeStep() {
-    return QuestionStep(
-        title: '당신의 나이는 어떻게 되십니까?',
-        answerFormat: IntegerAnswerFormat(),
-        isOptional: false);
+    return QuestionStep(title: '당신의 나이는 어떻게 되십니까?', answerFormat: IntegerAnswerFormat(), isOptional: false);
   }
 
   InstructionStep getVolume() {
@@ -206,9 +203,7 @@ class MainPage extends GetView<MainPageController> {
                       return InkWell(
                         onTap: () => controller.onPressedState(rx.value),
                         child: Icon(
-                          rx.value == PlayerState.playing
-                              ? Icons.pause_circle_outline
-                              : Icons.play_circle_outline,
+                          rx.value == PlayerState.playing ? Icons.pause_circle_outline : Icons.play_circle_outline,
                           size: 48,
                         ),
                       );
@@ -241,6 +236,7 @@ class MainPage extends GetView<MainPageController> {
           ],
         ),
       ),
+      buttonText: '다음으로',
     );
   }
 
@@ -256,7 +252,7 @@ class MainPage extends GetView<MainPageController> {
               return ObxValue<Rx<int>>((rx) {
                 return Text(
                   '$name ${rx.value + 1}번문항. \n'
-                      '지금 들려주는 화음을 듣고 점수를 매겨주세요',
+                  '지금 들려주는 화음을 듣고 점수를 매겨주세요',
                   style: TextStyle(
                     fontSize: 30,
                     color: Colors.black,
@@ -290,9 +286,7 @@ class MainPage extends GetView<MainPageController> {
                           return InkWell(
                             onTap: () => controller.onPressedState(rx.value),
                             child: Icon(
-                              rx.value == PlayerState.playing
-                                  ? Icons.pause_circle_outline
-                                  : Icons.play_circle_outline,
+                              rx.value == PlayerState.playing ? Icons.pause_circle_outline : Icons.play_circle_outline,
                               size: 48,
                             ),
                           );
@@ -326,23 +320,32 @@ class MainPage extends GetView<MainPageController> {
                 ),
               ),
             ),
-            Column(
-              children: [
-                Text('불협화도 점수',
+            controller.rx((state) {
+              return Column(
+                children: [
+                  Text(
+                    '불협화도 점수',
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.black,
-                    )),
-                ObxValue<Rx<double>>((rx) {
-                  return Slider(
-                    onChanged: controller.onChangedScore,
-                    min: 0,
-                    max: 100,
-                    value: rx.value,
-                  ); // score
-                }, controller.score),
-              ],
-            ),
+                    ),
+                  ),
+                  controller.questionType.rx((rxKey) {
+                    final questions = state.questions[rxKey.value];
+                    return controller.index.rx((rxValue) {
+                      final question = questions[rxValue.value]!;
+
+                      return Slider(
+                        onChanged: (value) => controller.onChangedScore(rxKey.value, rxValue.value, value),
+                        min: 0,
+                        max: question.maxSliderScore,
+                        value: question.sliderScore,
+                      );
+                    });
+                  }),
+                ],
+              );
+            }),
           ],
         ),
       ),
@@ -355,31 +358,34 @@ class MainPage extends GetView<MainPageController> {
   Future<Task> getSampleTask() async {
     return NavigableTask(
       id: TaskIdentifier(),
+      // [ step1, step2, step3]
       steps: [
         getStart(),
         getGenderStep(),
         getAgeStep(),
         getVolume(),
-        getMainStep(),
-        getMainStep(),
-        getMainStep(),
-        getMainStep(),
-        getMainStep(),
-        getMainStep(),
-        getMainStep(),
-        getMainStep(),
-        getMainStep(),
-        getMainStep(),
-        getMainStep(),
-        getMainStep(),
-        getMainStep(),
-        getMainStep(),
-        getMainStep(),
-        getMainStep(),
-        getMainStep(),
-        getMainStep(),
-        getMainStep(),
-        getMainStep(),
+
+        // ...[1, 2, 3, 4, 5].map((x) => [x * x, x])
+        // [[1, 1] [4, 2], [9, 3], [16, 4], [25, 5]]
+
+        // ...[1, 2, 3, 4, 5].expand((x) => [x * x, x])
+        // [1, 1, 4, 2, 9, 3, 16, 4, 25, 5]
+
+        // [getMainStep(), getStart(), getGenderStep()] * 100
+        /*
+        ...Iterable.generate(100, (_) {
+          return [
+            getMainStep(),
+            getStart(),
+            getGenderStep(),
+          ];
+        }).expand((x) => x),
+        */
+        // List<Step> (3) * 100
+        // Step * 300
+
+        // 스프레드 문법
+        ...Iterable.generate(20, (_) => getMainStep()),
       ],
     );
   }

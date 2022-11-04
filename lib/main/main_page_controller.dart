@@ -1,102 +1,100 @@
 import 'dart:math';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 
+import '../getx/extension.dart';
 import '../getx/get_controller.dart';
 import '../getx/get_rx_impl.dart';
 import '../survey_kit/survey_kit.dart';
 import 'main_page_model.dart';
-
-enum QuestionType {
-  none,
-  q2,
-  q3,
-  q4,
-}
-
-extension QuestionTypeEx on QuestionType {
-  String get name =>
-      {
-        QuestionType.q2: '2음화음(최대60점)',
-        QuestionType.q3: '3음화음(최대100점)',
-        QuestionType.q4: '4음화음(최대140점)',
-      }[this] ??
-      '';
-}
+import 'model/question_model.dart';
+import 'model/question_type.dart';
 
 class MainPageController extends GetController<MainPageModel> {
   MainPageController({
     required MainPageModel model,
   }) : super(model);
 
-  // 1개
-  late final SurveyController surveyController = SurveyController(
-    onNextStep: _onNextStep,
-  );
-
   final AudioPlayer audioPlayer = AudioPlayer();
 
-  final Rx<PlayerState> playerState = PlayerState.stopped.obs;
+  late final TextEditingController textEditingController = TextEditingController()..addListener(onListenText);
+  late final SurveyController surveyController = SurveyController(
+    onNextStep: _onNextStep,
+    onStepBack: _onStepBack,
+  );
+
+  late final Rx<PlayerState> playerState = PlayerState.stopped.obs..bindStream(audioPlayer.onPlayerStateChanged);
   final Rx<double> volume = 1.0.obs;
-
-  // 여러개
-  final Map<QuestionType, Iterable<String>> files = {
-    QuestionType.none: ['','','','volume.mp3'],
-    QuestionType.q2: Iterable.generate(8, (i) => 'Q2/Q2-${i + 1}.wav'),
-    QuestionType.q3: Iterable.generate(6, (i) => 'Q3/Q3-${i + 1}.wav'),
-    QuestionType.q4: Iterable.generate(6, (i) => 'Q4/Q4-${i + 1}.wav'),
-  };
-
-  final Map<QuestionType, Iterable<double>> maxScores = {
-    QuestionType.none: [100],
-    QuestionType.q2: [60, 0],
-    QuestionType.q3: [100, 0],
-    QuestionType.q4: [140, 0],
-  };
 
   final Rx<QuestionType> questionType = QuestionType.none.obs;
   final Rx<int> index = 0.obs;
-
-  final TextEditingController textEditingController = TextEditingController();
-  final Rx<double> score = 0.0.obs;
-
-  // key: none
-  // index: 0
-
-  // key: q2
-  // index: 0
-  void _onNextStep(BuildContext context, QuestionResult Function() resultFunction) {
-    // index: 0
-    // length - 1: 0
-    if (index.value < files[questionType.value]!.length - 1) {
-      index.value++;
-    } else {
-      final keyIndex = files.keys.toList().indexOf(questionType.value); // 0
-      if (keyIndex < files.keys.length - 1) {
-        final nextKey = files.keys.elementAt(keyIndex + 1);
-        index.value = 0;
-        questionType.value = nextKey;
-      }
-      // complete
-    }
-  }
 
   @override
   void onInit() {
     super.onInit();
     // audioPlayer.setSourceAsset(files.elementAt(state.index));
     // questionType이 바뀌거나 또는, index가 바뀌거나
-    rx.Rx.combineLatest2<QuestionType, int, String>(questionType.stream, index.stream, (questionType, index) => files[questionType]!.elementAt(index))
-        .listen((file) async {
-      textEditingController.text = '0.0';
+    rx.Rx.combineLatest2<QuestionType, int, QuestionModel>(
+            questionType.stream, index.stream, (questionType, index) => state.questions[questionType]!.elementAt(index))
+        .startWith(QuestionModel.empty())
+        .listen((question) async {
       await audioPlayer.pause();
-      await audioPlayer.setSourceAsset(file);
+      await audioPlayer.setSourceAsset(question.file);
     });
 
-    textEditingController.addListener(onListenText);
-    playerState.bindStream(audioPlayer.onPlayerStateChanged);
+    onChangedVolume(1 / 2);
+  }
+
+  void _onNextStep(BuildContext context, QuestionResult Function() resultFunction) async {
+    var index = this.index.value;
+    var questionType = this.questionType.value;
+
+    if (index < state.questions[questionType]!.length - 1) {
+      index++;
+    } else {
+      final keyIndex = state.questions.keys.toList().indexOf(questionType);
+      if (keyIndex < state.questions.keys.length - 1) {
+        final nextKey = state.questions.keys.elementAt(keyIndex + 1);
+
+        index = 0;
+        questionType = nextKey;
+      }
+    }
+
+    if (questionType == QuestionType.none && index == state.questions[QuestionType.none]!.length - 1) {
+      await audioPlayer.resume();
+    }
+
+    this.index.value = index;
+    this.questionType.value = questionType;
+  }
+
+  void _onStepBack(BuildContext context, QuestionResult Function()? resultFunction) async {
+    var index = this.index.value;
+    var questionType = this.questionType.value;
+
+    if (index > 0) {
+      index--;
+    } else {
+      final keyIndex = state.questions.keys.toList().indexOf(questionType);
+      if (keyIndex > 0) {
+        final prevKey = state.questions.keys.elementAt(keyIndex - 1);
+
+        index = state.questions[prevKey]!.length - 1;
+        questionType = prevKey;
+      }
+    }
+
+    this.index.value = index;
+    this.questionType.value = questionType;
+
+    if (questionType == QuestionType.none && index == state.questions[QuestionType.none]!.length - 1) {
+      await Future.delayed(Duration(milliseconds: 300));
+      await audioPlayer.resume();
+    }
   }
 
   @override
@@ -104,13 +102,73 @@ class MainPageController extends GetController<MainPageModel> {
     await audioPlayer.dispose();
     [playerState, volume].forEach((x) => x.close());
     textEditingController.dispose();
-    score.close();
     super.onClose();
   }
 
-  void onChangedScore(double value) {
-    score.value = value;
+  void onChangedScore(QuestionType questionType, int index, double value) {
+    // 메인 페이지 모델을 변경하는 함수 -> change
+    // Iterable<MapEntry(Key, Value)>
+    /*
+    [
+      MapEntry(QuestionType.none, [
+        QuestionModel(),
+        QuestionModel(),
+        QuestionModel(),
+      ]),
+
+      ->
+
+
+      MapEntry(QuestionType.none, {
+        0: QuestionModel(),
+        1: QuestionModel(),
+        2: QuestionModel(),
+      }),
+
+
+      MapEntry(QuestionType.q1, [
+        QuestionModel(),
+        QuestionModel(),
+        QuestionModel(),
+      ]),
+    ],
+    */
+
+    onChange(questionType, index, score: value);
     textEditingController.text = value.toStringAsFixed(1);
+  }
+
+  void onChange(
+    QuestionType questionType,
+    int index, {
+    String? file,
+    double? score,
+    double? maxSliderScore,
+    double? maxTextScore,
+    int? playCount,
+  }) {
+    change(
+      state.copyWith(
+        questions: Map.fromEntries({
+          ...state.questions.entries.map((x) => MapEntry(
+                x.key,
+                x.key == questionType
+                    ? [
+                        ...x.value.toList().asMap().entries.map((z) => z.key == index
+                            ? z.value.copyWith(
+                                file: file,
+                                score: score,
+                                maxSliderScore: maxSliderScore,
+                                maxTextScore: maxTextScore,
+                                playCount: playCount,
+                              )
+                            : z.value),
+                      ]
+                    : x.value,
+              )),
+        }),
+      ),
+    );
   }
 
   void onChangedVolume(double value) {
@@ -119,10 +177,29 @@ class MainPageController extends GetController<MainPageModel> {
   }
 
   void onListenText() {
-    final score = double.tryParse(textEditingController.value.text) ?? 0;
-    final maxScore = maxScores[questionType.value]?.elementAt(index.value) ?? 0;
+    final questionType = this.questionType.value;
+    final index = this.index.value;
 
-    this.score.value = maxScore > 0 ? min(maxScore, score) : score;
+    final text = double.tryParse(textEditingController.value.text) ?? 0;
+    // 50
+    final questionModel = state.questions[questionType][index];
+
+    if (questionModel is QuestionModel) {
+      // questionModel.maxTextScore 60
+      // questionModel.maxSliderScore 100 -> UI쪽에서 maxSliderScore보다 작은 값을 할당
+
+      final maxScore = max(questionModel.maxTextScore, questionModel.maxSliderScore);
+      final score = maxScore > 0 ? min(maxScore, text) : text;
+
+      if (questionModel.score != score) {
+        onChange(questionType, index, score: score);
+        textEditingController.text = score.toString();
+        textEditingController.selection = TextSelection(
+          baseOffset: score.toString().length,
+          extentOffset: score.toString().length,
+        );
+      }
+    }
   }
 
   void onPressedState(PlayerState state) async {

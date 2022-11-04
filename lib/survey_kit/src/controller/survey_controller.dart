@@ -72,7 +72,6 @@ class SurveyController {
   }) {
     if (onStepBack != null) {
       onStepBack!(context, resultFunction);
-      return;
     }
     BlocProvider.of<SurveyPresenter>(context).add(
       StepBack(
