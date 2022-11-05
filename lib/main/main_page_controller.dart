@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:audioplayers/audioplayers.dart';
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 
@@ -20,15 +19,13 @@ class MainPageController extends GetController<MainPageModel> {
 
   final AudioPlayer audioPlayer = AudioPlayer();
 
-  late final TextEditingController textEditingController =
-      TextEditingController()..addListener(onListenText);
+  late final TextEditingController textEditingController = TextEditingController()..addListener(onListenText);
   late final SurveyController surveyController = SurveyController(
     onNextStep: _onNextStep,
     onStepBack: _onStepBack,
   );
 
-  late final Rx<PlayerState> playerState = PlayerState.stopped.obs
-    ..bindStream(audioPlayer.onPlayerStateChanged);
+  late final Rx<PlayerState> playerState = PlayerState.stopped.obs..bindStream(audioPlayer.onPlayerStateChanged);
   final Rx<double> volume = 1.0.obs;
 
   final Rx<QuestionType> questionType = QuestionType.none.obs;
@@ -39,13 +36,9 @@ class MainPageController extends GetController<MainPageModel> {
     super.onInit();
     // audioPlayer.setSourceAsset(files.elementAt(state.index));
     // questionType이 바뀌거나 또는, index가 바뀌거나
-    rx.Rx.combineLatest2<QuestionType, int, QuestionModel>(
-            questionType.stream,
-            index.stream,
-            (questionType, index) =>
-                state.questions[questionType]!.elementAt(index))
-        .startWith(QuestionModel.empty())
-        .listen((question) async {
+    rx.Rx.combineLatest2<QuestionType, int, QuestionModel>(questionType.stream.startWith(questionType.value), index.stream.startWith(index.value),
+        (questionType, index) => state.questions[questionType]!.elementAt(index)).listen((question) async {
+      print('question: $question');
       await audioPlayer.pause();
       await audioPlayer.setSourceAsset(question.file);
     });
@@ -53,15 +46,13 @@ class MainPageController extends GetController<MainPageModel> {
     onChangedVolume(1 / 2);
   }
 
-  void _onNextStep(
-      BuildContext context, QuestionResult Function() resultFunction) async {
+  void _onNextStep(BuildContext context, QuestionResult Function() resultFunction) async {
     var index = this.index.value;
     var questionType = this.questionType.value;
     final keyIndex = state.questions.keys.toList().indexOf(questionType);
     if (index < state.questions[questionType]!.length - 1) {
       index++;
     } else {
-
       if (keyIndex < state.questions.keys.length - 1) {
         final nextKey = state.questions.keys.elementAt(keyIndex + 1);
 
@@ -69,25 +60,23 @@ class MainPageController extends GetController<MainPageModel> {
         questionType = nextKey;
       }
     }
+
     this.index.value = index;
     this.questionType.value = questionType;
 
-    if (questionType == QuestionType.none &&
-        index == state.questions[QuestionType.none]!.length - 1) {
+    if (questionType == QuestionType.none && index == state.questions[QuestionType.none]!.length - 1) {
       await Future.delayed(Duration(milliseconds: 300));
       await audioPlayer.resume();
     }
   }
 
-  void _onStepBack(
-      BuildContext context, QuestionResult Function()? resultFunction) async {
+  void _onStepBack(BuildContext context, QuestionResult Function()? resultFunction) async {
     var index = this.index.value;
     var questionType = this.questionType.value;
     final keyIndex = state.questions.keys.toList().indexOf(questionType);
     if (index > 0) {
       index--;
     } else {
-
       if (keyIndex > 0) {
         final prevKey = state.questions.keys.elementAt(keyIndex - 1);
 
@@ -99,8 +88,7 @@ class MainPageController extends GetController<MainPageModel> {
     this.index.value = index;
     this.questionType.value = questionType;
 
-    if (questionType == QuestionType.none &&
-        index == state.questions[QuestionType.none]!.length - 1) {
+    if (questionType == QuestionType.none && index == state.questions[QuestionType.none]!.length - 1) {
       await Future.delayed(Duration(milliseconds: 300));
       await audioPlayer.resume();
     }
@@ -163,19 +151,15 @@ class MainPageController extends GetController<MainPageModel> {
                 x.key,
                 x.key == questionType
                     ? [
-                        ...x.value
-                            .toList()
-                            .asMap()
-                            .entries
-                            .map((z) => z.key == index
-                                ? z.value.copyWith(
-                                    file: file,
-                                    score: score,
-                                    maxSliderScore: maxSliderScore,
-                                    maxTextScore: maxTextScore,
-                                    playCount: playCount,
-                                  )
-                                : z.value),
+                        ...x.value.toList().asMap().entries.map((z) => z.key == index
+                            ? z.value.copyWith(
+                                file: file,
+                                score: score,
+                                maxSliderScore: maxSliderScore,
+                                maxTextScore: maxTextScore,
+                                playCount: playCount,
+                              )
+                            : z.value),
                       ]
                     : x.value,
               )),
@@ -201,8 +185,7 @@ class MainPageController extends GetController<MainPageModel> {
       // questionModel.maxTextScore 60
       // questionModel.maxSliderScore 100 -> UI쪽에서 maxSliderScore보다 작은 값을 할당
 
-      final maxScore =
-          max(questionModel.maxTextScore, questionModel.maxSliderScore);
+      final maxScore = max(questionModel.maxTextScore, questionModel.maxSliderScore);
       final score = maxScore > 0 ? min(maxScore, text) : text;
 
       if (questionModel.score != score) {
