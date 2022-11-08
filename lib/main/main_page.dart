@@ -199,7 +199,7 @@ class MainPage extends GetView<MainPageController> {
                         color: Colors.black,
                       ),
                     ),
-                    ObxValue<Rx<PlayerState>>((rx) {
+                    controller.playerState.rx((rx) {
                       return InkWell(
                         onTap: () => controller.onPressedState(rx.value),
                         child: Icon(
@@ -207,7 +207,7 @@ class MainPage extends GetView<MainPageController> {
                           size: 48,
                         ),
                       );
-                    }, controller.playerState),
+                    }),
                     Text(
                       '볼륨조절',
                       style: TextStyle(
@@ -220,14 +220,14 @@ class MainPage extends GetView<MainPageController> {
                       size: 48,
                     ),
                     Expanded(
-                      child: ObxValue<Rx<double>>((rx) {
+                      child: controller.volume.rx((rx) {
                         return Slider(
                           onChanged: controller.onChangedVolume,
                           min: 0,
                           max: 1,
                           value: rx.value,
                         ); // score
-                      }, controller.volume),
+                      }),
                     ),
                   ],
                 ),
@@ -246,20 +246,19 @@ class MainPage extends GetView<MainPageController> {
         widthFactor: 0.7,
         child: Column(
           children: [
-            ObxValue<Rx<QuestionType>>((rxQuestionType) {
+            controller.questionType.rx((rxQuestionType) {
               final name = rxQuestionType.value.name;
 
-              return ObxValue<Rx<int>>((rx) {
+              return controller.index.rx((rxIndex) {
                 return Text(
-                  '$name ${rx.value + 1}번문항. \n'
-                  '지금 들려주는 화음을 듣고 점수를 매겨주세요',
+                  '$name ${rxIndex.value + 1}번문항.\n지금 들려주는 화음을 듣고 점수를 매겨주세요',
                   style: TextStyle(
                     fontSize: 30,
                     color: Colors.black,
                   ),
                 );
-              }, controller.index);
-            }, controller.questionType),
+              });
+            }),
             DecoratedBox(
               decoration: BoxDecoration(
                 border: Border.all(
@@ -282,7 +281,7 @@ class MainPage extends GetView<MainPageController> {
                             color: Colors.black,
                           ),
                         ),
-                        ObxValue<Rx<PlayerState>>((rx) {
+                        controller.playerState.rx((rx) {
                           return InkWell(
                             onTap: () => controller.onPressedState(rx.value),
                             child: Icon(
@@ -290,32 +289,28 @@ class MainPage extends GetView<MainPageController> {
                               size: 48,
                             ),
                           );
-                        }, controller.playerState),
+                        }),
                       ],
                     ),
-                    Row(
-                      children: [
-                        Text(
-                          '볼륨조절',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.black,
-                          ),
-                        ),
-                        Icon(
-                          Icons.volume_up_rounded,
-                          size: 48,
-                        ),
-                        ObxValue<Rx<double>>((rx) {
-                          return Slider(
-                            onChanged: controller.onChangedVolume,
-                            min: 0,
-                            max: 1,
-                            value: rx.value,
-                          ); // score
-                        }, controller.volume),
-                      ],
+                    Text(
+                      '볼륨조절',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.black,
+                      ),
                     ),
+                    Icon(
+                      Icons.volume_up_rounded,
+                      size: 48,
+                    ),
+                    controller.volume.rx((rx) {
+                      return Slider(
+                        onChanged: controller.onChangedVolume,
+                        min: 0,
+                        max: 1,
+                        value: rx.value,
+                      ); // score
+                    }),
                   ],
                 ),
               ),

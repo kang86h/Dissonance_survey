@@ -28,14 +28,28 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
   void initState() {
     super.initState();
     _doubleAnswerFormat = widget.questionStep.answerFormat as DoubleAnswerFormat;
-    widget.controller?.text = widget.result?.result?.toString() ?? '';
-    _checkValidation(widget.controller?.text ?? '');
     _startDate = DateTime.now();
+
+    print('widget.result: ${widget.result}');
+    print('widget.result?.result: ${widget.result?.result}');
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.controller?.addListener(onListenText);
+      widget.controller?.text = widget.result?.result?.toString() ?? '';
+    });
   }
 
-  void _checkValidation(String text) {
+  @override
+  void dispose() {
+    widget.controller?.removeListener(onListenText);
+    super.dispose();
+  }
+
+  void onListenText() {
+    final text = double.tryParse(widget.controller!.value.text) ?? 0;
+
     setState(() {
-      _isValid = text.isNotEmpty && double.tryParse(text) != null;
+      _isValid = text > 0;
     });
   }
 
@@ -68,9 +82,6 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
               hint: _doubleAnswerFormat.hint,
             ),
             controller: widget.controller!,
-            onChanged: (value) {
-              _checkValidation(value);
-            },
             keyboardType: TextInputType.number,
             textAlign: TextAlign.center,
           ),

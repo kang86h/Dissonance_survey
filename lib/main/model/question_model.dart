@@ -8,14 +8,16 @@ class QuestionModel extends GetModel {
     required this.score,
     required this.maxSliderScore,
     required this.maxTextScore,
-    required this.playCount,
+    required this.volumes,
+    required this.isAutoPlay,
   });
 
   final String file;
   final double score;
   final double maxSliderScore;
   final double maxTextScore;
-  final int playCount;
+  final Iterable<double> volumes;
+  final bool isAutoPlay;
 
   double get sliderScore => min(score, maxSliderScore);
 
@@ -24,11 +26,13 @@ class QuestionModel extends GetModel {
     score: 0,
     maxSliderScore: 0,
     maxTextScore: 0,
-    playCount: 0,
+    volumes: const [],
+    isAutoPlay: false,
   );
 
   static final QuestionModel _volume = _empty.copyWith(
     file: 'volume.mp3',
+    isAutoPlay: true,
   );
 
   factory QuestionModel.empty() => _empty;
@@ -44,20 +48,23 @@ class QuestionModel extends GetModel {
     double? score,
     double? maxSliderScore,
     double? maxTextScore,
-    int? playCount,
+    Iterable<double>? volumes,
+    bool? isAutoPlay,
   }) {
     return QuestionModel(
       file: file ?? this.file,
       score: score ?? this.score,
       maxSliderScore: maxSliderScore ?? this.maxSliderScore,
       maxTextScore: maxTextScore ?? this.maxTextScore,
-      playCount: playCount ?? this.playCount,
+      volumes: volumes ?? this.volumes,
+      isAutoPlay: isAutoPlay ?? this.isAutoPlay,
     );
   }
 
   @override
-  List<Object?> get props => [file, score, maxSliderScore, maxTextScore, playCount];
+  List<Object?> get props => [file, score, maxSliderScore, maxTextScore, volumes, isAutoPlay];
 
   @override
-  String toString() => 'file: $file score: $score maxSliderScore: $maxSliderScore maxTextScore: $maxTextScore playCount: $playCount';
+  String toString() =>
+      'file: $file score: $score maxSliderScore: $maxSliderScore maxTextScore: $maxTextScore volumes: $volumes isAutoPlay: $isAutoPlay';
 }

@@ -50,7 +50,6 @@ class StepView extends StatelessWidget {
                   child: OutlinedButton(
                     onPressed: isValid || step.isOptional
                         ? () {
-                            textEditingController?.text = '0.0';
                             surveyController.nextStep(context, resultFunction);
                           }
                         : null,
