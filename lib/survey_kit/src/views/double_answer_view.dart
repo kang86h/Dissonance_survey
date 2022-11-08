@@ -30,9 +30,6 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
     _doubleAnswerFormat = widget.questionStep.answerFormat as DoubleAnswerFormat;
     _startDate = DateTime.now();
 
-    print('widget.result: ${widget.result}');
-    print('widget.result?.result: ${widget.result?.result}');
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       widget.controller?.addListener(onListenText);
       widget.controller?.text = widget.result?.result?.toString() ?? '';

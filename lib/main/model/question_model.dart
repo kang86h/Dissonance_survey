@@ -4,6 +4,7 @@ import '../../getx/get_model.dart';
 
 class QuestionModel extends GetModel {
   QuestionModel({
+    required this.id,
     required this.file,
     required this.score,
     required this.maxSliderScore,
@@ -12,6 +13,7 @@ class QuestionModel extends GetModel {
     required this.isAutoPlay,
   });
 
+  final int id;
   final String file;
   final double score;
   final double maxSliderScore;
@@ -22,6 +24,7 @@ class QuestionModel extends GetModel {
   double get sliderScore => min(score, maxSliderScore);
 
   static final QuestionModel _empty = QuestionModel(
+    id: 0,
     file: '',
     score: 0,
     maxSliderScore: 0,
@@ -44,6 +47,7 @@ class QuestionModel extends GetModel {
 
   @override
   QuestionModel copyWith({
+    int? id,
     String? file,
     double? score,
     double? maxSliderScore,
@@ -52,6 +56,7 @@ class QuestionModel extends GetModel {
     bool? isAutoPlay,
   }) {
     return QuestionModel(
+      id: id ?? this.id,
       file: file ?? this.file,
       score: score ?? this.score,
       maxSliderScore: maxSliderScore ?? this.maxSliderScore,
@@ -62,9 +67,9 @@ class QuestionModel extends GetModel {
   }
 
   @override
-  List<Object?> get props => [file, score, maxSliderScore, maxTextScore, volumes, isAutoPlay];
+  List<Object?> get props => [id, file, score, maxSliderScore, maxTextScore, volumes, isAutoPlay];
 
   @override
   String toString() =>
-      'file: $file score: $score maxSliderScore: $maxSliderScore maxTextScore: $maxTextScore volumes: $volumes isAutoPlay: $isAutoPlay';
+      'id: $id file: $file score: $score maxSliderScore: $maxSliderScore maxTextScore: $maxTextScore volumes: $volumes isAutoPlay: $isAutoPlay';
 }

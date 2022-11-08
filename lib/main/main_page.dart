@@ -247,7 +247,7 @@ class MainPage extends GetView<MainPageController> {
         child: Column(
           children: [
             controller.questionType.rx((rxQuestionType) {
-              final name = rxQuestionType.value.name;
+              final name = rxQuestionType.value.title;
 
               return controller.index.rx((rxIndex) {
                 return Text(
