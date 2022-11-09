@@ -12,6 +12,11 @@ import 'main_page_model.dart';
 import 'model/question_model.dart';
 import 'model/question_type.dart';
 
+enum StepEvent {
+  next,
+  back,
+}
+
 class MainPageController extends GetController<MainPageModel> {
   MainPageController({
     required MainPageModel model,
@@ -21,8 +26,8 @@ class MainPageController extends GetController<MainPageModel> {
 
   late final TextEditingController textEditingController = TextEditingController()..addListener(onListenText);
   late final SurveyController surveyController = SurveyController(
-    onNextStep: _onNextStep,
-    onStepBack: _onStepBack,
+    onNextStep: (_, __) => _onStep(StepEvent.next),
+    onStepBack: (_, __) => _onStep(StepEvent.back),
   );
 
   late final Rx<PlayerState> playerState = PlayerState.stopped.obs..bindStream(audioPlayer.onPlayerStateChanged);
@@ -34,63 +39,59 @@ class MainPageController extends GetController<MainPageModel> {
   @override
   void onInit() {
     super.onInit();
-    // audioPlayer.setSourceAsset(files.elementAt(state.index));
-    // questionType이 바뀌거나 또는, index가 바뀌거나
-    rx.Rx.combineLatest2<QuestionType, int, QuestionModel>(questionType.stream.startWith(questionType.value), index.stream.startWith(index.value),
-        (questionType, index) => state.questions[questionType]!.elementAt(index)).listen((question) async {
-      print('question: $question');
-      await audioPlayer.pause();
-      await audioPlayer.setSourceAsset(question.file);
+    playerState.stream
+        .where((state) => state == PlayerState.playing)
+        .withLatestFrom3<QuestionType, int, double, Map>(questionType.stream, index.stream, volume.stream, (state, questionType, index, volume) {
+      final question = this.state.questions[questionType].elvis.elementAt(index);
+      return {
+        QuestionType: questionType,
+        int: index,
+        QuestionModel: question.copyWith(
+          volumes: [
+            ...question.volumes,
+            volume,
+          ],
+        ),
+      };
+    }).listen((map) {
+      onChange(map[QuestionType] as QuestionType, map[int] as int, volumes: (map[QuestionModel] as QuestionModel).volumes);
     });
-
     onChangedVolume(1 / 2);
   }
 
-  void _onNextStep(BuildContext context, QuestionResult Function() resultFunction) async {
-    var index = this.index.value;
+  void _onStep(StepEvent event) async {
     var questionType = this.questionType.value;
-    final keyIndex = state.questions.keys.toList().indexOf(questionType);
-    if (index < state.questions[questionType]!.length - 1) {
-      index++;
-    } else {
-      if (keyIndex < state.questions.keys.length - 1) {
-        final nextKey = state.questions.keys.elementAt(keyIndex + 1);
+    var index = this.index.value;
 
+    final keyIndex = state.questions.keys.toList().indexOf(questionType);
+
+    if (event == StepEvent.next) {
+      if (index < state.questions[questionType].elvis.length - 1) {
+        index = index + 1;
+      } else if (keyIndex < state.questions.keys.length - 1) {
+        questionType = state.questions.keys.elementAt(keyIndex + 1);
         index = 0;
-        questionType = nextKey;
       }
-    }
-
-    this.index.value = index;
-    this.questionType.value = questionType;
-
-    if (questionType == QuestionType.none && index == state.questions[QuestionType.none]!.length - 1) {
-      await Future.delayed(Duration(milliseconds: 300));
-      await audioPlayer.resume();
-    }
-  }
-
-  void _onStepBack(BuildContext context, QuestionResult Function()? resultFunction) async {
-    var index = this.index.value;
-    var questionType = this.questionType.value;
-    final keyIndex = state.questions.keys.toList().indexOf(questionType);
-    if (index > 0) {
-      index--;
-    } else {
-      if (keyIndex > 0) {
+    } else if (event == StepEvent.back) {
+      if (index > 0) {
+        index = index - 1;
+      } else if (keyIndex > 0) {
         final prevKey = state.questions.keys.elementAt(keyIndex - 1);
 
-        index = state.questions[prevKey]!.length - 1;
         questionType = prevKey;
+        index = state.questions[prevKey].elvis.length - 1;
       }
     }
 
     this.index.value = index;
     this.questionType.value = questionType;
 
-    if (questionType == QuestionType.none && index == state.questions[QuestionType.none]!.length - 1) {
-      await Future.delayed(Duration(milliseconds: 300));
+    final question = state.questions[questionType].elvis.elementAt(index);
+    await audioPlayer.setSourceAsset(question.file);
+    if (question.isAutoPlay) {
       await audioPlayer.resume();
+    } else {
+      await audioPlayer.pause();
     }
   }
 
@@ -142,7 +143,7 @@ class MainPageController extends GetController<MainPageModel> {
     double? score,
     double? maxSliderScore,
     double? maxTextScore,
-    int? playCount,
+    Iterable<double>? volumes,
   }) {
     change(
       state.copyWith(
@@ -157,7 +158,7 @@ class MainPageController extends GetController<MainPageModel> {
                                 score: score,
                                 maxSliderScore: maxSliderScore,
                                 maxTextScore: maxTextScore,
-                                playCount: playCount,
+                                volumes: volumes,
                               )
                             : z.value),
                       ]
@@ -188,8 +189,8 @@ class MainPageController extends GetController<MainPageModel> {
       final maxScore = max(questionModel.maxTextScore, questionModel.maxSliderScore);
       final score = maxScore > 0 ? min(maxScore, text) : text;
 
-      if (questionModel.score != score) {
-        onChange(questionType, index, score: score);
+      onChange(questionType, index, score: score);
+      if (text != score) {
         textEditingController.text = score.toString();
         textEditingController.selection = TextSelection(
           baseOffset: score.toString().length,
