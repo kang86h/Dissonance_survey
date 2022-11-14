@@ -43,6 +43,8 @@ class MainPageController extends GetController<MainPageModel> {
         .where((state) => state == PlayerState.playing)
         .withLatestFrom3<QuestionType, int, double, Map>(questionType.stream, index.stream, volume.stream, (state, questionType, index, volume) {
       final question = this.state.questions[questionType].elvis.elementAt(index);
+      final startedAt = question.isRecord && question.startedAt.length == question.endedAt.length ? [...question.startedAt, DateTime.now()] : null;
+
       return {
         QuestionType: questionType,
         int: index,
@@ -51,10 +53,20 @@ class MainPageController extends GetController<MainPageModel> {
             ...question.volumes,
             volume,
           ],
+          startedAt: startedAt,
         ),
       };
     }).listen((map) {
-      onChange(map[QuestionType] as QuestionType, map[int] as int, volumes: (map[QuestionModel] as QuestionModel).volumes);
+      final question = map[QuestionModel];
+
+      if (question is QuestionModel) {
+        onChange(
+          map[QuestionType] as QuestionType,
+          map[int] as int,
+          volumes: question.volumes,
+          startedAt: question.startedAt,
+        );
+      }
     });
     onChangedVolume(1 / 2);
   }
@@ -62,6 +74,14 @@ class MainPageController extends GetController<MainPageModel> {
   void _onStep(StepEvent event) async {
     var questionType = this.questionType.value;
     var index = this.index.value;
+    final question = state.questions[questionType].elvis.elementAt(index);
+    final endedAt = question.isRecord && question.startedAt.length > question.endedAt.length ? [...question.endedAt, DateTime.now()] : null;
+
+    onChange(
+      questionType,
+      index,
+      endedAt: endedAt,
+    );
 
     final keyIndex = state.questions.keys.toList().indexOf(questionType);
 
@@ -86,9 +106,9 @@ class MainPageController extends GetController<MainPageModel> {
     this.index.value = index;
     this.questionType.value = questionType;
 
-    final question = state.questions[questionType].elvis.elementAt(index);
-    await audioPlayer.setSourceAsset(question.file);
-    if (question.isAutoPlay) {
+    final nextQuestion = state.questions[questionType].elvis.elementAt(index);
+    await audioPlayer.setSourceAsset(nextQuestion.file);
+    if (nextQuestion.isAutoPlay) {
       await audioPlayer.resume();
     } else {
       await audioPlayer.pause();
@@ -132,8 +152,15 @@ class MainPageController extends GetController<MainPageModel> {
     ],
     */
 
-    onChange(questionType, index, score: value);
-    textEditingController.text = value.toStringAsFixed(1);
+    final questionType = this.questionType.value;
+    final index = this.index.value;
+
+    final questionModel = state.questions[questionType][index];
+
+    if (questionModel is QuestionModel && questionModel.volumes.isset) {
+      onChange(questionType, index, score: value);
+      textEditingController.text = value.toStringAsFixed(1);
+    }
   }
 
   void onChange(
@@ -144,6 +171,8 @@ class MainPageController extends GetController<MainPageModel> {
     double? maxSliderScore,
     double? maxTextScore,
     Iterable<double>? volumes,
+    Iterable<DateTime>? startedAt,
+    Iterable<DateTime>? endedAt,
   }) {
     change(
       state.copyWith(
@@ -159,6 +188,8 @@ class MainPageController extends GetController<MainPageModel> {
                                 maxSliderScore: maxSliderScore,
                                 maxTextScore: maxTextScore,
                                 volumes: volumes,
+                                startedAt: startedAt,
+                                endedAt: endedAt,
                               )
                             : z.value),
                       ]
@@ -182,7 +213,7 @@ class MainPageController extends GetController<MainPageModel> {
     // 50
     final questionModel = state.questions[questionType][index];
 
-    if (questionModel is QuestionModel) {
+    if (questionModel is QuestionModel && questionModel.volumes.isset) {
       // questionModel.maxTextScore 60
       // questionModel.maxSliderScore 100 -> UI쪽에서 maxSliderScore보다 작은 값을 할당
 
@@ -197,6 +228,8 @@ class MainPageController extends GetController<MainPageModel> {
           extentOffset: score.toString().length,
         );
       }
+    } else {
+      textEditingController.clear();
     }
   }
 

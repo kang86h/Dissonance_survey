@@ -11,6 +11,9 @@ class QuestionModel extends GetModel {
     required this.maxTextScore,
     required this.volumes,
     required this.isAutoPlay,
+    required this.isRecord,
+    required this.startedAt,
+    required this.endedAt,
   });
 
   final int id;
@@ -20,8 +23,17 @@ class QuestionModel extends GetModel {
   final double maxTextScore;
   final Iterable<double> volumes;
   final bool isAutoPlay;
+  final bool isRecord;
+  final Iterable<DateTime> startedAt;
+  final Iterable<DateTime> endedAt;
 
   double get sliderScore => min(score, maxSliderScore);
+
+  int get totalMilliseconds {
+    final length = min(startedAt.length, endedAt.length);
+    final total = Iterable.generate(length, (i) => endedAt.elementAt(i).difference(startedAt.elementAt(i))).reduce((a, c) => a + c);
+    return total.inMilliseconds;
+  }
 
   static final QuestionModel _empty = QuestionModel(
     id: 0,
@@ -31,6 +43,9 @@ class QuestionModel extends GetModel {
     maxTextScore: 0,
     volumes: const [],
     isAutoPlay: false,
+    isRecord: false,
+    startedAt: const [],
+    endedAt: const [],
   );
 
   static final QuestionModel _volume = _empty.copyWith(
@@ -54,6 +69,9 @@ class QuestionModel extends GetModel {
     double? maxTextScore,
     Iterable<double>? volumes,
     bool? isAutoPlay,
+    bool? isRecord,
+    Iterable<DateTime>? startedAt,
+    Iterable<DateTime>? endedAt,
   }) {
     return QuestionModel(
       id: id ?? this.id,
@@ -63,13 +81,16 @@ class QuestionModel extends GetModel {
       maxTextScore: maxTextScore ?? this.maxTextScore,
       volumes: volumes ?? this.volumes,
       isAutoPlay: isAutoPlay ?? this.isAutoPlay,
+      isRecord: isRecord ?? this.isRecord,
+      startedAt: startedAt ?? this.startedAt,
+      endedAt: endedAt ?? this.endedAt,
     );
   }
 
   @override
-  List<Object?> get props => [id, file, score, maxSliderScore, maxTextScore, volumes, isAutoPlay];
+  List<Object?> get props => [id, file, score, maxSliderScore, maxTextScore, volumes, isAutoPlay, isRecord, startedAt, endedAt];
 
   @override
   String toString() =>
-      'id: $id file: $file score: $score maxSliderScore: $maxSliderScore maxTextScore: $maxTextScore volumes: $volumes isAutoPlay: $isAutoPlay';
+      'id: $id file: $file score: $score maxSliderScore: $maxSliderScore maxTextScore: $maxTextScore volumes: $volumes isAutoPlay: $isAutoPlay isRecord: $isRecord startedAt: $startedAt endedAt: $endedAt';
 }
