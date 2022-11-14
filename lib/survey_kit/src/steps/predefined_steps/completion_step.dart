@@ -13,7 +13,7 @@ class CompletionStep extends Step {
 
   CompletionStep({
     bool isOptional = false,
-    required StepIdentifier stepIdentifier,
+    StepIdentifier? stepIdentifier,
     String buttonText = 'End Survey',
     bool showAppBar = true,
     required this.title,

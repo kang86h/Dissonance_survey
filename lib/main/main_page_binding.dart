@@ -13,7 +13,8 @@ class MainPageBinding extends Bindings {
         model: MainPageModel.empty().copyWith(
           questions: {
             QuestionType.none: [
-              ...Iterable.generate(3, (_) => QuestionModel.empty()), //볼륨조절 전 스텝 갯수
+              ...Iterable.generate(3, (_) => QuestionModel.empty()),
+              //볼륨조절 전 스텝 갯수
               QuestionModel.volume(),
             ],
             QuestionType.q2: (QuestionType questionType) {
@@ -21,12 +22,12 @@ class MainPageBinding extends Bindings {
               final questions = List.generate(
                 8,
                 (i) => QuestionModel.empty().copyWith(
-                  id: i + 1,
-                  file: '$name/$name-${i + 1}.wav',
-                  maxSliderScore: 60,
-                  maxTextScore: 1000,
-                  isRecord: true,
-                ),
+                    id: i + 1,
+                    file: '$name/$name-${i + 1}.mp3',
+                    maxSliderScore: 60,
+                    maxTextScore: 1000,
+                    isRecord: true,
+                    sliderlengthratio: 60 / 140),
               );
               if (questionType.isRandom) {
                 questions.shuffle();
@@ -39,12 +40,12 @@ class MainPageBinding extends Bindings {
               final questions = List.generate(
                 6,
                 (i) => QuestionModel.empty().copyWith(
-                  id: i + 1,
-                  file: '$name/$name-${i + 1}.wav',
-                  maxSliderScore: 100,
-                  maxTextScore: 1000,
-                  isRecord: true,
-                ),
+                    id: i + 1,
+                    file: '$name/$name-${i + 1}.wav',
+                    maxSliderScore: 100,
+                    maxTextScore: 1000,
+                    isRecord: true,
+                    sliderlengthratio: 100 / 140),
               );
               if (questionType.isRandom) {
                 questions.shuffle();
@@ -57,12 +58,12 @@ class MainPageBinding extends Bindings {
               final questions = List.generate(
                 6,
                 (i) => QuestionModel.empty().copyWith(
-                  id: i + 1,
-                  file: '$name/$name-${i + 1}.wav',
-                  maxSliderScore: 140,
-                  maxTextScore: 1000,
-                  isRecord: true,
-                ),
+                    id: i + 1,
+                    file: '$name/$name-${i + 1}.wav',
+                    maxSliderScore: 140,
+                    maxTextScore: 1000,
+                    isRecord: true,
+                    sliderlengthratio: 140 / 140),
               );
               if (questionType.isRandom) {
                 questions.shuffle();

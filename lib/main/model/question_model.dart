@@ -14,6 +14,7 @@ class QuestionModel extends GetModel {
     required this.isRecord,
     required this.startedAt,
     required this.endedAt,
+    required this.sliderlengthratio,
   });
 
   final int id;
@@ -26,12 +27,15 @@ class QuestionModel extends GetModel {
   final bool isRecord;
   final Iterable<DateTime> startedAt;
   final Iterable<DateTime> endedAt;
+  final double sliderlengthratio;
 
   double get sliderScore => min(score, maxSliderScore);
 
   int get totalMilliseconds {
     final length = min(startedAt.length, endedAt.length);
-    final total = Iterable.generate(length, (i) => endedAt.elementAt(i).difference(startedAt.elementAt(i))).reduce((a, c) => a + c);
+    final total = Iterable.generate(length,
+            (i) => endedAt.elementAt(i).difference(startedAt.elementAt(i)))
+        .reduce((a, c) => a + c);
     return total.inMilliseconds;
   }
 
@@ -46,6 +50,7 @@ class QuestionModel extends GetModel {
     isRecord: false,
     startedAt: const [],
     endedAt: const [],
+    sliderlengthratio: 0,
   );
 
   static final QuestionModel _volume = _empty.copyWith(
@@ -72,6 +77,7 @@ class QuestionModel extends GetModel {
     bool? isRecord,
     Iterable<DateTime>? startedAt,
     Iterable<DateTime>? endedAt,
+    double? sliderlengthratio,
   }) {
     return QuestionModel(
       id: id ?? this.id,
@@ -84,13 +90,26 @@ class QuestionModel extends GetModel {
       isRecord: isRecord ?? this.isRecord,
       startedAt: startedAt ?? this.startedAt,
       endedAt: endedAt ?? this.endedAt,
+      sliderlengthratio: sliderlengthratio ?? this.sliderlengthratio,
     );
   }
 
   @override
-  List<Object?> get props => [id, file, score, maxSliderScore, maxTextScore, volumes, isAutoPlay, isRecord, startedAt, endedAt];
+  List<Object?> get props => [
+        id,
+        file,
+        score,
+        maxSliderScore,
+        maxTextScore,
+        volumes,
+        isAutoPlay,
+        isRecord,
+        startedAt,
+        endedAt,
+        sliderlengthratio,
+      ];
 
   @override
   String toString() =>
-      'id: $id file: $file score: $score maxSliderScore: $maxSliderScore maxTextScore: $maxTextScore volumes: $volumes isAutoPlay: $isAutoPlay isRecord: $isRecord startedAt: $startedAt endedAt: $endedAt';
+      'id: $id file: $file score: $score maxSliderScore: $maxSliderScore maxTextScore: $maxTextScore volumes: $volumes isAutoPlay: $isAutoPlay isRecord: $isRecord startedAt: $startedAt endedAt: $endedAt sliderlengthratio: $sliderlengthratio';
 }

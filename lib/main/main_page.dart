@@ -20,7 +20,9 @@ class MainPage extends GetView<MainPageController> {
         child: FutureBuilder<Task>(
           future: getSampleTask(),
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done && snapshot.hasData && snapshot.data != null) {
+            if (snapshot.connectionState == ConnectionState.done &&
+                snapshot.hasData &&
+                snapshot.data != null) {
               final task = snapshot.data!;
               return SurveyKit(
                 surveyController: controller.surveyController,
@@ -169,7 +171,10 @@ class MainPage extends GetView<MainPageController> {
   }
 
   QuestionStep getAgeStep() {
-    return QuestionStep(title: '당신의 나이는 어떻게 되십니까?', answerFormat: IntegerAnswerFormat(), isOptional: false);
+    return QuestionStep(
+        title: '당신의 나이는 어떻게 되십니까?',
+        answerFormat: IntegerAnswerFormat(),
+        isOptional: false);
   }
 
   InstructionStep getVolume() {
@@ -177,7 +182,7 @@ class MainPage extends GetView<MainPageController> {
       title: '테스트에 적절한 볼륨으로 조절해주세요',
       text: '',
       content: FractionallySizedBox(
-        widthFactor: 0.7,
+        widthFactor: 0.8,
         child: Column(
           children: [
             DecoratedBox(
@@ -203,7 +208,9 @@ class MainPage extends GetView<MainPageController> {
                       return InkWell(
                         onTap: () => controller.onPressedState(rx.value),
                         child: Icon(
-                          rx.value == PlayerState.playing ? Icons.pause_circle_outline : Icons.play_circle_outline,
+                          rx.value == PlayerState.playing
+                              ? Icons.pause_circle_outline
+                              : Icons.play_circle_outline,
                           size: 48,
                         ),
                       );
@@ -243,7 +250,7 @@ class MainPage extends GetView<MainPageController> {
   QuestionStep getMainStep() {
     return QuestionStep(
       content: FractionallySizedBox(
-        widthFactor: 0.7,
+        widthFactor: 0.8,
         child: Column(
           children: [
             controller.questionType.rx((rxQuestionType) {
@@ -270,28 +277,24 @@ class MainPage extends GetView<MainPageController> {
                 padding: const EdgeInsets.all(24.0),
                 child: Row(
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          '재생',
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.black,
-                          ),
-                        ),
-                        controller.playerState.rx((rx) {
-                          return InkWell(
-                            onTap: () => controller.onPressedState(rx.value),
-                            child: Icon(
-                              rx.value == PlayerState.playing ? Icons.pause_circle_outline : Icons.play_circle_outline,
-                              size: 48,
-                            ),
-                          );
-                        }),
-                      ],
+                    Text(
+                      '재생',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.black,
+                      ),
                     ),
+                    controller.playerState.rx((rx) {
+                      return InkWell(
+                        onTap: () => controller.onPressedState(rx.value),
+                        child: Icon(
+                          rx.value == PlayerState.playing
+                              ? Icons.pause_circle_outline
+                              : Icons.play_circle_outline,
+                          size: 48,
+                        ),
+                      );
+                    }),
                     Text(
                       '볼륨조절',
                       style: TextStyle(
@@ -303,14 +306,16 @@ class MainPage extends GetView<MainPageController> {
                       Icons.volume_up_rounded,
                       size: 48,
                     ),
-                    controller.volume.rx((rx) {
-                      return Slider(
-                        onChanged: controller.onChangedVolume,
-                        min: 0,
-                        max: 1,
-                        value: rx.value,
-                      ); // score
-                    }),
+                    Expanded(
+                      child: controller.volume.rx((rx) {
+                        return Slider(
+                          onChanged: controller.onChangedVolume,
+                          min: 0,
+                          max: 1,
+                          value: rx.value,
+                        ); // score
+                      }),
+                    ),
                   ],
                 ),
               ),
@@ -330,11 +335,15 @@ class MainPage extends GetView<MainPageController> {
                     return controller.index.rx((rxValue) {
                       final question = questions[rxValue.value]!;
 
-                      return Slider(
-                        onChanged: (value) => controller.onChangedScore(rxKey.value, rxValue.value, value),
-                        min: 0,
-                        max: question.maxSliderScore,
-                        value: question.sliderScore,
+                      return FractionallySizedBox(
+                        widthFactor: question.sliderlengthratio,
+                        child: Slider(
+                          onChanged: (value) => controller.onChangedScore(
+                              rxKey.value, rxValue.value, value),
+                          min: 0,
+                          max: question.maxSliderScore,
+                          value: question.sliderScore,
+                        ),
                       );
                     });
                   }),
@@ -348,6 +357,14 @@ class MainPage extends GetView<MainPageController> {
         controller: controller.textEditingController,
       ),
     );
+  }
+
+  CompletionStep getComplete() {
+    return CompletionStep(
+        title: '모든 설문이 끝났습니다.',
+        text: '참여완료 버튼을 누르시면 모든 설문이 종료됩니다.\n'
+            '모든 설문을 종료하시겠습니까?',
+        buttonText: '참여완료');
   }
 
   Future<Task> getSampleTask() async {
@@ -381,6 +398,7 @@ class MainPage extends GetView<MainPageController> {
 
         // 스프레드 문법
         ...Iterable.generate(20, (_) => getMainStep()),
+        getComplete()
       ],
     );
   }
