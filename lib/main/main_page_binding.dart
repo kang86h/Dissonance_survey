@@ -25,6 +25,7 @@ class MainPageBinding extends Bindings {
                   file: '$name/$name-${i + 1}.wav',
                   maxSliderScore: 60,
                   maxTextScore: 1000,
+                  isRecord: true,
                 ),
               );
               if (questionType.isRandom) {
@@ -40,8 +41,9 @@ class MainPageBinding extends Bindings {
                 (i) => QuestionModel.empty().copyWith(
                   id: i + 1,
                   file: '$name/$name-${i + 1}.wav',
-                  maxSliderScore: 60,
+                  maxSliderScore: 100,
                   maxTextScore: 1000,
+                  isRecord: true,
                 ),
               );
               if (questionType.isRandom) {
@@ -57,8 +59,9 @@ class MainPageBinding extends Bindings {
                 (i) => QuestionModel.empty().copyWith(
                   id: i + 1,
                   file: '$name/$name-${i + 1}.wav',
-                  maxSliderScore: 60,
+                  maxSliderScore: 140,
                   maxTextScore: 1000,
+                  isRecord: true,
                 ),
               );
               if (questionType.isRandom) {
