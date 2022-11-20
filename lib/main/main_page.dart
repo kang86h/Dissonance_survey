@@ -1,3 +1,6 @@
+import 'dart:html' as html;
+import 'dart:math';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +10,9 @@ import '../getx/get_rx_impl.dart';
 import '../survey_kit/survey_kit.dart';
 import 'main_page_controller.dart';
 import 'model/question_type.dart';
+
+final StepIdentifier _genderIdentifier = StepIdentifier(id: 'gender');
+final StepIdentifier _ageIdentifier = StepIdentifier(id: 'age');
 
 class MainPage extends GetView<MainPageController> {
   const MainPage({
@@ -20,123 +26,162 @@ class MainPage extends GetView<MainPageController> {
         child: FutureBuilder<Task>(
           future: getSampleTask(),
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done &&
-                snapshot.hasData &&
-                snapshot.data != null) {
+            if (snapshot.connectionState == ConnectionState.done && snapshot.hasData && snapshot.data != null) {
               final task = snapshot.data!;
-              return SurveyKit(
-                surveyController: controller.surveyController,
-                onResult: (SurveyResult result) {
-                  print(result.finishReason);
-                  Navigator.pushNamed(context, '/');
-                },
-                task: task,
-                showProgress: true,
-                localizations: {
-                  'cancel': 'Cancel',
-                  'next': 'Next',
-                },
-                themeData: Theme.of(context).copyWith(
-                  colorScheme: ColorScheme.fromSwatch(
-                    primarySwatch: Colors.cyan,
-                  ).copyWith(
-                    onPrimary: Colors.white,
-                  ),
-                  primaryColor: Colors.cyan,
-                  backgroundColor: Colors.white,
-                  appBarTheme: const AppBarTheme(
-                    color: Colors.white,
-                    iconTheme: IconThemeData(
-                      color: Colors.cyan,
+              return controller.rx((state) {
+                return SurveyKit(
+                  surveyController: controller.surveyController,
+                  onResult: (SurveyResult surveyResult) {
+                    final result = state.questions.values.expand((x) => x).where((x) => x.score > 0).map((x) => x.toJson());
+                    final gender = surveyResult.results.where((x) => x.id == _genderIdentifier).firstOrNull?.results.firstOrNull?.valueIdentifier ?? '';
+                    final age = surveyResult.results.where((x) => x.id == _ageIdentifier).firstOrNull?.results.firstOrNull?.valueIdentifier ?? '';
+
+                    print('result: $result');
+                    print('gender: $gender');
+                    print('age: $age');
+                    html.window.open('https://naver.com', '_self');
+
+                    // [age, gender];
+                    // 사용자 컬렉션: 키값, 성별, 나이, 맥 어드레스
+                    // result -> 성별, 나이
+                    // 맥어드레스
+
+                    // 설문조사 결과 컬렉션: 키값, 사용자 키값, 결과(리스트)
+
+                    // firebase data store upload
+
+                    // RDBMS 관계형 데이터베이스의 형식
+                    // article
+                    // id, content, author
+                    // 1,  '',       'AA'
+                    // 2,  '',       'BB'
+                    // 3,  '',       'CC'
+
+                    // NOSQL
+                    /*
+                    articles: [
+                      0H: {
+                            id: "",
+                            content: "",
+                            author: "",
+                          },
+                      1H: {
+                            id: "",
+                            content: "",
+                            files: "",
+                            author: "",
+                          },
+                    ]
+                    */
+                  },
+                  task: task,
+                  showProgress: true,
+                  localizations: {
+                    'cancel': 'Cancel',
+                    'next': 'Next',
+                  },
+                  themeData: Theme.of(context).copyWith(
+                    colorScheme: ColorScheme.fromSwatch(
+                      primarySwatch: Colors.cyan,
+                    ).copyWith(
+                      onPrimary: Colors.white,
                     ),
-                    titleTextStyle: TextStyle(
-                      color: Colors.cyan,
-                    ),
-                  ),
-                  iconTheme: const IconThemeData(
-                    color: Colors.cyan,
-                  ),
-                  textSelectionTheme: TextSelectionThemeData(
-                    cursorColor: Colors.cyan,
-                    selectionColor: Colors.cyan,
-                    selectionHandleColor: Colors.cyan,
-                  ),
-                  cupertinoOverrideTheme: CupertinoThemeData(
                     primaryColor: Colors.cyan,
-                  ),
-                  outlinedButtonTheme: OutlinedButtonThemeData(
-                    style: ButtonStyle(
-                      minimumSize: MaterialStateProperty.all(
-                        Size(150.0, 60.0),
+                    backgroundColor: Colors.white,
+                    appBarTheme: const AppBarTheme(
+                      color: Colors.white,
+                      iconTheme: IconThemeData(
+                        color: Colors.cyan,
                       ),
-                      side: MaterialStateProperty.resolveWith(
-                        (Set<MaterialState> state) {
-                          if (state.contains(MaterialState.disabled)) {
+                      titleTextStyle: TextStyle(
+                        color: Colors.cyan,
+                      ),
+                    ),
+                    iconTheme: const IconThemeData(
+                      color: Colors.cyan,
+                    ),
+                    textSelectionTheme: TextSelectionThemeData(
+                      cursorColor: Colors.cyan,
+                      selectionColor: Colors.cyan,
+                      selectionHandleColor: Colors.cyan,
+                    ),
+                    cupertinoOverrideTheme: CupertinoThemeData(
+                      primaryColor: Colors.cyan,
+                    ),
+                    outlinedButtonTheme: OutlinedButtonThemeData(
+                      style: ButtonStyle(
+                        minimumSize: MaterialStateProperty.all(
+                          Size(150.0, 60.0),
+                        ),
+                        side: MaterialStateProperty.resolveWith(
+                          (Set<MaterialState> state) {
+                            if (state.contains(MaterialState.disabled)) {
+                              return BorderSide(
+                                color: Colors.grey,
+                              );
+                            }
                             return BorderSide(
-                              color: Colors.grey,
+                              color: Colors.cyan,
                             );
-                          }
-                          return BorderSide(
-                            color: Colors.cyan,
-                          );
-                        },
-                      ),
-                      shape: MaterialStateProperty.all(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
+                          },
+                        ),
+                        shape: MaterialStateProperty.all(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                        ),
+                        textStyle: MaterialStateProperty.resolveWith(
+                          (Set<MaterialState> state) {
+                            if (state.contains(MaterialState.disabled)) {
+                              return Theme.of(context).textTheme.button?.copyWith(
+                                    color: Colors.grey,
+                                  );
+                            }
+                            return Theme.of(context).textTheme.button?.copyWith(
+                                  color: Colors.cyan,
+                                );
+                          },
                         ),
                       ),
-                      textStyle: MaterialStateProperty.resolveWith(
-                        (Set<MaterialState> state) {
-                          if (state.contains(MaterialState.disabled)) {
-                            return Theme.of(context).textTheme.button?.copyWith(
-                                  color: Colors.grey,
-                                );
-                          }
-                          return Theme.of(context).textTheme.button?.copyWith(
+                    ),
+                    textButtonTheme: TextButtonThemeData(
+                      style: ButtonStyle(
+                        textStyle: MaterialStateProperty.all(
+                          Theme.of(context).textTheme.button?.copyWith(
                                 color: Colors.cyan,
-                              );
-                        },
+                              ),
+                        ),
+                      ),
+                    ),
+                    textTheme: TextTheme(
+                      headline2: TextStyle(
+                        fontSize: 28.0,
+                        color: Colors.black,
+                      ),
+                      headline5: TextStyle(
+                        fontSize: 24.0,
+                        color: Colors.black,
+                      ),
+                      bodyText2: TextStyle(
+                        fontSize: 18.0,
+                        color: Colors.black,
+                      ),
+                      subtitle1: TextStyle(
+                        fontSize: 18.0,
+                        color: Colors.black,
+                      ),
+                    ),
+                    inputDecorationTheme: InputDecorationTheme(
+                      labelStyle: TextStyle(
+                        color: Colors.black,
                       ),
                     ),
                   ),
-                  textButtonTheme: TextButtonThemeData(
-                    style: ButtonStyle(
-                      textStyle: MaterialStateProperty.all(
-                        Theme.of(context).textTheme.button?.copyWith(
-                              color: Colors.cyan,
-                            ),
-                      ),
-                    ),
+                  surveyProgressbarConfiguration: SurveyProgressConfiguration(
+                    backgroundColor: Colors.white,
                   ),
-                  textTheme: TextTheme(
-                    headline2: TextStyle(
-                      fontSize: 28.0,
-                      color: Colors.black,
-                    ),
-                    headline5: TextStyle(
-                      fontSize: 24.0,
-                      color: Colors.black,
-                    ),
-                    bodyText2: TextStyle(
-                      fontSize: 18.0,
-                      color: Colors.black,
-                    ),
-                    subtitle1: TextStyle(
-                      fontSize: 18.0,
-                      color: Colors.black,
-                    ),
-                  ),
-                  inputDecorationTheme: InputDecorationTheme(
-                    labelStyle: TextStyle(
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-                surveyProgressbarConfiguration: SurveyProgressConfiguration(
-                  backgroundColor: Colors.white,
-                ),
-              );
+                );
+              });
             }
             return CircularProgressIndicator.adaptive();
           },
@@ -159,6 +204,7 @@ class MainPage extends GetView<MainPageController> {
 
   QuestionStep getGenderStep() {
     return QuestionStep(
+      stepIdentifier: _genderIdentifier,
       title: '당신의 성별은 무엇인가요?',
       isOptional: false,
       answerFormat: SingleChoiceAnswerFormat(
@@ -172,9 +218,11 @@ class MainPage extends GetView<MainPageController> {
 
   QuestionStep getAgeStep() {
     return QuestionStep(
-        title: '당신의 나이는 어떻게 되십니까?',
-        answerFormat: IntegerAnswerFormat(),
-        isOptional: false);
+      stepIdentifier: _ageIdentifier,
+      title: '당신의 나이는 어떻게 되십니까?',
+      answerFormat: IntegerAnswerFormat(),
+      isOptional: false,
+    );
   }
 
   InstructionStep getVolume() {
@@ -208,9 +256,7 @@ class MainPage extends GetView<MainPageController> {
                       return InkWell(
                         onTap: () => controller.onPressedState(rx.value),
                         child: Icon(
-                          rx.value == PlayerState.playing
-                              ? Icons.pause_circle_outline
-                              : Icons.play_circle_outline,
+                          rx.value == PlayerState.playing ? Icons.pause_circle_outline : Icons.play_circle_outline,
                           size: 48,
                         ),
                       );
@@ -288,9 +334,7 @@ class MainPage extends GetView<MainPageController> {
                       return InkWell(
                         onTap: () => controller.onPressedState(rx.value),
                         child: Icon(
-                          rx.value == PlayerState.playing
-                              ? Icons.pause_circle_outline
-                              : Icons.play_circle_outline,
+                          rx.value == PlayerState.playing ? Icons.pause_circle_outline : Icons.play_circle_outline,
                           size: 48,
                         ),
                       );
@@ -332,14 +376,15 @@ class MainPage extends GetView<MainPageController> {
                   ),
                   controller.questionType.rx((rxKey) {
                     final questions = state.questions[rxKey.value];
+                    final maxSliderScore = state.questions.values.map((x) => x.map((y) => y.maxSliderScore).reduce(max)).reduce(max);
+
                     return controller.index.rx((rxValue) {
                       final question = questions[rxValue.value]!;
 
                       return FractionallySizedBox(
-                        widthFactor: question.sliderlengthratio,
+                        widthFactor: question.maxSliderScore / maxSliderScore,
                         child: Slider(
-                          onChanged: (value) => controller.onChangedScore(
-                              rxKey.value, rxValue.value, value),
+                          onChanged: (value) => controller.onChangedScore(rxKey.value, rxValue.value, value),
                           min: 0,
                           max: question.maxSliderScore,
                           value: question.sliderScore,
@@ -397,8 +442,8 @@ class MainPage extends GetView<MainPageController> {
         // Step * 300
 
         // 스프레드 문법
-        ...Iterable.generate(20, (_) => getMainStep()),
-        getComplete()
+        ...Iterable.generate(3, (_) => getMainStep()),
+        getComplete(),
       ],
     );
   }

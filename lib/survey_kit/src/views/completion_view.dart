@@ -30,23 +30,6 @@ class CompletionView extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyText2,
               textAlign: TextAlign.center,
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 32.0),
-              child: Container(
-                width: 150.0,
-                height: 150.0,
-                child: assetPath.isNotEmpty
-                ? Lottie.asset(
-                  assetPath,
-                  repeat: false,
-                )
-                : Lottie.asset(
-                  'assets/fancy_checkmark.json',
-                  package: 'survey_kit',
-                  repeat: false,
-                ),
-              ),
-            )
           ],
         ),
       ),

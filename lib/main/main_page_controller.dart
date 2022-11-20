@@ -218,14 +218,23 @@ class MainPageController extends GetController<MainPageModel> {
       // questionModel.maxSliderScore 100 -> UI쪽에서 maxSliderScore보다 작은 값을 할당
 
       final maxScore = max(questionModel.maxTextScore, questionModel.maxSliderScore);
-      final score = maxScore > 0 ? min(maxScore, text) : text;
 
-      onChange(questionType, index, score: score);
-      if (text != score) {
-        textEditingController.text = score.toString();
+      if (text > 0) {
+        final score = maxScore > 0 ? min(maxScore, text) : text;
+        onChange(questionType, index, score: score);
+
+        if (text != score) {
+          textEditingController.text = score.toString();
+          textEditingController.selection = TextSelection(
+            baseOffset: score.toString().length,
+            extentOffset: score.toString().length,
+          );
+        }
+      } else if (questionModel.score > 0) {
+        textEditingController.text = questionModel.score.toString();
         textEditingController.selection = TextSelection(
-          baseOffset: score.toString().length,
-          extentOffset: score.toString().length,
+          baseOffset: questionModel.score.toString().length,
+          extentOffset: questionModel.score.toString().length,
         );
       }
     } else {

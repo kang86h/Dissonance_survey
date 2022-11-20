@@ -109,6 +109,15 @@ class QuestionModel extends GetModel {
         sliderlengthratio,
       ];
 
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'file': file,
+    'score': score,
+    'play_count': volumes.length,
+    'volumes': volumes,
+    'total_milliseconds': totalMilliseconds,
+  };
+
   @override
   String toString() =>
       'id: $id file: $file score: $score maxSliderScore: $maxSliderScore maxTextScore: $maxTextScore volumes: $volumes isAutoPlay: $isAutoPlay isRecord: $isRecord startedAt: $startedAt endedAt: $endedAt sliderlengthratio: $sliderlengthratio';
