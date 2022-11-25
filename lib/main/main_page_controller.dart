@@ -1,8 +1,10 @@
 import 'dart:math';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart' as rx;
+import 'package:surveykit_example/main/main_page.dart';
 
 import '../getx/extension.dart';
 import '../getx/get_controller.dart';
@@ -121,6 +123,24 @@ class MainPageController extends GetController<MainPageModel> {
     [playerState, volume].forEach((x) => x.close());
     textEditingController.dispose();
     super.onClose();
+  }
+
+  void onResult(SurveyResult surveyResult) async {
+    final gender = surveyResult.results.where((x) => x.id == MainPage.genderIdentifier).firstOrNull?.results.firstOrNull?.valueIdentifier ?? '';
+    final age = surveyResult.results.where((x) => x.id == MainPage.ageIdentifier).firstOrNull?.results.firstOrNull?.valueIdentifier ?? '';
+
+    final userCollection = FirebaseFirestore.instance.collection('user');
+    final userDocument = await userCollection.add({
+      'age': age,
+      'gender': gender,
+      'mac_address': '',
+    });
+
+    final resultCollection = FirebaseFirestore.instance.collection('result');
+    await resultCollection.add({
+      'user_id': userDocument.id,
+      'question': state.toJson(),
+    });
   }
 
   void onChangedScore(QuestionType questionType, int index, double value) {

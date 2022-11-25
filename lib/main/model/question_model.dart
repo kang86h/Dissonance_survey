@@ -110,7 +110,6 @@ class QuestionModel extends GetModel {
       ];
 
   Map<String, dynamic> toJson() => {
-    'id': id,
     'file': file,
     'score': score,
     'play_count': volumes.length,

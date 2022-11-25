@@ -11,13 +11,14 @@ import '../survey_kit/survey_kit.dart';
 import 'main_page_controller.dart';
 import 'model/question_type.dart';
 
-final StepIdentifier _genderIdentifier = StepIdentifier(id: 'gender');
-final StepIdentifier _ageIdentifier = StepIdentifier(id: 'age');
 
 class MainPage extends GetView<MainPageController> {
   const MainPage({
     Key? key,
   }) : super(key: key);
+
+  static StepIdentifier genderIdentifier = StepIdentifier(id: 'gender');
+  static StepIdentifier ageIdentifier = StepIdentifier(id: 'age');
 
   @override
   Widget build(BuildContext context) {
@@ -31,15 +32,20 @@ class MainPage extends GetView<MainPageController> {
               return controller.rx((state) {
                 return SurveyKit(
                   surveyController: controller.surveyController,
+                  onResult: controller.onResult,
+                  /*
                   onResult: (SurveyResult surveyResult) {
-                    final result = state.questions.values.expand((x) => x).where((x) => x.score > 0).map((x) => x.toJson());
+                    final result = state.toJson();
                     final gender = surveyResult.results.where((x) => x.id == _genderIdentifier).firstOrNull?.results.firstOrNull?.valueIdentifier ?? '';
                     final age = surveyResult.results.where((x) => x.id == _ageIdentifier).firstOrNull?.results.firstOrNull?.valueIdentifier ?? '';
 
+
+                    /*
                     print('result: $result');
                     print('gender: $gender');
                     print('age: $age');
                     html.window.open('https://naver.com', '_self');
+                    */
 
                     // [age, gender];
                     // 사용자 컬렉션: 키값, 성별, 나이, 맥 어드레스
@@ -74,6 +80,7 @@ class MainPage extends GetView<MainPageController> {
                     ]
                     */
                   },
+                  */
                   task: task,
                   showProgress: true,
                   localizations: {
@@ -204,7 +211,7 @@ class MainPage extends GetView<MainPageController> {
 
   QuestionStep getGenderStep() {
     return QuestionStep(
-      stepIdentifier: _genderIdentifier,
+      stepIdentifier: genderIdentifier,
       title: '당신의 성별은 무엇인가요?',
       isOptional: false,
       answerFormat: SingleChoiceAnswerFormat(
@@ -218,7 +225,7 @@ class MainPage extends GetView<MainPageController> {
 
   QuestionStep getAgeStep() {
     return QuestionStep(
-      stepIdentifier: _ageIdentifier,
+      stepIdentifier: ageIdentifier,
       title: '당신의 나이는 어떻게 되십니까?',
       answerFormat: IntegerAnswerFormat(),
       isOptional: false,
