@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>482462884629-92ktv75a6sn349gf1i3a4hr0kpf5m5e9.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.482462884629-92ktv75a6sn349gf1i3a4hr0kpf5m5e9</string>
+	<key>API_KEY</key>
+	<string>AIzaSyA6wIqjpWQRE1k3JEj99sdlHeKhrkjo_1k</string>
+	<key>GCM_SENDER_ID</key>
+	<string>482462884629</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.quickbirdstudios.SurveyKitExample</string>
+	<key>PROJECT_ID</key>
+	<string>dissonance-survey-1</string>
+	<key>STORAGE_BUCKET</key>
+	<string>dissonance-survey-1.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:482462884629:ios:1d6606aa4c2d6511997f1c</string>
+</dict>
+</plist>

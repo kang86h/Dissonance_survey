@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "482462884629",
+    "project_id": "dissonance-survey-1",
+    "storage_bucket": "dissonance-survey-1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:482462884629:android:675b70533b042cb8997f1c",
+        "android_client_info": {
+          "package_name": "com.quickbirdstudios.surveykit_example"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "482462884629-48ud2cqn21q4bp5dhf75g19m0oqalpgm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD2IB4_eMs9f4xalQpqgxcvYuM6da70S-0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "482462884629-48ud2cqn21q4bp5dhf75g19m0oqalpgm.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "482462884629-6pqkasrhq93f6t519caq9c93gl8fqb6t.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.quickbirdstudios.example"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
