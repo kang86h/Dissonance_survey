@@ -128,15 +128,14 @@ class MainPageController extends GetController<MainPageModel> {
   void onResult(SurveyResult surveyResult) async {
     final gender = surveyResult.results.where((x) => x.id == MainPage.genderIdentifier).firstOrNull?.results.firstOrNull?.valueIdentifier ?? '';
     final age = surveyResult.results.where((x) => x.id == MainPage.ageIdentifier).firstOrNull?.results.firstOrNull?.valueIdentifier ?? '';
-
-    final userCollection = FirebaseFirestore.instance.collection('user');
+    CollectionReference userCollection = FirebaseFirestore.instance.collection('user');
     final userDocument = await userCollection.add({
       'age': age,
       'gender': gender,
       'mac_address': '',
     });
 
-    final resultCollection = FirebaseFirestore.instance.collection('result');
+    CollectionReference resultCollection = FirebaseFirestore.instance.collection('result');
     await resultCollection.add({
       'user_id': userDocument.id,
       'question': state.toJson(),
