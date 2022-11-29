@@ -13,7 +13,7 @@ class MainPageBinding extends Bindings {
         model: MainPageModel.empty().copyWith(
           questions: {
             QuestionType.none: [
-              ...Iterable.generate(3, (_) => QuestionModel.empty()),
+              ...List.generate(3, (_) => QuestionModel.empty()),
               //볼륨조절 전 스텝 갯수
               QuestionModel.volume(),
             ],
@@ -41,7 +41,7 @@ class MainPageBinding extends Bindings {
                 6,
                 (i) => QuestionModel.empty().copyWith(
                     id: i + 1,
-                    file: '$name/$name-${i + 1}.wav',
+                    file: '$name/$name-${i + 1}.mp3',
                     maxSliderScore: 100,
                     maxTextScore: 1000,
                     isRecord: true,
@@ -59,7 +59,7 @@ class MainPageBinding extends Bindings {
                 6,
                 (i) => QuestionModel.empty().copyWith(
                     id: i + 1,
-                    file: '$name/$name-${i + 1}.wav',
+                    file: '$name/$name-${i + 1}.mp3',
                     maxSliderScore: 140,
                     maxTextScore: 1000,
                     isRecord: true,

@@ -14,5 +14,5 @@ extension QuestionTypeEx on QuestionType {
       }[this] ??
       '';
 
-  bool get isRandom => [QuestionType.q2].contains(this);
+  bool get isRandom => [QuestionType.q2, QuestionType.q3, QuestionType.q4].contains(this);
 }

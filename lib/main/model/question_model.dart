@@ -32,10 +32,28 @@ class QuestionModel extends GetModel {
   double get sliderScore => min(score, maxSliderScore);
 
   int get totalMilliseconds {
+    // 예외처리 Exception -> 에러가 발생
+
+    // NullPointerException
+    // [1, 2, 3].length > 5 ? [5] : null
+
+    // [1, 2, 3].reduce((a, c) => a + c);
+    // a: 1, c: 2
+    // a: 3, c: 3
+    // 6
+
+    // [1, 2, 3].fold(100, (a, c) => a + c);
+    // a: 100, c: 1
+    // a: 101, c: 2
+    // a: 103, c: 3
+    // 106
+
+    // [].reduce((a, c) => a + c);
+    // [].fold(Duration.zero, (a, c) => a + c); -> 기본값
+
     final length = min(startedAt.length, endedAt.length);
-    final total = Iterable.generate(length,
-            (i) => endedAt.elementAt(i).difference(startedAt.elementAt(i)))
-        .reduce((a, c) => a + c);
+    final total =
+        Iterable.generate(length, (i) => endedAt.elementAt(i).difference(startedAt.elementAt(i))).fold<Duration>(Duration.zero, (a, c) => a + c);
     return total.inMilliseconds;
   }
 
@@ -110,12 +128,12 @@ class QuestionModel extends GetModel {
       ];
 
   Map<String, dynamic> toJson() => {
-    'file': file,
-    'score': score,
-    'play_count': volumes.length,
-    'volumes': volumes,
-    'total_milliseconds': totalMilliseconds,
-  };
+        'file': file,
+        'score': score,
+        'play_count': volumes.length,
+        'volumes': volumes,
+        'total_milliseconds': totalMilliseconds,
+      };
 
   @override
   String toString() =>

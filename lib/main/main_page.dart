@@ -11,7 +11,6 @@ import '../survey_kit/survey_kit.dart';
 import 'main_page_controller.dart';
 import 'model/question_type.dart';
 
-
 class MainPage extends GetView<MainPageController> {
   const MainPage({
     Key? key,
@@ -236,64 +235,66 @@ class MainPage extends GetView<MainPageController> {
     return InstructionStep(
       title: '테스트에 적절한 볼륨으로 조절해주세요',
       text: '',
-      content: FractionallySizedBox(
-        widthFactor: 0.8,
-        child: Column(
-          children: [
-            DecoratedBox(
-              decoration: BoxDecoration(
-                border: Border.all(
-                  width: 2,
-                  color: Colors.cyan,
-                ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      '재생',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.black,
-                      ),
-                    ),
-                    controller.playerState.rx((rx) {
-                      return InkWell(
-                        onTap: () => controller.onPressedState(rx.value),
-                        child: Icon(
-                          rx.value == PlayerState.playing ? Icons.pause_circle_outline : Icons.play_circle_outline,
-                          size: 48,
-                        ),
-                      );
-                    }),
-                    Text(
-                      '볼륨조절',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.black,
-                      ),
-                    ),
-                    Icon(
-                      Icons.volume_up_rounded,
-                      size: 48,
-                    ),
-                    Expanded(
-                      child: controller.volume.rx((rx) {
-                        return Slider(
-                          onChanged: controller.onChangedVolume,
-                          min: 0,
-                          max: 1,
-                          value: rx.value,
-                        ); // score
-                      }),
-                    ),
-                  ],
-                ),
+      content: ConstrainedBox(
+        constraints: BoxConstraints.tightFor(width: 500),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              border: Border.all(
+                width: 2,
+                color: Colors.cyan,
               ),
             ),
-          ],
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '재생',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.black,
+                        ),
+                      ),
+                      controller.playerState.rx((rx) {
+                        return InkWell(
+                          onTap: () => controller.onPressedState(rx.value),
+                          child: Icon(
+                            rx.value == PlayerState.playing ? Icons.pause_circle_outline : Icons.play_circle_outline,
+                            size: 48,
+                          ),
+                        );
+                      }),
+                      Text(
+                        '볼륨조절',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.black,
+                        ),
+                      ),
+                      Icon(
+                        Icons.volume_up_rounded,
+                        size: 48,
+                      ),
+                    ],
+                  ),
+                  controller.volume.rx((rx) {
+                    return Slider(
+                      onChanged: controller.onChangedVolume,
+                      min: 0,
+                      max: 1,
+                      value: rx.value,
+                    ); // score
+                  }),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
       buttonText: '다음으로',
@@ -302,8 +303,8 @@ class MainPage extends GetView<MainPageController> {
 
   QuestionStep getMainStep() {
     return QuestionStep(
-      content: FractionallySizedBox(
-        widthFactor: 0.8,
+      content: ConstrainedBox(
+        constraints: BoxConstraints.tightFor(width: 500),
         child: Column(
           children: [
             controller.questionType.rx((rxQuestionType) {
@@ -319,46 +320,53 @@ class MainPage extends GetView<MainPageController> {
                 );
               });
             }),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                border: Border.all(
-                  width: 2,
-                  color: Colors.black,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    width: 2,
+                    color: Colors.black,
+                  ),
                 ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Row(
-                  children: [
-                    Text(
-                      '재생',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.black,
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            '재생',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.black,
+                            ),
+                          ),
+                          controller.playerState.rx((rx) {
+                            return InkWell(
+                              onTap: () => controller.onPressedState(rx.value),
+                              child: Icon(
+                                rx.value == PlayerState.playing ? Icons.pause_circle_outline : Icons.play_circle_outline,
+                                size: 48,
+                              ),
+                            );
+                          }),
+                          Text(
+                            '볼륨조절',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.black,
+                            ),
+                          ),
+                          Icon(
+                            Icons.volume_up_rounded,
+                            size: 48,
+                          ),
+                        ],
                       ),
-                    ),
-                    controller.playerState.rx((rx) {
-                      return InkWell(
-                        onTap: () => controller.onPressedState(rx.value),
-                        child: Icon(
-                          rx.value == PlayerState.playing ? Icons.pause_circle_outline : Icons.play_circle_outline,
-                          size: 48,
-                        ),
-                      );
-                    }),
-                    Text(
-                      '볼륨조절',
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.black,
-                      ),
-                    ),
-                    Icon(
-                      Icons.volume_up_rounded,
-                      size: 48,
-                    ),
-                    Expanded(
-                      child: controller.volume.rx((rx) {
+                      controller.volume.rx((rx) {
                         return Slider(
                           onChanged: controller.onChangedVolume,
                           min: 0,
@@ -366,8 +374,8 @@ class MainPage extends GetView<MainPageController> {
                           value: rx.value,
                         ); // score
                       }),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -449,7 +457,7 @@ class MainPage extends GetView<MainPageController> {
         // Step * 300
 
         // 스프레드 문법
-        ...Iterable.generate(3, (_) => getMainStep()),
+        ...Iterable.generate(20, (_) => getMainStep()),
         getComplete(),
       ],
     );

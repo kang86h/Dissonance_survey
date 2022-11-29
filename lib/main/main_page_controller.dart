@@ -1,3 +1,4 @@
+import 'dart:html' as html;
 import 'dart:math';
 
 import 'package:audioplayers/audioplayers.dart';
@@ -132,14 +133,17 @@ class MainPageController extends GetController<MainPageModel> {
     final userDocument = await userCollection.add({
       'age': age,
       'gender': gender,
-      'mac_address': '',
+      'createdAt': DateTime.now(),
     });
 
     CollectionReference resultCollection = FirebaseFirestore.instance.collection('result');
     await resultCollection.add({
       'user_id': userDocument.id,
       'question': state.toJson(),
+      'createdAt': DateTime.now(),
     });
+
+    html.window.open('https://naver.com', '_self');
   }
 
   void onChangedScore(QuestionType questionType, int index, double value) {
@@ -217,6 +221,10 @@ class MainPageController extends GetController<MainPageModel> {
         }),
       ),
     );
+  }
+
+  void toAdmin() async {
+    // await Get.toNamed('/admin');
   }
 
   void onChangedVolume(double value) {
