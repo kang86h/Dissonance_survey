@@ -36,17 +36,15 @@ class MainPageModel extends GetModel {
   MainPageModel copyWith({
     Map<QuestionType, Iterable<QuestionModel>>? questions,
   }) {
-    List<int?> list = [1, 2, 3, 4];
-    list[2] = null;
-    // [1, 2, null, 4]
-
     return MainPageModel(
       questions: questions ?? this.questions,
     );
   }
 
   Map<String, dynamic> toJson() => Map.fromEntries({
-        ...questions.entries.where((x) => x.key != QuestionType.none).map((x) => MapEntry(x.key.name, x.value.map((y) => y.toJson()))),
+        ...questions.entries
+            .where((x) => x.key != QuestionType.none)
+            .map((x) => MapEntry(x.key.name, x.value.map((y) => y.toJson()))),
       });
 
   // Map<String, Iterable<Json>>

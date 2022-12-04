@@ -204,7 +204,7 @@ class MainPage extends GetView<MainPageController> {
   InstructionStep getStart() {
     return InstructionStep(
       title: '이 설문조사는 화음을 듣고 불협화도 점수를 매기는 조사입니다',
-      text: '참여자분들께서는 약 3초간 화음을 듣고 화음의 불협화도 점수를 매겨주시면 됩니다\n'
+      text: '약 3초간 화음을 듣고 화음의 불협화도 점수를 매겨주시면 됩니다\n'
           '협화적인 화음일수록 낮은 점수를, 불협화적인 화음일수록 높은 점수를 매기세요\n'
           '점수는 숫자로 기입하시거나, 슬라이더에서 위치를 조절하셔서 매기세요\n'
           '화음에 사용된 음의 갯수에따라 최고점이 다릅니다\n'
@@ -321,9 +321,10 @@ class MainPage extends GetView<MainPageController> {
                 return Text(
                   '$name ${rxIndex.value + 1}번문항.\n지금 들려주는 화음을 듣고 점수를 매겨주세요',
                   style: TextStyle(
-                    fontSize: 24,
+                    fontSize: 20,
                     color: Colors.black,
                   ),
+                  textAlign: TextAlign.center,
                 );
               });
             }),
@@ -347,7 +348,7 @@ class MainPage extends GetView<MainPageController> {
                           Text(
                             '재생',
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 20,
                               color: Colors.black,
                             ),
                           ),
@@ -365,7 +366,7 @@ class MainPage extends GetView<MainPageController> {
                           Text(
                             '볼륨조절',
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 20,
                               color: Colors.black,
                             ),
                           ),
@@ -395,7 +396,7 @@ class MainPage extends GetView<MainPageController> {
                     Text(
                       '불협화도 점수',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 20,
                         color: Colors.black,
                       ),
                     ),
@@ -413,7 +414,7 @@ class MainPage extends GetView<MainPageController> {
 
                             return FractionallySizedBox(
                               widthFactor:
-                                  question.maxSliderScore / maxSliderScore,
+                              (question.maxSliderScore + ((maxSliderScore - question.maxSliderScore) * 0.15)) / maxSliderScore,
                               child: Column(
                                 children: [
                                   Slider(
@@ -438,7 +439,7 @@ class MainPage extends GetView<MainPageController> {
                                       ),
                                       Spacer(),
                                       SizedBox(
-                                        width: (question.maxSliderScore-20)/6,
+                                        width: question.maxSliderScore > 0? (question.maxSliderScore-20)/6 : 0
                                       ),
                                       Text(
                                         '${question.maxSliderScore/2}',
