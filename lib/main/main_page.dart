@@ -26,7 +26,9 @@ class MainPage extends GetView<MainPageController> {
         child: FutureBuilder<Task>(
           future: getSampleTask(),
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done && snapshot.hasData && snapshot.data != null) {
+            if (snapshot.connectionState == ConnectionState.done &&
+                snapshot.hasData &&
+                snapshot.data != null) {
               final task = snapshot.data!;
               return controller.rx((state) {
                 return SurveyKit(
@@ -139,7 +141,10 @@ class MainPage extends GetView<MainPageController> {
                         textStyle: MaterialStateProperty.resolveWith(
                           (Set<MaterialState> state) {
                             if (state.contains(MaterialState.disabled)) {
-                              return Theme.of(context).textTheme.button?.copyWith(
+                              return Theme.of(context)
+                                  .textTheme
+                                  .button
+                                  ?.copyWith(
                                     color: Colors.grey,
                                   );
                             }
@@ -161,11 +166,11 @@ class MainPage extends GetView<MainPageController> {
                     ),
                     textTheme: TextTheme(
                       headline2: TextStyle(
-                        fontSize: 28.0,
+                        fontSize: 24.0,
                         color: Colors.black,
                       ),
                       headline5: TextStyle(
-                        fontSize: 24.0,
+                        fontSize: 22.0,
                         color: Colors.black,
                       ),
                       bodyText2: TextStyle(
@@ -265,7 +270,9 @@ class MainPage extends GetView<MainPageController> {
                         return InkWell(
                           onTap: () => controller.onPressedState(rx.value),
                           child: Icon(
-                            rx.value == PlayerState.playing ? Icons.pause_circle_outline : Icons.play_circle_outline,
+                            rx.value == PlayerState.playing
+                                ? Icons.pause_circle_outline
+                                : Icons.play_circle_outline,
                             size: 48,
                           ),
                         );
@@ -314,7 +321,7 @@ class MainPage extends GetView<MainPageController> {
                 return Text(
                   '$name ${rxIndex.value + 1}번문항.\n지금 들려주는 화음을 듣고 점수를 매겨주세요',
                   style: TextStyle(
-                    fontSize: 30,
+                    fontSize: 24,
                     color: Colors.black,
                   ),
                 );
@@ -348,7 +355,9 @@ class MainPage extends GetView<MainPageController> {
                             return InkWell(
                               onTap: () => controller.onPressedState(rx.value),
                               child: Icon(
-                                rx.value == PlayerState.playing ? Icons.pause_circle_outline : Icons.play_circle_outline,
+                                rx.value == PlayerState.playing
+                                    ? Icons.pause_circle_outline
+                                    : Icons.play_circle_outline,
                                 size: 48,
                               ),
                             );
@@ -379,37 +388,89 @@ class MainPage extends GetView<MainPageController> {
                 ),
               ),
             ),
-            controller.rx((state) {
-              return Column(
-                children: [
-                  Text(
-                    '불협화도 점수',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.black,
+            controller.rx(
+              (state) {
+                return Column(
+                  children: [
+                    Text(
+                      '불협화도 점수',
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: Colors.black,
+                      ),
                     ),
-                  ),
-                  controller.questionType.rx((rxKey) {
-                    final questions = state.questions[rxKey.value];
-                    final maxSliderScore = state.questions.values.map((x) => x.map((y) => y.maxSliderScore).reduce(max)).reduce(max);
+                    controller.questionType.rx(
+                      (rxKey) {
+                        final questions = state.questions[rxKey.value];
+                        final maxSliderScore = state.questions.values
+                            .map((x) =>
+                                x.map((y) => y.maxSliderScore).reduce(max))
+                            .reduce(max);
 
-                    return controller.index.rx((rxValue) {
-                      final question = questions[rxValue.value]!;
+                        return controller.index.rx(
+                          (rxValue) {
+                            final question = questions[rxValue.value]!;
 
-                      return FractionallySizedBox(
-                        widthFactor: question.maxSliderScore / maxSliderScore,
-                        child: Slider(
-                          onChanged: (value) => controller.onChangedScore(rxKey.value, rxValue.value, value),
-                          min: 0,
-                          max: question.maxSliderScore,
-                          value: question.sliderScore,
-                        ),
-                      );
-                    });
-                  }),
-                ],
-              );
-            }),
+                            return FractionallySizedBox(
+                              widthFactor:
+                                  question.maxSliderScore / maxSliderScore,
+                              child: Column(
+                                children: [
+                                  Slider(
+                                    onChanged: (value) =>
+                                        controller.onChangedScore(
+                                            rxKey.value, rxValue.value, value),
+                                    min: 0,
+                                    max: question.maxSliderScore,
+                                    value: question.sliderScore,
+                                  ),
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width: 18.0,
+                                      ),
+                                      Text(
+                                        '0',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      Spacer(),
+                                      SizedBox(
+                                        width: (question.maxSliderScore-20)/6,
+                                      ),
+                                      Text(
+                                        '${question.maxSliderScore/2}',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      Spacer(),
+                                      Text(
+                                        '${question.maxSliderScore}',
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width: 12.0,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ],
+                );
+              },
+            ),
           ],
         ),
       ),

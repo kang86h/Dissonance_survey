@@ -182,7 +182,7 @@ class MainPageController extends GetController<MainPageModel> {
 
     if (questionModel is QuestionModel && questionModel.volumes.isset) {
       onChange(questionType, index, score: value);
-      textEditingController.text = value.toStringAsFixed(1);
+      textEditingController.text = value.toStringAsFixed(0);
     }
   }
 

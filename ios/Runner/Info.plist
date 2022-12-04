@@ -49,4 +49,8 @@
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 </dict>
+	<key>UIBackgraoyndmodes</key>
+	<array>
+	<string>audio</string>
+	</array>
 </plist>
