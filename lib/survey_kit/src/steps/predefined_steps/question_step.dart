@@ -72,6 +72,7 @@ class QuestionStep extends Step {
           key: key,
           questionStep: this,
           result: questionResult as MultipleChoiceQuestionResult?,
+          // controller: (answerFormat as MultipleChoiceAnswerFormat).controller,
         );
       case ScaleAnswerFormat:
         return ScaleAnswerView(

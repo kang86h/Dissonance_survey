@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../survey_kit.dart';
 
@@ -22,7 +23,7 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
   late final DoubleAnswerFormat _doubleAnswerFormat;
   late final DateTime _startDate;
 
-  bool _isValid = false;
+  late bool _isValid = (double.tryParse(widget.controller!.value.text) ?? 0) > 0;
 
   @override
   void initState() {
@@ -34,6 +35,8 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
       widget.controller?.addListener(onListenText);
       widget.controller?.text = widget.result?.result?.toString() ?? '';
     });
+
+    Get.focusScope?.unfocus();
   }
 
   @override

@@ -22,12 +22,12 @@ class MainPageBinding extends Bindings {
               final questions = List.generate(
                 8,
                 (i) => QuestionModel.empty().copyWith(
-                    id: i + 1,
-                    file: '$name/$name-${i + 1}.mp3',
-                    maxSliderScore: 60,
-                    maxTextScore: 1000,
-                    isRecord: true,
-                    sliderlengthratio: 60 / 140),
+                  id: i + 1,
+                  file: '$name/$name-${i + 1}.mp3',
+                  maxSliderScore: 60,
+                  maxTextScore: 1000,
+                  isRecord: true,
+                ),
               );
               if (questionType.isRandom) {
                 questions.shuffle();
@@ -40,12 +40,12 @@ class MainPageBinding extends Bindings {
               final questions = List.generate(
                 6,
                 (i) => QuestionModel.empty().copyWith(
-                    id: i + 1,
-                    file: '$name/$name-${i + 1}.mp3',
-                    maxSliderScore: 100,
-                    maxTextScore: 1000,
-                    isRecord: true,
-                    sliderlengthratio: 100 / 140),
+                  id: i + 1,
+                  file: '$name/$name-${i + 1}.mp3',
+                  maxSliderScore: 100,
+                  maxTextScore: 1000,
+                  isRecord: true,
+                ),
               );
               if (questionType.isRandom) {
                 questions.shuffle();
@@ -58,12 +58,12 @@ class MainPageBinding extends Bindings {
               final questions = List.generate(
                 6,
                 (i) => QuestionModel.empty().copyWith(
-                    id: i + 1,
-                    file: '$name/$name-${i + 1}.mp3',
-                    maxSliderScore: 140,
-                    maxTextScore: 1000,
-                    isRecord: true,
-                    sliderlengthratio: 140 / 140),
+                  id: i + 1,
+                  file: '$name/$name-${i + 1}.mp3',
+                  maxSliderScore: 140,
+                  maxTextScore: 1000,
+                  isRecord: true,
+                ),
               );
               if (questionType.isRandom) {
                 questions.shuffle();

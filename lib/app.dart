@@ -15,7 +15,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      initialRoute: '/main',
+      initialRoute: '/admin',
       getPages: [
         GetPage(name: '/main', page: () => MainPage(), binding: MainPageBinding()),
         GetPage(name: '/admin', page: () => AdminPage(), binding: AdminPageBinding()),

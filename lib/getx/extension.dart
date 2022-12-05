@@ -74,6 +74,18 @@ extension GetXRxNullableEx<T> on getx.Rx<T>? {
   }
 }
 
+extension RxListNullableEx<T> on RxList<T>? {
+  Widget rx(Widget Function(RxList<T> rx) builder, {Widget? onEmpty}) {
+    return this is RxList<T> ? ObxValue<RxList<T>>(builder, this!) : onEmpty ?? const SizedBox.shrink();
+  }
+}
+
+extension GetXRxListNullableEx<T> on getx.RxList<T>? {
+  Widget rx(Widget Function(getx.RxList<T> rx) builder, {Widget? onEmpty}) {
+    return this is getx.RxList<T> ? ObxValue<getx.RxList<T>>(builder, this!) : onEmpty ?? const SizedBox.shrink();
+  }
+}
+
 extension StreamOptionalEx<T> on Stream<T>? {
   Stream<T> get elvis => this ?? const Stream.empty();
 }

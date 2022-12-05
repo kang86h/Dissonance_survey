@@ -14,7 +14,7 @@ class QuestionModel extends GetModel {
     required this.isRecord,
     required this.startedAt,
     required this.endedAt,
-    required this.sliderlengthratio,
+    required this.totalMilliseconds,
   });
 
   final int id;
@@ -27,11 +27,11 @@ class QuestionModel extends GetModel {
   final bool isRecord;
   final Iterable<DateTime> startedAt;
   final Iterable<DateTime> endedAt;
-  final double sliderlengthratio;
+  final int totalMilliseconds;
 
   double get sliderScore => min(score, maxSliderScore);
 
-  int get totalMilliseconds {
+  int get getTotalMilliseconds {
     // 예외처리 Exception -> 에러가 발생
 
     // NullPointerException
@@ -68,7 +68,7 @@ class QuestionModel extends GetModel {
     isRecord: false,
     startedAt: const [],
     endedAt: const [],
-    sliderlengthratio: 0,
+    totalMilliseconds: 0,
   );
 
   static final QuestionModel _volume = _empty.copyWith(
@@ -95,7 +95,7 @@ class QuestionModel extends GetModel {
     bool? isRecord,
     Iterable<DateTime>? startedAt,
     Iterable<DateTime>? endedAt,
-    double? sliderlengthratio,
+    int? totalMilliseconds,
   }) {
     return QuestionModel(
       id: id ?? this.id,
@@ -108,7 +108,7 @@ class QuestionModel extends GetModel {
       isRecord: isRecord ?? this.isRecord,
       startedAt: startedAt ?? this.startedAt,
       endedAt: endedAt ?? this.endedAt,
-      sliderlengthratio: sliderlengthratio ?? this.sliderlengthratio,
+      totalMilliseconds: totalMilliseconds ?? this.totalMilliseconds,
     );
   }
 
@@ -124,7 +124,7 @@ class QuestionModel extends GetModel {
         isRecord,
         startedAt,
         endedAt,
-        sliderlengthratio,
+        totalMilliseconds,
       ];
 
   Map<String, dynamic> toJson() => {
@@ -132,10 +132,19 @@ class QuestionModel extends GetModel {
         'score': score,
         'play_count': volumes.length,
         'volumes': volumes,
-        'total_milliseconds': totalMilliseconds,
+        'total_milliseconds': getTotalMilliseconds,
       };
+
+  factory QuestionModel.fromJson(Map<String, dynamic> map) => _empty.copyWith(
+        file: map['file'],
+        score: double.tryParse(map['score'].toString()) ?? 0.0,
+        volumes: [
+          ...Iterable.castFrom(map['volumes'] ?? []).map((x) => double.tryParse(x.toString()) ?? 0.0),
+        ],
+        totalMilliseconds: int.tryParse(map['total_milliseconds'].toString()) ?? 0,
+      );
 
   @override
   String toString() =>
-      'id: $id file: $file score: $score maxSliderScore: $maxSliderScore maxTextScore: $maxTextScore volumes: $volumes isAutoPlay: $isAutoPlay isRecord: $isRecord startedAt: $startedAt endedAt: $endedAt sliderlengthratio: $sliderlengthratio';
+      'id: $id file: $file score: $score maxSliderScore: $maxSliderScore maxTextScore: $maxTextScore volumes: $volumes isAutoPlay: $isAutoPlay isRecord: $isRecord startedAt: $startedAt endedAt: $endedAt totalMilliseconds: $totalMilliseconds';
 }

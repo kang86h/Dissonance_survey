@@ -16,6 +16,7 @@ dependencies:
   camera: ^0.10.0+1
   cloud_firestore: ^4.1.0
   collection: ^1.15.0
+  csv: ^5.0.1
   cupertino_icons: ^1.0.2
   equatable: ^2.0.3
   firebase_core: ^2.3.0

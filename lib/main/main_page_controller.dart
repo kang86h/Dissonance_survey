@@ -246,6 +246,7 @@ class MainPageController extends GetController<MainPageModel> {
 
       final maxScore = max(questionModel.maxTextScore, questionModel.maxSliderScore);
 
+      // 텍스트 컨트롤러의 값이 있을 때
       if (text > 0) {
         final score = maxScore > 0 ? min(maxScore, text) : text;
         onChange(questionType, index, score: score);
@@ -257,8 +258,9 @@ class MainPageController extends GetController<MainPageModel> {
             extentOffset: score.toString().length,
           );
         }
+        // 이전, 다음 스텝으로 진행했을 때 실행되는 함수
       } else if (questionModel.score > 0) {
-        textEditingController.text = questionModel.score.toString();
+        textEditingController.text = questionModel.score.toStringAsFixed(0);
         textEditingController.selection = TextSelection(
           baseOffset: questionModel.score.toString().length,
           extentOffset: questionModel.score.toString().length,
