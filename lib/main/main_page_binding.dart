@@ -15,7 +15,9 @@ class MainPageBinding extends Bindings {
             QuestionType.none: [
               ...List.generate(3, (_) => QuestionModel.empty()),
               //볼륨조절 전 스텝 갯수
+              QuestionModel.prequestion(),
               QuestionModel.volume(),
+              QuestionModel.empty(),
             ],
             QuestionType.q2: (QuestionType questionType) {
               final name = questionType.name.toUpperCase();

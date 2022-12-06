@@ -15,6 +15,7 @@ class QuestionModel extends GetModel {
     required this.startedAt,
     required this.endedAt,
     required this.totalMilliseconds,
+    required this.prequestion,
   });
 
   final int id;
@@ -28,6 +29,7 @@ class QuestionModel extends GetModel {
   final Iterable<DateTime> startedAt;
   final Iterable<DateTime> endedAt;
   final int totalMilliseconds;
+  final Iterable<String> prequestion;
 
   double get sliderScore => min(score, maxSliderScore);
 
@@ -52,8 +54,9 @@ class QuestionModel extends GetModel {
     // [].fold(Duration.zero, (a, c) => a + c); -> 기본값
 
     final length = min(startedAt.length, endedAt.length);
-    final total =
-        Iterable.generate(length, (i) => endedAt.elementAt(i).difference(startedAt.elementAt(i))).fold<Duration>(Duration.zero, (a, c) => a + c);
+    final total = Iterable.generate(length,
+            (i) => endedAt.elementAt(i).difference(startedAt.elementAt(i)))
+        .fold<Duration>(Duration.zero, (a, c) => a + c);
     return total.inMilliseconds;
   }
 
@@ -69,6 +72,7 @@ class QuestionModel extends GetModel {
     startedAt: const [],
     endedAt: const [],
     totalMilliseconds: 0,
+    prequestion: [],
   );
 
   static final QuestionModel _volume = _empty.copyWith(
@@ -76,9 +80,15 @@ class QuestionModel extends GetModel {
     isAutoPlay: true,
   );
 
+  static final QuestionModel _prequestion = _empty.copyWith(
+    prequestion: [],
+  );
+
   factory QuestionModel.empty() => _empty;
 
   factory QuestionModel.volume() => _volume;
+
+  factory QuestionModel.prequestion() => _prequestion;
 
   @override
   bool get isEmpty => this == _empty;
@@ -96,6 +106,7 @@ class QuestionModel extends GetModel {
     Iterable<DateTime>? startedAt,
     Iterable<DateTime>? endedAt,
     int? totalMilliseconds,
+    Iterable<String>? prequestion,
   }) {
     return QuestionModel(
       id: id ?? this.id,
@@ -109,6 +120,7 @@ class QuestionModel extends GetModel {
       startedAt: startedAt ?? this.startedAt,
       endedAt: endedAt ?? this.endedAt,
       totalMilliseconds: totalMilliseconds ?? this.totalMilliseconds,
+      prequestion: prequestion ?? this.prequestion,
     );
   }
 
@@ -125,6 +137,7 @@ class QuestionModel extends GetModel {
         startedAt,
         endedAt,
         totalMilliseconds,
+        prequestion,
       ];
 
   Map<String, dynamic> toJson() => {
@@ -139,12 +152,14 @@ class QuestionModel extends GetModel {
         file: map['file'],
         score: double.tryParse(map['score'].toString()) ?? 0.0,
         volumes: [
-          ...Iterable.castFrom(map['volumes'] ?? []).map((x) => double.tryParse(x.toString()) ?? 0.0),
+          ...Iterable.castFrom(map['volumes'] ?? [])
+              .map((x) => double.tryParse(x.toString()) ?? 0.0),
         ],
-        totalMilliseconds: int.tryParse(map['total_milliseconds'].toString()) ?? 0,
+        totalMilliseconds:
+            int.tryParse(map['total_milliseconds'].toString()) ?? 0,
       );
 
   @override
   String toString() =>
-      'id: $id file: $file score: $score maxSliderScore: $maxSliderScore maxTextScore: $maxTextScore volumes: $volumes isAutoPlay: $isAutoPlay isRecord: $isRecord startedAt: $startedAt endedAt: $endedAt totalMilliseconds: $totalMilliseconds';
+      'id: $id file: $file score: $score maxSliderScore: $maxSliderScore maxTextScore: $maxTextScore volumes: $volumes isAutoPlay: $isAutoPlay isRecord: $isRecord startedAt: $startedAt endedAt: $endedAt totalMilliseconds: $totalMilliseconds prequestion: $prequestion';
 }

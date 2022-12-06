@@ -2,6 +2,7 @@ import 'dart:html' as html;
 import 'dart:math';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:video_player/video_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:surveykit_example/getx/extension.dart';
@@ -18,6 +19,7 @@ class MainPage extends GetView<MainPageController> {
 
   static StepIdentifier genderIdentifier = StepIdentifier(id: 'gender');
   static StepIdentifier ageIdentifier = StepIdentifier(id: 'age');
+  static StepIdentifier PrequestionIdentifier = StepIdentifier(id: 'prequestion');
 
   @override
   Widget build(BuildContext context) {
@@ -236,6 +238,20 @@ class MainPage extends GetView<MainPageController> {
     );
   }
 
+  QuestionStep getPrequestionStep() {
+    return QuestionStep(
+      stepIdentifier: PrequestionIdentifier,
+      title: '당신이 생각하는 불협화음이란 어떤 것입니까?\n옳다고 생각하는 것을 모두 선택해 주세요\n원하시는 답이 없다면 직접 적어주세요.',
+      answerFormat: MultipleChoiceAnswerFormat(textChoices: [
+        TextChoice(text: '1. 아름답지 않게 들리는 음', value: '1'),
+        TextChoice(text: '2. 어울리지 않는 음', value: '2'),
+        TextChoice(text: '3. 한 음으로 들리지 않는 음', value: '3'),
+        TextChoice(text: '4. 기타', value: 'Textfiled')
+      ]),
+      isOptional: false,
+    );
+  }
+
   InstructionStep getVolume() {
     return InstructionStep(
       title: '테스트에 적절한 볼륨으로 조절해주세요',
@@ -308,6 +324,15 @@ class MainPage extends GetView<MainPageController> {
     );
   }
 
+  InstructionStep getTutirial() {
+    return InstructionStep(
+      title: '튜토리얼 비디오',
+      text: '',
+      content: Container(),
+      buttonText: '다음으로',
+    );
+  }
+
   QuestionStep getMainStep() {
     return QuestionStep(
       content: ConstrainedBox(
@@ -319,7 +344,7 @@ class MainPage extends GetView<MainPageController> {
 
               return controller.index.rx((rxIndex) {
                 return Text(
-                  '$name ${rxIndex.value + 1}번문항.\n지금 들려주는 화음을 듣고 점수를 매겨주세요',
+                  '$name ${rxIndex.value + 1}번문항.\n지금 들려주는 화음을 듣고 점수를 매겨주세요\n지정된 만점보다 더 큰 점수를 주고 싶으실 경우\n직접 숫자를 입력해주세요.',
                   style: TextStyle(
                     fontSize: 20,
                     color: Colors.black,
@@ -413,8 +438,11 @@ class MainPage extends GetView<MainPageController> {
                             final question = questions[rxValue.value]!;
 
                             return FractionallySizedBox(
-                              widthFactor:
-                              (question.maxSliderScore + ((maxSliderScore - question.maxSliderScore) * 0.15)) / maxSliderScore,
+                              widthFactor: (question.maxSliderScore +
+                                      ((maxSliderScore -
+                                              question.maxSliderScore) *
+                                          0.15)) /
+                                  maxSliderScore,
                               child: Column(
                                 children: [
                                   Slider(
@@ -439,10 +467,12 @@ class MainPage extends GetView<MainPageController> {
                                       ),
                                       Spacer(),
                                       SizedBox(
-                                        width: question.maxSliderScore > 0? (question.maxSliderScore-20)/6 : 0
-                                      ),
+                                          width: question.maxSliderScore > 0
+                                              ? (question.maxSliderScore - 20) /
+                                                  6
+                                              : 0),
                                       Text(
-                                        '${question.maxSliderScore/2}',
+                                        '${question.maxSliderScore / 2}',
                                         style: TextStyle(
                                           fontSize: 20,
                                           color: Colors.black,
@@ -497,7 +527,9 @@ class MainPage extends GetView<MainPageController> {
         getStart(),
         getGenderStep(),
         getAgeStep(),
+        getPrequestionStep(),
         getVolume(),
+        getTutirial(),
 
         // ...[1, 2, 3, 4, 5].map((x) => [x * x, x])
         // [[1, 1] [4, 2], [9, 3], [16, 4], [25, 5]]
