@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'text_choice.g.dart';
@@ -5,11 +6,13 @@ part 'text_choice.g.dart';
 @JsonSerializable()
 class TextChoice {
   final String text;
-  final String value;
+  String value;
+  final TextEditingController? controller;
 
-  const TextChoice({
+  TextChoice({
     required this.text,
     required this.value,
+    this.controller,
   }) : super();
 
   factory TextChoice.fromJson(Map<String, dynamic> json) =>

@@ -7,6 +7,7 @@ class QuestionModel extends GetModel {
     required this.id,
     required this.file,
     required this.score,
+    required this.isSkip,
     required this.maxSliderScore,
     required this.maxTextScore,
     required this.volumes,
@@ -21,6 +22,7 @@ class QuestionModel extends GetModel {
   final int id;
   final String file;
   final double score;
+  final bool isSkip;
   final double maxSliderScore;
   final double maxTextScore;
   final Iterable<double> volumes;
@@ -54,9 +56,8 @@ class QuestionModel extends GetModel {
     // [].fold(Duration.zero, (a, c) => a + c); -> 기본값
 
     final length = min(startedAt.length, endedAt.length);
-    final total = Iterable.generate(length,
-            (i) => endedAt.elementAt(i).difference(startedAt.elementAt(i)))
-        .fold<Duration>(Duration.zero, (a, c) => a + c);
+    final total =
+        Iterable.generate(length, (i) => endedAt.elementAt(i).difference(startedAt.elementAt(i))).fold<Duration>(Duration.zero, (a, c) => a + c);
     return total.inMilliseconds;
   }
 
@@ -64,6 +65,7 @@ class QuestionModel extends GetModel {
     id: 0,
     file: '',
     score: 0,
+    isSkip: false,
     maxSliderScore: 0,
     maxTextScore: 0,
     volumes: const [],
@@ -98,6 +100,7 @@ class QuestionModel extends GetModel {
     int? id,
     String? file,
     double? score,
+    bool? isSkip,
     double? maxSliderScore,
     double? maxTextScore,
     Iterable<double>? volumes,
@@ -112,6 +115,7 @@ class QuestionModel extends GetModel {
       id: id ?? this.id,
       file: file ?? this.file,
       score: score ?? this.score,
+      isSkip: isSkip ?? this.isSkip,
       maxSliderScore: maxSliderScore ?? this.maxSliderScore,
       maxTextScore: maxTextScore ?? this.maxTextScore,
       volumes: volumes ?? this.volumes,
@@ -129,6 +133,7 @@ class QuestionModel extends GetModel {
         id,
         file,
         score,
+        isSkip,
         maxSliderScore,
         maxTextScore,
         volumes,
@@ -152,14 +157,12 @@ class QuestionModel extends GetModel {
         file: map['file'],
         score: double.tryParse(map['score'].toString()) ?? 0.0,
         volumes: [
-          ...Iterable.castFrom(map['volumes'] ?? [])
-              .map((x) => double.tryParse(x.toString()) ?? 0.0),
+          ...Iterable.castFrom(map['volumes'] ?? []).map((x) => double.tryParse(x.toString()) ?? 0.0),
         ],
-        totalMilliseconds:
-            int.tryParse(map['total_milliseconds'].toString()) ?? 0,
+        totalMilliseconds: int.tryParse(map['total_milliseconds'].toString()) ?? 0,
       );
 
   @override
   String toString() =>
-      'id: $id file: $file score: $score maxSliderScore: $maxSliderScore maxTextScore: $maxTextScore volumes: $volumes isAutoPlay: $isAutoPlay isRecord: $isRecord startedAt: $startedAt endedAt: $endedAt totalMilliseconds: $totalMilliseconds prequestion: $prequestion';
+      'id: $id file: $file score: $score isSkip: $isSkip maxSliderScore: $maxSliderScore maxTextScore: $maxTextScore volumes: $volumes isAutoPlay: $isAutoPlay isRecord: $isRecord startedAt: $startedAt endedAt: $endedAt totalMilliseconds: $totalMilliseconds prequestion: $prequestion';
 }

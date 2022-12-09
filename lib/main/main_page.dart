@@ -2,12 +2,12 @@ import 'dart:html' as html;
 import 'dart:math';
 
 import 'package:audioplayers/audioplayers.dart';
-import 'package:video_player/video_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:surveykit_example/getx/extension.dart';
+import 'package:video_player/video_player.dart';
 
-import '../getx/get_rx_impl.dart';
+import '../getx/get_rx_impl.dart' hide RxBool;
 import '../survey_kit/survey_kit.dart';
 import 'main_page_controller.dart';
 import 'model/question_type.dart';
@@ -28,9 +28,7 @@ class MainPage extends GetView<MainPageController> {
         child: FutureBuilder<Task>(
           future: getSampleTask(),
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done &&
-                snapshot.hasData &&
-                snapshot.data != null) {
+            if (snapshot.connectionState == ConnectionState.done && snapshot.hasData && snapshot.data != null) {
               final task = snapshot.data!;
               return controller.rx((state) {
                 return SurveyKit(
@@ -143,10 +141,7 @@ class MainPage extends GetView<MainPageController> {
                         textStyle: MaterialStateProperty.resolveWith(
                           (Set<MaterialState> state) {
                             if (state.contains(MaterialState.disabled)) {
-                              return Theme.of(context)
-                                  .textTheme
-                                  .button
-                                  ?.copyWith(
+                              return Theme.of(context).textTheme.button?.copyWith(
                                     color: Colors.grey,
                                   );
                             }
@@ -242,12 +237,14 @@ class MainPage extends GetView<MainPageController> {
     return QuestionStep(
       stepIdentifier: PrequestionIdentifier,
       title: '당신이 생각하는 불협화음이란 어떤 것입니까?\n옳다고 생각하는 것을 모두 선택해 주세요\n원하시는 답이 없다면 직접 적어주세요.',
-      answerFormat: MultipleChoiceAnswerFormat(textChoices: [
-        TextChoice(text: '1. 아름답지 않게 들리는 음', value: '1'),
-        TextChoice(text: '2. 어울리지 않는 음', value: '2'),
-        TextChoice(text: '3. 한 음으로 들리지 않는 음', value: '3'),
-        TextChoice(text: '4. 기타', value: 'Textfiled')
-      ]),
+      answerFormat: MultipleChoiceAnswerFormat(
+        textChoices: [
+          TextChoice(text: '1. 아름답지 않게 들리는 음', value: '1'),
+          TextChoice(text: '2. 어울리지 않는 음', value: '2'),
+          TextChoice(text: '3. 한 음으로 들리지 않는 음', value: '3'),
+          TextChoice(text: '4. 기타', value: '', controller: controller.multipleEditingController),
+        ],
+      ),
       isOptional: false,
     );
   }
@@ -286,9 +283,7 @@ class MainPage extends GetView<MainPageController> {
                         return InkWell(
                           onTap: () => controller.onPressedState(rx.value),
                           child: Icon(
-                            rx.value == PlayerState.playing
-                                ? Icons.pause_circle_outline
-                                : Icons.play_circle_outline,
+                            rx.value == PlayerState.playing ? Icons.pause_circle_outline : Icons.play_circle_outline,
                             size: 48,
                           ),
                         );
@@ -328,7 +323,41 @@ class MainPage extends GetView<MainPageController> {
     return InstructionStep(
       title: '튜토리얼 비디오',
       text: '',
-      content: Container(),
+      content: controller.videoStatus.rx((rx) {
+        if (rx.value == VideoStatus.empty) {
+          return CircularProgressIndicator();
+        }
+
+        return Stack(
+          children: [
+            AspectRatio(
+              aspectRatio: controller.videoPlayerController.value.aspectRatio,
+              child: VideoPlayer(controller.videoPlayerController),
+            ),
+            Positioned.fill(
+              child: Center(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: Colors.yellow.withOpacity(1 / 2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: InkWell(
+                    onTap: controller.onPressedVideo,
+                    child: Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Icon(
+                        rx.value == VideoStatus.play ? Icons.pause_circle_outline : Icons.play_circle_outline,
+                        color: Colors.black,
+                        size: 48,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            )
+          ],
+        );
+      }),
       buttonText: '다음으로',
     );
   }
@@ -381,9 +410,7 @@ class MainPage extends GetView<MainPageController> {
                             return InkWell(
                               onTap: () => controller.onPressedState(rx.value),
                               child: Icon(
-                                rx.value == PlayerState.playing
-                                    ? Icons.pause_circle_outline
-                                    : Icons.play_circle_outline,
+                                rx.value == PlayerState.playing ? Icons.pause_circle_outline : Icons.play_circle_outline,
                                 size: 48,
                               ),
                             );
@@ -428,31 +455,28 @@ class MainPage extends GetView<MainPageController> {
                     controller.questionType.rx(
                       (rxKey) {
                         final questions = state.questions[rxKey.value];
-                        final maxSliderScore = state.questions.values
-                            .map((x) =>
-                                x.map((y) => y.maxSliderScore).reduce(max))
-                            .reduce(max);
+                        final maxSliderScore = state.questions.values.map((x) => x.map((y) => y.maxSliderScore).reduce(max)).reduce(max);
 
                         return controller.index.rx(
                           (rxValue) {
                             final question = questions[rxValue.value]!;
 
                             return FractionallySizedBox(
-                              widthFactor: (question.maxSliderScore +
-                                      ((maxSliderScore -
-                                              question.maxSliderScore) *
-                                          0.15)) /
-                                  maxSliderScore,
+                              widthFactor: (question.maxSliderScore + ((maxSliderScore - question.maxSliderScore) * 0.15)) / maxSliderScore,
                               child: Column(
                                 children: [
-                                  Slider(
-                                    onChanged: (value) =>
-                                        controller.onChangedScore(
-                                            rxKey.value, rxValue.value, value),
-                                    min: 0,
-                                    max: question.maxSliderScore,
-                                    value: question.sliderScore,
-                                  ),
+                                  controller.isSkip.rx((rx) {
+                                    Get.log('${rx.value}');
+                                    final onChanged =
+                                        (double value) => rx.value ? null : controller.onChangedScore(rxKey.value, rxValue.value, value);
+
+                                    return Slider(
+                                      onChanged: onChanged,
+                                      min: 0,
+                                      max: question.maxSliderScore,
+                                      value: rx.value ? 0 : question.sliderScore,
+                                    );
+                                  }),
                                   Row(
                                     children: [
                                       SizedBox(
@@ -466,11 +490,7 @@ class MainPage extends GetView<MainPageController> {
                                         ),
                                       ),
                                       Spacer(),
-                                      SizedBox(
-                                          width: question.maxSliderScore > 0
-                                              ? (question.maxSliderScore - 20) /
-                                                  6
-                                              : 0),
+                                      SizedBox(width: question.maxSliderScore > 0 ? (question.maxSliderScore - 20) / 6 : 0),
                                       Text(
                                         '${question.maxSliderScore / 2}',
                                         style: TextStyle(
@@ -507,6 +527,8 @@ class MainPage extends GetView<MainPageController> {
       ),
       answerFormat: DoubleAnswerFormat(
         controller: controller.textEditingController,
+        isSkip: controller.isSkip,
+        isPlay: controller.isPlay,
       ),
     );
   }
@@ -551,7 +573,7 @@ class MainPage extends GetView<MainPageController> {
         // Step * 300
 
         // 스프레드 문법
-        ...Iterable.generate(20, (_) => getMainStep()),
+        // ...Iterable.generate(20, (_) => getMainStep()),
         getComplete(),
       ],
     );

@@ -2,6 +2,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:surveykit_example/getx/get_rx_impl.dart';
 
 import '../../survey_kit.dart';
 
@@ -12,14 +13,18 @@ class DoubleAnswerFormat implements AnswerFormat {
   final double? defaultValue;
   final String hint;
   final TextEditingController? controller;
+  final RxBool? isSkip;
+  final RxBool? isPlay;
 
   const DoubleAnswerFormat({
     this.defaultValue,
     this.hint = '',
     this.controller,
+    this.isSkip,
+    this.isPlay,
   }) : super();
 
-  factory DoubleAnswerFormat.fromJson(Map<String, dynamic> json) =>
-      _$DoubleAnswerFormatFromJson(json);
+  factory DoubleAnswerFormat.fromJson(Map<String, dynamic> json) => _$DoubleAnswerFormatFromJson(json);
+
   Map<String, dynamic> toJson() => _$DoubleAnswerFormatToJson(this);
 }

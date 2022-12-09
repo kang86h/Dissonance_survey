@@ -1,12 +1,17 @@
+/*
 import 'dart:html' as html;
 import 'dart:math';
 
+/*
+import 'package:assets_audio_player/assets_audio_player.dart' hide PlayerState;
 import 'package:audioplayers/audioplayers.dart';
+*/
+
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart' as rx;
 import 'package:surveykit_example/main/main_page.dart';
-import 'package:video_player/video_player.dart';
 
 import '../getx/extension.dart';
 import '../getx/get_controller.dart';
@@ -21,47 +26,51 @@ enum StepEvent {
   back,
 }
 
-enum VideoStatus {
-  empty,
-  pause,
-  play,
-}
-
 class MainPageController extends GetController<MainPageModel> {
   MainPageController({
     required MainPageModel model,
   }) : super(model);
 
-  final AudioPlayer audioPlayer = AudioPlayer();
-  final VideoPlayerController videoPlayerController = VideoPlayerController.asset('assets/tutorial.mp4');
+  final AssetsAudioPlayer audioPlayer = AssetsAudioPlayer.newPlayer();
+  late final AssetsAudioPlayer player;
 
-  final TextEditingController multipleEditingController = TextEditingController();
+  late final TextEditingController multipleEditingController = TextEditingController();
   late final TextEditingController textEditingController = TextEditingController()..addListener(onListenText);
   late final SurveyController surveyController = SurveyController(
     onNextStep: (_, __) => _onStep(StepEvent.next),
     onStepBack: (_, __) => _onStep(StepEvent.back),
   );
 
-  late final Rx<VideoStatus> videoStatus = VideoStatus.empty.obs;
-  late final Rx<PlayerState> playerState = PlayerState.stopped.obs..bindStream(audioPlayer.onPlayerStateChanged);
+  late final Rx<PlayerState> playerState = PlayerState.stop.obs..bindStream(audioPlayer.playerState);
   final Rx<double> volume = 1.0.obs;
 
   final Rx<QuestionType> questionType = QuestionType.none.obs;
   final Rx<int> index = 0.obs;
   final RxBool isSkip = false.obs;
   final RxBool isPlay = false.obs;
-  final Rx<double> videoBuffered = 0.0.obs;
-  final Rx<double> videoPlayed = 0.0.obs;
 
   @override
   void onInit() async {
     super.onInit();
-    await videoPlayerController.initialize();
-    videoPlayerController.addListener(_onListenVideo);
-    videoStatus.value = VideoStatus.pause;
+
+    final player = AssetsAudioPlayer.newPlayer();
+    this.player = player;
+    player.onErrorDo = (e) {
+      Get.log('e: ${e.error}');
+      Get.log('e: ${e.error.message}');
+    };
+    player.open(
+      Audio("assets/tutorial.mp4"),
+      autoStart: true,
+      showNotification: true,
+      volume: 1,
+    );
+    player.isPlaying.listen((event) {
+      Get.log('event: $event');
+    });
 
     playerState.stream
-        .where((state) => state == PlayerState.playing)
+        .where((state) => state == PlayerState.play)
         .withLatestFrom3<QuestionType, int, double, Map>(questionType.stream, index.stream, volume.stream, (state, questionType, index, volume) {
       final question = this.state.questions[questionType].elvis.elementAt(index);
       final startedAt = question.isRecord && question.startedAt.length == question.endedAt.length ? [...question.startedAt, DateTime.now()] : null;
@@ -96,6 +105,7 @@ class MainPageController extends GetController<MainPageModel> {
 
   void _onStep(StepEvent event) async {
     Get.focusScope?.unfocus();
+    await player.play();
 
     var questionType = this.questionType.value;
     var index = this.index.value;
@@ -133,27 +143,20 @@ class MainPageController extends GetController<MainPageModel> {
     this.index.value = index;
     this.questionType.value = questionType;
 
-    if (state.videoStartedAt.millisecondsSinceEpoch != defaultDateTime.millisecondsSinceEpoch &&
-        state.videoEndedAt.millisecondsSinceEpoch == defaultDateTime.millisecondsSinceEpoch &&
-        questionType != QuestionType.none) {
-      change(state.copyWith(
-        videoEndedAt: DateTime.now(),
-      ));
-    }
-
-    await videoPlayerController.pause();
     await audioPlayer.stop();
 
     final nextQuestion = state.questions[questionType].elvis.elementAt(index);
     isSkip.value = nextQuestion.isSkip;
     isPlay.value = nextQuestion.volumes.isset;
-
     if (nextQuestion.file.isset) {
-      await audioPlayer.setSource(AssetSource(nextQuestion.file));
+      await audioPlayer.open(
+        Audio('assets/${nextQuestion.file}'),
+        autoStart: true,
+      );
       await audioPlayer.seek(Duration.zero);
 
       if (nextQuestion.isAutoPlay) {
-        await audioPlayer.resume();
+        await audioPlayer.play();
       }
     }
   }
@@ -161,26 +164,10 @@ class MainPageController extends GetController<MainPageModel> {
   @override
   void onClose() async {
     await audioPlayer.dispose();
-    videoPlayerController.dispose();
+    [playerState, volume, isSkip, isPlay].forEach((x) => x.close());
     multipleEditingController.dispose();
     textEditingController.dispose();
-    [playerState, volume, isSkip, isPlay, videoBuffered, videoPlayed].forEach((x) => x.close());
     super.onClose();
-  }
-
-  void _onListenVideo() {
-    if (videoPlayerController.value.isInitialized) {
-      final duration = videoPlayerController.value.duration.inMilliseconds;
-      final position = videoPlayerController.value.position.inMilliseconds;
-
-      videoPlayed.value = position / duration;
-
-      videoStatus.value = videoPlayerController.value.isPlaying ? VideoStatus.play : VideoStatus.pause;
-    } else {
-      videoStatus.value = VideoStatus.empty;
-    }
-
-    Get.log('videoStatus.value: ${videoStatus.value}');
   }
 
   void onResult(SurveyResult surveyResult) async {
@@ -194,7 +181,6 @@ class MainPageController extends GetController<MainPageModel> {
       'age': age,
       'gender': gender,
       'prequestion': prequestion,
-      'video_milliseconds': state.getVideoMilliseconds,
       'createdAt': DateTime.now(),
     });
 
@@ -293,7 +279,6 @@ class MainPageController extends GetController<MainPageModel> {
 
   void onChangedVolume(double value) {
     audioPlayer.setVolume(value);
-    videoPlayerController.setVolume(value);
     volume.value = value;
   }
 
@@ -341,31 +326,15 @@ class MainPageController extends GetController<MainPageModel> {
   }
 
   void onPressedState(PlayerState state) async {
-    if (state == PlayerState.playing) {
+    if (state == PlayerState.play) {
       await audioPlayer.pause();
-    } else if (state == PlayerState.paused) {
-      await audioPlayer.resume();
+    } else if (state == PlayerState.pause) {
+      await audioPlayer.play();
     } else {
       await audioPlayer.seek(Duration.zero);
-      await audioPlayer.resume();
-    }
-  }
-
-  void onPressedVideo() async {
-    // 맨 처음에 재생버튼 클릭 시 startedAt
-    // 맨 처음에 다음으로 버튼 클릭 시 endedAt
-    // 이후로는 버튼 클릭해도 아무런 기록하지 않음
-
-    if (videoStatus.value == VideoStatus.play) {
-      await videoPlayerController.pause();
-    } else {
-      if (state.videoStartedAt.millisecondsSinceEpoch == defaultDateTime.millisecondsSinceEpoch) {
-        change(state.copyWith(
-          videoStartedAt: DateTime.now(),
-        ));
-      }
-
-      await videoPlayerController.play();
+      await audioPlayer.play();
     }
   }
 }
+
+*/

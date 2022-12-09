@@ -5,6 +5,7 @@
 // ignore_for_file: directives_ordering
 // ignore_for_file: lines_longer_than_80_chars
 
+import 'package:assets_audio_player_web/web/assets_audio_player_web.dart';
 import 'package:audioplayers_web/audioplayers_web.dart';
 import 'package:camera_web/camera_web.dart';
 import 'package:cloud_firestore_web/cloud_firestore_web.dart';
@@ -17,6 +18,7 @@ import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
 // ignore: public_member_api_docs
 void registerPlugins(Registrar registrar) {
+  AssetsAudioPlayerWebPlugin.registerWith(registrar);
   AudioplayersPlugin.registerWith(registrar);
   CameraPlugin.registerWith(registrar);
   FirebaseFirestoreWeb.registerWith(registrar);
