@@ -15,6 +15,7 @@ class QuestionStep extends Step {
   @JsonKey(ignore: true)
   final Widget content;
   final AnswerFormat answerFormat;
+
   // int: 0
   // boolean: false
   // String: ''
@@ -54,6 +55,8 @@ class QuestionStep extends Step {
           questionStep: this,
           result: questionResult as DoubleQuestionResult?,
           controller: (answerFormat as DoubleAnswerFormat).controller,
+          isSkip: (answerFormat as DoubleAnswerFormat).isSkip,
+          isPlay: (answerFormat as DoubleAnswerFormat).isPlay,
         );
       case TextAnswerFormat:
         return TextAnswerView(
@@ -72,7 +75,6 @@ class QuestionStep extends Step {
           key: key,
           questionStep: this,
           result: questionResult as MultipleChoiceQuestionResult?,
-          // controller: (answerFormat as MultipleChoiceAnswerFormat).controller,
         );
       case ScaleAnswerFormat:
         return ScaleAnswerView(
@@ -115,7 +117,7 @@ class QuestionStep extends Step {
     }
   }
 
-  factory QuestionStep.fromJson(Map<String, dynamic> json) =>
-      _$QuestionStepFromJson(json);
+  factory QuestionStep.fromJson(Map<String, dynamic> json) => _$QuestionStepFromJson(json);
+
   Map<String, dynamic> toJson() => _$QuestionStepToJson(this);
 }

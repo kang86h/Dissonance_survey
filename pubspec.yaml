@@ -12,6 +12,8 @@ dependencies:
   get: ^4.6.5
   rxdart: ^0.27.5
   audioplayers: ^1.1.1
+  assets_audio_player: ^3.0.6
+  assets_audio_player_web: ^3.0.6
   bloc: ^8.0.3
   camera: ^0.10.0+1
   cloud_firestore: ^4.1.0
@@ -43,8 +45,8 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-  - assets/
-  - assets/Q2/
-  - assets/Q3/
-  - assets/Q4/
-  - assets/example_json.json
+    - assets/
+    - assets/Q2/
+    - assets/Q3/
+    - assets/Q4/
+    - assets/example_json.json

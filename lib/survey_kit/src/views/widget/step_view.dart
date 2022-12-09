@@ -41,12 +41,12 @@ class StepView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 32.0),
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: title,
                 ),
                 child,
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 32.0),
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: OutlinedButton(
                     onPressed: isValid || step.isOptional
                         ? () {
