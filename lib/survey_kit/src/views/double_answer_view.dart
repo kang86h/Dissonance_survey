@@ -34,7 +34,8 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
   @override
   void initState() {
     super.initState();
-    _doubleAnswerFormat = widget.questionStep.answerFormat as DoubleAnswerFormat;
+    _doubleAnswerFormat =
+        widget.questionStep.answerFormat as DoubleAnswerFormat;
     _startDate = DateTime.now();
 
     WidgetsBinding.instance?.addPostFrameCallback((_) {
@@ -66,9 +67,13 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
               startDate: _startDate,
               endDate: DateTime.now(),
               valueIdentifier: widget.controller?.text ?? '',
-              result: double.tryParse(widget.controller?.text ?? '') ?? _doubleAnswerFormat.defaultValue ?? null,
+              result: double.tryParse(widget.controller?.text ?? '') ??
+                  _doubleAnswerFormat.defaultValue ??
+                  null,
             ),
-            isValid: rx is RxBool && rx.value || _isValid || widget.questionStep.isOptional,
+            isValid: rx is RxBool && rx.value ||
+                _isValid ||
+                widget.questionStep.isOptional,
             title: widget.questionStep.title.isNotEmpty
                 ? Text(
                     widget.questionStep.title,
@@ -77,23 +82,15 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
                   )
                 : widget.questionStep.content,
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 32.0),
+              padding: const EdgeInsets.symmetric(vertical: 0.0),
               child: Container(
-                width: MediaQuery.of(context).size.width,
+                width: 500,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    TextField(
-                      decoration: textFieldInputDecoration(
-                        hint: _doubleAnswerFormat.hint,
-                      ),
-                      enabled: !(rx is RxBool && rx.value),
-                      controller: widget.controller!,
-                      keyboardType: TextInputType.number,
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 10),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Checkbox(
                           value: (rx is RxBool && rx.value),
@@ -107,10 +104,17 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
                             widget.controller?.clear();
                           },
                         ),
-                        Expanded(
-                          child: Text('평가할 수 없음'),
-                        ),
+                        Text('평가할 수 없음'),
                       ],
+                    ),
+                    TextField(
+                      decoration: textFieldInputDecoration(
+                        hint: _doubleAnswerFormat.hint,
+                      ),
+                      enabled: !(rx is RxBool && rx.value),
+                      controller: widget.controller!,
+                      keyboardType: TextInputType.number,
+                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),
@@ -118,7 +122,7 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
             ),
           );
 
-      if(widget.isPlay is RxBool) {
+      if (widget.isPlay is RxBool) {
         return ObxValue<RxBool>((isPlay) {
           if (isPlay.value) {
             return ObxValue<RxBool>((isSkip) {

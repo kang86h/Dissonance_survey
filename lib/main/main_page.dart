@@ -1,4 +1,5 @@
 import 'dart:html' as html;
+import 'dart:js';
 import 'dart:math';
 
 import 'package:audioplayers/audioplayers.dart';
@@ -328,28 +329,29 @@ class MainPage extends GetView<MainPageController> {
           return CircularProgressIndicator();
         }
 
-        return Stack(
+        return Column(
           children: [
-            AspectRatio(
-              aspectRatio: controller.videoPlayerController.value.aspectRatio,
-              child: VideoPlayer(controller.videoPlayerController),
+            Container(
+              width: 500,
+              child: AspectRatio(
+                aspectRatio: controller.videoPlayerController.value.aspectRatio,
+                child: VideoPlayer(controller.videoPlayerController),
+              ),
             ),
-            Positioned.fill(
-              child: Center(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: Colors.yellow.withOpacity(1 / 2),
-                    shape: BoxShape.circle,
-                  ),
-                  child: InkWell(
-                    onTap: controller.onPressedVideo,
-                    child: Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: Icon(
-                        rx.value == VideoStatus.play ? Icons.pause_circle_outline : Icons.play_circle_outline,
-                        color: Colors.black,
-                        size: 48,
-                      ),
+            Center(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  color: Colors.yellow.withOpacity(1 / 2),
+                  shape: BoxShape.circle,
+                ),
+                child: InkWell(
+                  onTap: controller.onPressedVideo,
+                  child: Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Icon(
+                      rx.value == VideoStatus.play ? Icons.pause_circle_outline : Icons.play_circle_outline,
+                      color: Colors.black,
+                      size: 48,
                     ),
                   ),
                 ),
@@ -573,7 +575,7 @@ class MainPage extends GetView<MainPageController> {
         // Step * 300
 
         // 스프레드 문법
-        // ...Iterable.generate(20, (_) => getMainStep()),
+        ...Iterable.generate(20, (_) => getMainStep()),
         getComplete(),
       ],
     );
