@@ -1,15 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:surveykit_example/admin/model/type/result_field_type.dart';
+import 'package:surveykit_example/admin/model/type/user_field_type.dart';
 import 'package:surveykit_example/getx/extension.dart';
 import 'package:surveykit_example/main/model/question_model.dart';
 import '../getx/get_rx_impl.dart';
 
 import 'admin_page_controller.dart';
-
-const List<String> _sortedUser = ['id', 'age', 'gender', 'createdAt'];
-const List<String> _sortedResult = ['user_id', 'question', 'createdAt'];
 
 class AdminPage extends GetView<AdminPageController> {
   const AdminPage({
@@ -24,6 +22,43 @@ class AdminPage extends GetView<AdminPageController> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              controller.rx((state) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    ...state.conditions.toList().asMap().entries.map((x) => Row(
+                          children: [
+                            Expanded(
+                              child: DropdownButton(
+                                onChanged: (field) => controller.onPressedCondition(x.key, x.value.copyWith(
+                                  field: field,
+                                )),
+                                value: x.value.field,
+                                items: [
+                                  ...UserFieldType.values.where((x) => x.isDropdown).map((x) => DropdownMenuItem(
+                                        value: x,
+                                        child: Text(x.name),
+                                      )),
+                                  ...ResultFieldType.values.where((x) => x.isDropdown).map((x) => DropdownMenuItem(
+                                        value: x,
+                                        child: Text(x.name),
+                                      )),
+                                ],
+                              ),
+                            ),
+                            Expanded(child: Text(x.value.range.name)),
+                            Expanded(child: Text(x.value.condition.name)),
+                          ],
+                        )),
+                    IconButton(
+                      onPressed: controller.onPressedAddCondition,
+                      icon: Icon(
+                        Icons.add,
+                      ),
+                    ),
+                  ],
+                );
+              }),
               Padding(
                 padding: const EdgeInsets.all(10),
                 child: DecoratedBox(
@@ -34,15 +69,33 @@ class AdminPage extends GetView<AdminPageController> {
                     ),
                   ),
                   child: controller.userStream.rx((rx) {
+                    if (rx.isNullOrEmpty) {
+                      return const Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      );
+                    }
+
                     return Table(
                       children: [
                         TableRow(
                           children: [
-                            ..._sortedUser.map((x) => TableCell(
-                                  child: Text(x),
+                            ...UserFieldType.values.map((x) => TableCell(
+                                  child: Text(x.name),
                                 )),
                           ],
                         ),
+                        /*
+                        Row(
+                        ㅁㅁㅁㅁㅁ(필드) / ㅁㅁㅁㅁㅁ(데이터 조건) 동등, 이상, 이하인 게 하나라도 있을 때
+                        ㅁㅁㅁㅁㅁ(필드) / ㅁㅁㅁㅁㅁ(데이터 조건) 동등, 이상, 이하
+                        +
+                        )
+
+                        확인
+                        */
                         ...rx.map((x) {
                           final data = x.data();
 
@@ -67,12 +120,11 @@ class AdminPage extends GetView<AdminPageController> {
                       MapEntry('age', '11'),
                     ]
                     */
-                          print('0 data.entries: ${data.entries}');
-                          // final sorted = data.entries.sorted((a, b) => _sorted.indexOf(a.key).compareTo(_sorted.indexOf(b.key)));
                           final sorted = [
                             MapEntry('id', x.id),
+                            ...UserFieldType.values.where((x) => !data.keys.contains(x.name) && x.name != 'id').map((x) => MapEntry(x.name, '')),
                             ...data.entries,
-                          ].sorted((a, b) => _sortedUser.indexOf(a.key).compareTo(_sortedUser.indexOf(b.key)));
+                          ].sorted((a, b) => getUserFieldIndex(name: a.key).compareTo(getUserFieldIndex(name: b.key)));
 
                           // _sorted.indexOf(a.key): gender -> 1
                           // _sorted.indexOf(a.key): age -> 0
@@ -89,7 +141,6 @@ class AdminPage extends GetView<AdminPageController> {
                           // A -> Z
                           // a -> z
                           // 가 -> 하
-                          print('sorted: ${sorted}');
 
                           return TableRow(
                             children: [
@@ -103,7 +154,7 @@ class AdminPage extends GetView<AdminPageController> {
                                 }
 
                                 return TableCell(
-                                  child: Text(y.value),
+                                  child: Text(y.value.toString()),
                                 );
                               }),
                             ],
@@ -138,8 +189,9 @@ class AdminPage extends GetView<AdminPageController> {
                       children: [
                         ...rx.map((x) {
                           final data = x.data();
+
                           final sorted = (() {
-                            final sorted = data.entries.sorted((a, b) => _sortedResult.indexOf(a.key).compareTo(_sortedResult.indexOf(b.key)));
+                            final sorted = data.entries.sorted((a, b) => getResultFieldIndex(name: a.key).compareTo(getResultFieldIndex(name: b.key)));
                             return sorted.expand((y) {
                               final value = y.value;
 
@@ -189,8 +241,8 @@ class AdminPage extends GetView<AdminPageController> {
                                       crossAxisAlignment: CrossAxisAlignment.stretch,
                                       children: [
                                         Text('id: ${value.file}'),
-                                        Text('score: ${value.score}'),
-                                        Text('volumes: ${value.volumes}'),
+                                        Text('score: ${value.score.toStringAsFixed(2)}'),
+                                        Text('volumes: ${value.volumes.map((x) => x.toStringAsFixed(2))}'),
                                         Text('play_count: ${value.volumes.length}'),
                                         Text('totalMilliseconds: ${value.totalMilliseconds}'),
                                       ],

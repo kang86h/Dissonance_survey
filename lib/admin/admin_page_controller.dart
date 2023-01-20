@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:rxdart/rxdart.dart' as rx;
+import 'package:surveykit_example/admin/model/type/condition_model.dart';
+import 'package:surveykit_example/admin/model/type/result_field_type.dart';
 
 import '../getx/get_controller.dart';
 import 'admin_page_model.dart';
@@ -13,7 +15,7 @@ class AdminPageController extends GetController<AdminPageModel> {
   final RxList<QueryDocumentSnapshot<Map<String, dynamic>>> userStream = <QueryDocumentSnapshot<Map<String, dynamic>>>[].obs
     ..bindStream(FirebaseFirestore.instance.collection('user').snapshots().map((x) => x.docs));
 
-  final RxList<QueryDocumentSnapshot<Map<String, dynamic>>> resultStream = <QueryDocumentSnapshot<Map<String, dynamic>>>[].obs
+  late final RxList<QueryDocumentSnapshot<Map<String, dynamic>>> resultStream = <QueryDocumentSnapshot<Map<String, dynamic>>>[].obs
     ..bindStream(FirebaseFirestore.instance.collection('result').snapshots().map((x) => x.docs));
 
   @override
@@ -38,5 +40,26 @@ class AdminPageController extends GetController<AdminPageModel> {
     final resultCollection = FirebaseFirestore.instance.collection('result');
     final resultDoc = await resultCollection.get();
     resultDoc.docs.forEach((x) => print('x.data(): ${x.data()}'));
+  }
+
+  /*
+  List 수정, 삭제, 추가
+  Iterable readonly
+  */
+  void onPressedAddCondition() {
+    change(state.copyWith(
+      conditions: [
+        ...state.conditions,
+        ConditionModel.empty(),
+      ],
+    ));
+  }
+
+  void onPressedCondition(int index, ConditionModel condition) {
+    change(state.copyWith(
+      conditions: [
+        ...state.conditions.toList().asMap().entries.map((x) => x.key == index ? condition : x.value),
+      ],
+    ));
   }
 }
