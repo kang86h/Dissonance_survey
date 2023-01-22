@@ -42,15 +42,19 @@ class AdminPageController extends GetController<AdminPageModel> {
     resultDoc.docs.forEach((x) => print('x.data(): ${x.data()}'));
   }
 
-  /*
-  List 수정, 삭제, 추가
-  Iterable readonly
-  */
   void onPressedAddCondition() {
     change(state.copyWith(
       conditions: [
         ...state.conditions,
         ConditionModel.empty(),
+      ],
+    ));
+  }
+
+  void onPressedRemoveCondition(int index) {
+    change(state.copyWith(
+      conditions: [
+        ...state.conditions.toList().asMap().entries.where((x) => x.key != index).map((x) => x.value),
       ],
     ));
   }
