@@ -1,10 +1,23 @@
+import 'package:surveykit_example/admin/model/type/user_field_type.dart';
+
 enum ConditionType {
+  empty,
   more_than,
   less_than,
   between,
   equals,
   not_equals,
   contains,
+}
+
+extension ConditionTypeEx on ConditionType {
+  bool isField(dynamic fieldType) {
+    if (fieldType == UserFieldType.gender) {
+      return [ConditionType.empty, ConditionType.equals, ConditionType.not_equals].contains(this);
+    }
+
+    return true;
+  }
 }
 
 /*

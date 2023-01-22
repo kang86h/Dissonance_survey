@@ -1,24 +1,25 @@
-import 'dart:math';
-
 import 'package:surveykit_example/admin/model/type/condition_type.dart';
 import 'package:surveykit_example/admin/model/type/range_type.dart';
 import 'package:surveykit_example/getx/get_model.dart';
 
 class ConditionModel extends GetModel {
   ConditionModel({
+    required this.field,
     required this.condition,
     required this.range,
-    required this.field,
+    required this.value,
   });
 
+  final dynamic field;
   final ConditionType condition;
   final RangeType range;
-  final dynamic field;
+  final Iterable<dynamic> value;
 
   static final ConditionModel _empty = ConditionModel(
-    condition: ConditionType.values.first,
-    range: RangeType.values.first,
     field: null,
+    condition: ConditionType.empty,
+    range: RangeType.empty,
+    value: const [],
   );
 
   factory ConditionModel.empty() => _empty;
@@ -28,20 +29,22 @@ class ConditionModel extends GetModel {
 
   @override
   ConditionModel copyWith({
+    dynamic field,
     ConditionType? condition,
     RangeType? range,
-    dynamic field,
+    Iterable<dynamic>? value,
   }) {
     return ConditionModel(
+      field: field ?? this.field,
       condition: condition ?? this.condition,
       range: range ?? this.range,
-      field: field ?? this.field,
+      value: value ?? this.value,
     );
   }
 
   @override
-  List<Object?> get props => [condition, range, field];
+  List<Object?> get props => [field, condition, range, value];
 
   @override
-  String toString() => 'condition: $condition range: $range field: $field';
+  String toString() => 'field: $field condition: $condition range: $range value: $value';
 }

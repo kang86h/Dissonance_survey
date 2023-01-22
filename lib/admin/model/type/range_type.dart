@@ -1,4 +1,5 @@
 enum RangeType {
+  empty,
   any,
   all,
   max,

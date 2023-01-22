@@ -1,8 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:surveykit_example/admin/model/type/condition_type.dart';
+import 'package:surveykit_example/admin/model/type/range_type.dart';
 import 'package:surveykit_example/admin/model/type/result_field_type.dart';
 import 'package:surveykit_example/admin/model/type/user_field_type.dart';
+import 'package:surveykit_example/admin/model/type/value/user_gender_value.dart';
 import 'package:surveykit_example/getx/extension.dart';
 import 'package:surveykit_example/main/model/question_model.dart';
 import '../getx/get_rx_impl.dart';
@@ -26,30 +30,175 @@ class AdminPage extends GetView<AdminPageController> {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    ...state.conditions.toList().asMap().entries.map((x) => Row(
-                          children: [
-                            Expanded(
-                              child: DropdownButton(
-                                onChanged: (field) => controller.onPressedCondition(x.key, x.value.copyWith(
-                                  field: field,
-                                )),
-                                value: x.value.field,
-                                items: [
-                                  ...UserFieldType.values.where((x) => x.isDropdown).map((x) => DropdownMenuItem(
-                                        value: x,
-                                        child: Text(x.name),
-                                      )),
-                                  ...ResultFieldType.values.where((x) => x.isDropdown).map((x) => DropdownMenuItem(
-                                        value: x,
-                                        child: Text(x.name),
-                                      )),
-                                ],
-                              ),
+                    ...state.conditions.toList().asMap().entries.expand((x) => [
+                          if (x.key > 0) ...[
+                            const SizedBox(height: 10),
+                            Divider(
+                              height: 1,
+                              indent: 20,
+                              endIndent: 20,
+                              color: Colors.grey,
                             ),
-                            Expanded(child: Text(x.value.range.name)),
-                            Expanded(child: Text(x.value.condition.name)),
+                            const SizedBox(height: 10),
                           ],
-                        )),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: DropdownButton(
+                                  onChanged: (field) => controller.onPressedCondition(
+                                      x.key,
+                                      x.value.copyWith(
+                                        field: field,
+                                        range: RangeType.empty,
+                                        condition: ConditionType.empty,
+                                        value: const [],
+                                      )),
+                                  isExpanded: true,
+                                  value: x.value.field,
+                                  items: [
+                                    ...UserFieldType.values.where((y) => y.isDropdown).map((y) => DropdownMenuItem(
+                                          value: y,
+                                          child: Text(y.name),
+                                        )),
+                                    ...ResultFieldType.values.where((y) => y.isDropdown).map((y) => DropdownMenuItem(
+                                          value: y,
+                                          child: Text(y.name),
+                                        )),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: DropdownButton<RangeType>(
+                                  onChanged: x.value.field is ResultFieldType
+                                      ? (range) => controller.onPressedCondition(
+                                          x.key,
+                                          x.value.copyWith(
+                                            range: range,
+                                            condition: ConditionType.empty,
+                                            value: const [],
+                                          ))
+                                      : null,
+                                  isExpanded: true,
+                                  value: x.value.range,
+                                  items: [
+                                    ...RangeType.values.map((y) => DropdownMenuItem(
+                                          value: y,
+                                          child: y == RangeType.empty ? const SizedBox.shrink() : Text(y.name),
+                                        )),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                child: DropdownButton<ConditionType>(
+                                  onChanged: (condition) => controller.onPressedCondition(
+                                      x.key,
+                                      x.value.copyWith(
+                                        condition: condition,
+                                        value: const [],
+                                      )),
+                                  isExpanded: true,
+                                  value: x.value.condition,
+                                  items: [
+                                    ...ConditionType.values.where((y) => y.isField(x.value.field)).map((y) => DropdownMenuItem(
+                                          value: y,
+                                          child: y == ConditionType.empty ? const SizedBox.shrink() : Text(y.name),
+                                        )),
+                                  ],
+                                ),
+                              ),
+                              Expanded(
+                                flex: 4,
+                                child: (() {
+                                  final field = x.value.field;
+
+                                  if (field == UserFieldType.gender) {
+                                    return DropdownButton<UserGenderValue>(
+                                      onChanged: (value) => controller.onPressedCondition(
+                                          x.key,
+                                          x.value.copyWith(
+                                            value: [value],
+                                          )),
+                                      isExpanded: true,
+                                      value: x.value.value.firstOrNull,
+                                      items: [
+                                        ...UserGenderValue.values.map((y) => DropdownMenuItem(
+                                              value: y,
+                                              child: Text(y.name),
+                                            )),
+                                      ],
+                                    );
+                                  } else if (field == UserFieldType.createdAt) {
+                                    if (x.value.condition == ConditionType.between) {
+                                      return Row(
+                                        children: [
+                                          Expanded(
+                                            child: CalendarDatePicker(
+                                              onDateChanged: (value) => controller.onPressedCondition(
+                                                  x.key,
+                                                  x.value.copyWith(
+                                                    value: [value, x.value.value.secondOrNull],
+                                                  )),
+                                              firstDate: DateTime(2000, 1, 1),
+                                              lastDate: DateTime(2099, 12, 31),
+                                              initialDate: DateTime.now(),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: CalendarDatePicker(
+                                              onDateChanged: (value) => controller.onPressedCondition(
+                                                  x.key,
+                                                  x.value.copyWith(
+                                                    value: [x.value.value.firstOrNull, value],
+                                                  )),
+                                              firstDate: DateTime(2000, 1, 1),
+                                              lastDate: DateTime(2099, 12, 31),
+                                              initialDate: DateTime.now(),
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    }
+
+                                    return CalendarDatePicker(
+                                      onDateChanged: (value) => controller.onPressedCondition(
+                                          x.key,
+                                          x.value.copyWith(
+                                            value: [value],
+                                          )),
+                                      firstDate: DateTime(2000, 1, 1),
+                                      lastDate: DateTime(2099, 12, 31),
+                                      initialDate: DateTime.now(),
+                                    );
+                                  } else {
+                                    if (x.value.condition == ConditionType.between) {
+                                      return Row(
+                                        children: [
+                                          Expanded(
+                                            child: TextField(
+                                              onChanged: (value) => [value, x.value.value.secondOrNull],
+                                              keyboardType: TextInputType.number,
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: TextField(
+                                              onChanged: (value) => [x.value.value.firstOrNull, value],
+                                              keyboardType: TextInputType.number,
+                                            ),
+                                          ),
+                                        ],
+                                      );
+                                    }
+
+                                    return TextField(
+                                      onChanged: (value) => [value],
+                                      keyboardType: TextInputType.number,
+                                    );
+                                  }
+                                })(),
+                              ),
+                            ],
+                          ),
+                        ]),
                     IconButton(
                       onPressed: controller.onPressedAddCondition,
                       icon: Icon(
