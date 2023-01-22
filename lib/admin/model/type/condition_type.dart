@@ -7,13 +7,14 @@ enum ConditionType {
   between,
   equals,
   not_equals,
-  contains,
 }
 
 extension ConditionTypeEx on ConditionType {
   bool isField(dynamic fieldType) {
     if (fieldType == UserFieldType.gender) {
       return [ConditionType.empty, ConditionType.equals, ConditionType.not_equals].contains(this);
+    } else if (fieldType == UserFieldType.createdAt) {
+      return [ConditionType.between].contains(this);
     }
 
     return true;
@@ -26,5 +27,4 @@ extension ConditionTypeEx on ConditionType {
 사이 - between
 동등 - equals
 다를 때 - not equals
-포함 - contains
 */

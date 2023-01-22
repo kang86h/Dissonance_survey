@@ -191,7 +191,7 @@ class MainPageController extends GetController<MainPageModel> {
 
     CollectionReference userCollection = FirebaseFirestore.instance.collection('user');
     final userDocument = await userCollection.add({
-      'age': age,
+      'age': int.tryParse(age) ?? 0,
       'gender': gender,
       'prequestion': prequestion,
       'video_milliseconds': state.getVideoMilliseconds,
