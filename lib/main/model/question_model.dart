@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:surveykit_example/getx/extension.dart';
+
 import '../../getx/get_model.dart';
 
 class QuestionModel extends GetModel {
@@ -94,6 +96,8 @@ class QuestionModel extends GetModel {
 
   @override
   bool get isEmpty => this == _empty;
+
+  String get header => file.split('/').lastOrNull.elvis.split('.').firstOrNull.elvis;
 
   @override
   QuestionModel copyWith({
