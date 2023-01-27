@@ -575,7 +575,7 @@ class MainPage extends GetView<MainPageController> {
         // Step * 300
 
         // 스프레드 문법
-        ...Iterable.generate(20, (_) => getMainStep()),
+        ...Iterable.generate(0, (_) => getMainStep()),
         getComplete(),
       ],
     );

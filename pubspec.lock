@@ -274,6 +274,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.1.1"
+  cp949:
+    dependency: "direct main"
+    description:
+      name: cp949
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.2.1"
   cross_file:
     dependency: transitive
     description:
@@ -316,6 +323,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.2.4"
+  download:
+    dependency: "direct main"
+    description:
+      name: download
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   equatable:
     dependency: "direct main"
     description:

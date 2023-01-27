@@ -193,7 +193,14 @@ class MainPageController extends GetController<MainPageModel> {
     final userDocument = await userCollection.add({
       'age': int.tryParse(age) ?? 0,
       'gender': gender,
-      'prequestion': prequestion,
+      'prequestion': (() {
+        if (prequestion.contains(',')) {
+          final list = prequestion.split(',')..sort();
+          return list.join(',');
+        }
+
+        return prequestion;
+      })(),
       'video_milliseconds': state.getVideoMilliseconds,
       'createdAt': DateTime.now(),
     });
