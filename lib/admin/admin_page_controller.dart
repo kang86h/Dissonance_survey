@@ -1,6 +1,10 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:collection/collection.dart';
+import 'package:cp949/cp949.dart';
+import 'package:csv/csv.dart';
+import 'package:download/download.dart';
 import 'package:surveykit_example/admin/admin_page_model.dart';
 import 'package:surveykit_example/admin/model/type/condition_model.dart';
 import 'package:surveykit_example/admin/model/type/condition_type.dart';
@@ -19,10 +23,10 @@ class AdminPageController extends GetController<AdminPageModel> {
     required AdminPageModel model,
   }) : super(model);
 
-  final rx.BehaviorSubject<List<QueryDocumentSnapshot<Map<String, dynamic>>>> userStream = rx.BehaviorSubject()
-    ..addStream(FirebaseFirestore.instance.collection('user').snapshots().map((x) => x.docs));
-  final rx.BehaviorSubject<List<QueryDocumentSnapshot<Map<String, dynamic>>>> resultStream = rx.BehaviorSubject()
-    ..addStream(FirebaseFirestore.instance.collection('result').snapshots().map((x) => x.docs));
+  final rx.BehaviorSubject<List<QueryDocumentSnapshot<Map<String, dynamic>>>> userStream = rx.BehaviorSubject.seeded([])
+    ..addStream(FirebaseFirestore.instance.collection('user').orderBy('createdAt', descending: true).snapshots().map((x) => x.docs));
+  final rx.BehaviorSubject<List<QueryDocumentSnapshot<Map<String, dynamic>>>> resultStream = rx.BehaviorSubject.seeded([])
+    ..addStream(FirebaseFirestore.instance.collection('result').orderBy('createdAt', descending: true).snapshots().map((x) => x.docs));
 
   late final RxList<QueryDocumentSnapshot<Map<String, dynamic>>> filterUserList = <QueryDocumentSnapshot<Map<String, dynamic>>>[].obs;
   late final RxList<QueryDocumentSnapshot<Map<String, dynamic>>> filterResultList = <QueryDocumentSnapshot<Map<String, dynamic>>>[].obs;
@@ -30,18 +34,23 @@ class AdminPageController extends GetController<AdminPageModel> {
   @override
   void onInit() {
     super.onInit();
+    userStream.listen((value) {
+      onPressedApplyCondition();
+    });
+    resultStream.listen((value) {
+      onPressedApplyCondition();
+    });
   }
 
-  void onPressedUserData() async {
-    final userCollection = FirebaseFirestore.instance.collection('user');
-    final userDoc = await userCollection.get();
-    userDoc.docs.forEach((x) => print('x.data(): ${x.data()}'));
-  }
-
-  void onPressedResultData() async {
-    final resultCollection = FirebaseFirestore.instance.collection('result');
-    final resultDoc = await resultCollection.get();
-    resultDoc.docs.forEach((x) => print('x.data(): ${x.data()}'));
+  @override
+  void onClose() async {
+    super.onClose();
+    await Future.wait([
+      userStream.close(),
+      resultStream.close(),
+    ]);
+    filterUserList.close();
+    filterResultList.close();
   }
 
   void onPressedAddCondition() {
@@ -248,6 +257,102 @@ class AdminPageController extends GetController<AdminPageModel> {
 
     this.filterUserList.value = filterUserList.where((x) => filterResultIdList.contains(x.id)).toList();
     this.filterResultList.value = filterResultList.where((x) => filterUserIdList.contains(x.data()['user_id'])).toList();
+  }
+
+  void onPressedUserDownload() {
+    final rows = [
+      [
+        ...UserFieldType.values.map((x) => x.name),
+      ],
+      ...filterUserList.value.map((x) {
+        final data = x.data();
+        final sorted = [
+          MapEntry('id', x.id),
+          ...UserFieldType.values.where((x) => !data.keys.contains(x.name) && x.name != 'id').map((x) => MapEntry(x.name, '')),
+          ...data.entries,
+        ].sorted((a, b) => getUserFieldIndex(name: a.key).compareTo(getUserFieldIndex(name: b.key)));
+
+        return [
+          ...sorted.map((y) {
+            final value = y.value;
+
+            if (value is Timestamp) {
+              return value.toDate().toString();
+            }
+            if (y.key == 'prequestion') {
+              return '(${value.toString().replaceAll(',', ' ')})';
+            }
+
+            return y.value.toString();
+          }),
+        ];
+      }),
+    ];
+    final csv = ListToCsvConverter().convert(rows);
+    final stream = Stream.fromIterable(encode(csv));
+    download(stream, 'user_${DateTime.now().toIso8601String()}.csv');
+  }
+
+  void onPressedResultDownload() {
+    final sorted = filterResultList.value.map((x) {
+      final data = x.data();
+      final sorted = data.entries.sorted((a, b) => getResultFieldIndex(name: a.key).compareTo(getResultFieldIndex(name: b.key)));
+      return [
+        data['user_id'],
+        ...sorted.expand((y) {
+          final value = y.value;
+
+          if (value is Map<dynamic, dynamic>) {
+            // 타입 변환
+            final map = Map.fromEntries([
+              ...Map<String, dynamic>.from(value).entries.map((x) {
+                return MapEntry(
+                  x.key,
+                  [
+                    ...Iterable.castFrom(x.value),
+                  ].map((y) => QuestionModel.fromJson(y)),
+                );
+              }),
+            ]);
+
+            return map.entries.expand((z) => z.value.map((w) => MapEntry(w.file, w))).sorted((a, b) => a.value.file.compareTo(b.value.file));
+          }
+
+          return <MapEntry<String, QuestionModel>>[];
+        }).toList(),
+      ];
+    }).toList();
+
+    ResultFieldType.values.where((x) => x.isDropdown).forEach((tab) {
+      final rows = [
+        [
+          'user_id',
+          ...sorted.take(1).expand((x) => x.whereType<MapEntry<String, QuestionModel>>().map((y) => y.value.header)),
+        ],
+        ...sorted.map((x) => [
+              ...x.map((y) {
+                if (y is String) {
+                  return y;
+                } else if (y is MapEntry<String, QuestionModel>) {
+                  if (tab == ResultFieldType.score) {
+                    return y.value.score.toStringAsFixed(2);
+                  } else if (tab == ResultFieldType.volumes) {
+                    return y.value.volumes.map((x) => x.toStringAsFixed(2)).join(" ");
+                  } else if (tab == ResultFieldType.play_count) {
+                    return y.value.volumes.length;
+                  } else if (tab == ResultFieldType.totalMilliseconds) {
+                    return y.value.totalMilliseconds;
+                  }
+                }
+
+                return '';
+              }),
+            ]),
+      ];
+      final csv = ListToCsvConverter().convert(rows);
+      final stream = Stream.fromIterable(encode(csv));
+      download(stream, '${tab.name}_${DateTime.now().toIso8601String()}.csv');
+    });
   }
 
   void onPressedRemoveCondition(int index) {
