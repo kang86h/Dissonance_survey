@@ -15,3 +15,6 @@ void main() async {
 
   runApp(App());
 }
+
+
+//flutter build web--no-sound-null-safety

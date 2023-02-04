@@ -48,7 +48,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
-    - assets/Q2/
-    - assets/Q3/
-    - assets/Q4/
+    - assets/HS1Q2/
+    - assets/HS1Q3/
+    - assets/HS1Q4/
     - assets/example_json.json

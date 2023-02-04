@@ -19,7 +19,7 @@ class MainPageBinding extends Bindings {
               QuestionModel.volume(),
               QuestionModel.empty(),
             ],
-            QuestionType.q2: (QuestionType questionType) {
+            QuestionType.hs1q2: (QuestionType questionType) {
               final name = questionType.name.toUpperCase();
               final questions = List.generate(
                 8,
@@ -36,8 +36,8 @@ class MainPageBinding extends Bindings {
               }
 
               return questions;
-            }(QuestionType.q2),
-            QuestionType.q3: (QuestionType questionType) {
+            }(QuestionType.hs1q2),
+            QuestionType.hs1q3: (QuestionType questionType) {
               final name = questionType.name.toUpperCase();
               final questions = List.generate(
                 6,
@@ -54,8 +54,8 @@ class MainPageBinding extends Bindings {
               }
 
               return questions;
-            }(QuestionType.q3),
-            QuestionType.q4: (QuestionType questionType) {
+            }(QuestionType.hs1q3),
+            QuestionType.hs1q4: (QuestionType questionType) {
               final name = questionType.name.toUpperCase();
               final questions = List.generate(
                 6,
@@ -72,7 +72,7 @@ class MainPageBinding extends Bindings {
               }
 
               return questions;
-            }(QuestionType.q4),
+            }(QuestionType.hs1q4),
           },
         ),
       ),

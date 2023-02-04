@@ -38,28 +38,10 @@ class QuestionModel extends GetModel {
   double get sliderScore => min(score, maxSliderScore);
 
   int get getTotalMilliseconds {
-    // 예외처리 Exception -> 에러가 발생
-
-    // NullPointerException
-    // [1, 2, 3].length > 5 ? [5] : null
-
-    // [1, 2, 3].reduce((a, c) => a + c);
-    // a: 1, c: 2
-    // a: 3, c: 3
-    // 6
-
-    // [1, 2, 3].fold(100, (a, c) => a + c);
-    // a: 100, c: 1
-    // a: 101, c: 2
-    // a: 103, c: 3
-    // 106
-
-    // [].reduce((a, c) => a + c);
-    // [].fold(Duration.zero, (a, c) => a + c); -> 기본값
-
     final length = min(startedAt.length, endedAt.length);
-    final total =
-        Iterable.generate(length, (i) => endedAt.elementAt(i).difference(startedAt.elementAt(i))).fold<Duration>(Duration.zero, (a, c) => a + c);
+    final total = Iterable.generate(length,
+            (i) => endedAt.elementAt(i).difference(startedAt.elementAt(i)))
+        .fold<Duration>(Duration.zero, (a, c) => a + c);
     return total.inMilliseconds;
   }
 
@@ -97,7 +79,8 @@ class QuestionModel extends GetModel {
   @override
   bool get isEmpty => this == _empty;
 
-  String get header => file.split('/').lastOrNull.elvis.split('.').firstOrNull.elvis;
+  String get header =>
+      file.split('/').lastOrNull.elvis.split('.').firstOrNull.elvis;
 
   @override
   QuestionModel copyWith({
@@ -161,9 +144,11 @@ class QuestionModel extends GetModel {
         file: map['file'],
         score: double.tryParse(map['score'].toString()) ?? 0.0,
         volumes: [
-          ...Iterable.castFrom(map['volumes'] ?? []).map((x) => double.tryParse(x.toString()) ?? 0.0),
+          ...Iterable.castFrom(map['volumes'] ?? [])
+              .map((x) => double.tryParse(x.toString()) ?? 0.0),
         ],
-        totalMilliseconds: int.tryParse(map['total_milliseconds'].toString()) ?? 0,
+        totalMilliseconds:
+            int.tryParse(map['total_milliseconds'].toString()) ?? 0,
       );
 
   @override

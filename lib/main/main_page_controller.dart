@@ -216,33 +216,6 @@ class MainPageController extends GetController<MainPageModel> {
   }
 
   void onChangedScore(QuestionType questionType, int index, double value) {
-    // 메인 페이지 모델을 변경하는 함수 -> change
-    // Iterable<MapEntry(Key, Value)>
-    /*
-    [
-      MapEntry(QuestionType.none, [
-        QuestionModel(),
-        QuestionModel(),
-        QuestionModel(),
-      ]),
-
-      ->
-
-
-      MapEntry(QuestionType.none, {
-        0: QuestionModel(),
-        1: QuestionModel(),
-        2: QuestionModel(),
-      }),
-
-
-      MapEntry(QuestionType.q1, [
-        QuestionModel(),
-        QuestionModel(),
-        QuestionModel(),
-      ]),
-    ],
-    */
 
     final questionType = this.questionType.value;
     final index = this.index.value;
@@ -359,9 +332,7 @@ class MainPageController extends GetController<MainPageModel> {
   }
 
   void onPressedVideo() async {
-    // 맨 처음에 재생버튼 클릭 시 startedAt
-    // 맨 처음에 다음으로 버튼 클릭 시 endedAt
-    // 이후로는 버튼 클릭해도 아무런 기록하지 않음
+
 
     if (videoStatus.value == VideoStatus.play) {
       await videoPlayerController.pause();
