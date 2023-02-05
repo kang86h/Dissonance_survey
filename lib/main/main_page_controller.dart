@@ -183,8 +183,6 @@ class MainPageController extends GetController<MainPageModel> {
     } else {
       videoStatus.value = VideoStatus.empty;
     }
-
-    Get.log('videoStatus.value: ${videoStatus.value}');
   }
 
   void onResult(SurveyResult surveyResult) async {

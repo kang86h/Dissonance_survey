@@ -38,54 +38,6 @@ class MainPage extends GetView<MainPageController> {
                 return SurveyKit(
                   surveyController: controller.surveyController,
                   onResult: controller.onResult,
-                  /*
-                  onResult: (SurveyResult surveyResult) {
-                    final result = state.toJson();
-                    final gender = surveyResult.results.where((x) => x.id == _genderIdentifier).firstOrNull?.results.firstOrNull?.valueIdentifier ?? '';
-                    final age = surveyResult.results.where((x) => x.id == _ageIdentifier).firstOrNull?.results.firstOrNull?.valueIdentifier ?? '';
-
-
-                    /*
-                    print('result: $result');
-                    print('gender: $gender');
-                    print('age: $age');
-                    html.window.open('https://naver.com', '_self');
-                    */
-
-                    // [age, gender];
-                    // 사용자 컬렉션: 키값, 성별, 나이, 맥 어드레스
-                    // result -> 성별, 나이
-                    // 맥어드레스
-
-                    // 설문조사 결과 컬렉션: 키값, 사용자 키값, 결과(리스트)
-
-                    // firebase data store upload
-
-                    // RDBMS 관계형 데이터베이스의 형식
-                    // article
-                    // id, content, author
-                    // 1,  '',       'AA'
-                    // 2,  '',       'BB'
-                    // 3,  '',       'CC'
-
-                    // NOSQL
-                    /*
-                    articles: [
-                      0H: {
-                            id: "",
-                            content: "",
-                            author: "",
-                          },
-                      1H: {
-                            id: "",
-                            content: "",
-                            files: "",
-                            author: "",
-                          },
-                    ]
-                    */
-                  },
-                  */
                   task: task,
                   showProgress: true,
                   localizations: {
@@ -218,7 +170,7 @@ class MainPage extends GetView<MainPageController> {
           '화음에 사용된 음의 갯수에따라 최고점이 다릅니다\n'
           '2음화음 최대 60점\n'
           '3음화음 최대 100점\n'
-          '4음화음 최대 140점)\n',
+          '4음화음 최대 140점\n',
       buttonText: '시작',
     );
   }
@@ -453,6 +405,15 @@ class MainPage extends GetView<MainPageController> {
                             size: 48,
                           ),
                         ],
+                      ),
+                      Text(
+                        '아이폰, 아이패드 사용자는\n'
+                        '볼륨 버튼을 이용해 조절해주세요',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.black,
+                        ),
                       ),
                       controller.volume.rx((rx) {
                         return Slider(

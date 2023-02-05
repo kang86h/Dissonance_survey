@@ -17,4 +17,5 @@ void main() async {
 }
 
 
-//flutter build web--no-sound-null-safety
+//flutter build web --no-sound-null-safety
+//firebase deploy --only hosting
