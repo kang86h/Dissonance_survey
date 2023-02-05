@@ -50,6 +50,7 @@ class MainPageController extends GetController<MainPageModel> {
   final Rx<int> index = 0.obs;
   final RxBool isSkip = false.obs;
   final RxBool isPlay = false.obs;
+  final RxBool isLoad = false.obs;
   final Rx<double> videoBuffered = 0.0.obs;
   final Rx<double> videoPlayed = 0.0.obs;
 
@@ -95,6 +96,7 @@ class MainPageController extends GetController<MainPageModel> {
   }
 
   void _onStep(StepEvent event) async {
+    isLoad.value = true;
     Get.focusScope?.unfocus();
 
     var questionType = this.questionType.value;
@@ -156,6 +158,8 @@ class MainPageController extends GetController<MainPageModel> {
         await audioPlayer.resume();
       }
     }
+
+    isLoad.value = false;
   }
 
   @override
@@ -164,7 +168,7 @@ class MainPageController extends GetController<MainPageModel> {
     videoPlayerController.dispose();
     multipleEditingController.dispose();
     textEditingController.dispose();
-    [playerState, volume, isSkip, isPlay, videoBuffered, videoPlayed].forEach((x) => x.close());
+    [playerState, volume, isSkip, isPlay, isLoad, videoBuffered, videoPlayed].forEach((x) => x.close());
     super.onClose();
   }
 
@@ -216,7 +220,6 @@ class MainPageController extends GetController<MainPageModel> {
   }
 
   void onChangedScore(QuestionType questionType, int index, double value) {
-
     final questionType = this.questionType.value;
     final index = this.index.value;
 
@@ -321,19 +324,19 @@ class MainPageController extends GetController<MainPageModel> {
   }
 
   void onPressedState(PlayerState state) async {
-    if (state == PlayerState.playing) {
-      await audioPlayer.pause();
-    } else if (state == PlayerState.paused) {
-      await audioPlayer.resume();
-    } else {
-      await audioPlayer.seek(Duration.zero);
-      await audioPlayer.resume();
+    if (!isLoad.value) {
+      if (state == PlayerState.playing) {
+        await audioPlayer.pause();
+      } else if (state == PlayerState.paused) {
+        await audioPlayer.resume();
+      } else {
+        await audioPlayer.seek(Duration.zero);
+        await audioPlayer.resume();
+      }
     }
   }
 
   void onPressedVideo() async {
-
-
     if (videoStatus.value == VideoStatus.play) {
       await videoPlayerController.pause();
     } else {
