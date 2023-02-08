@@ -18,4 +18,12 @@ void main() async {
 
 
 //flutter build web --no-sound-null-safety
+//firebase init
+//   build/web -> y -> n
+//flutterfire configure
+//flutter build web --no-sound-null-safety
 //firebase deploy --only hosting
+
+//git init
+//git remote add origin https://github.com/kang86h/Dissonance_survey_2.git
+//git branch -M main
