@@ -214,6 +214,8 @@ class MainPageController extends GetController<MainPageModel> {
       'createdAt': DateTime.now(),
     });
 
+    Get.toNamed('/complete');
+
     //html.window.open('https://naver.com', '_self');
   }
 
