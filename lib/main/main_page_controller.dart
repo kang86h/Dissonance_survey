@@ -1,4 +1,3 @@
-import 'dart:html' as html;
 import 'dart:math';
 
 import 'package:audioplayers/audioplayers.dart';
@@ -31,6 +30,8 @@ class MainPageController extends GetController<MainPageModel> {
   MainPageController({
     required MainPageModel model,
   }) : super(model);
+
+  static bool disabled = false;
 
   final AudioPlayer audioPlayer = AudioPlayer();
   final VideoPlayerController videoPlayerController = VideoPlayerController.asset('assets/tutorial.mp4');
@@ -117,24 +118,35 @@ class MainPageController extends GetController<MainPageModel> {
     if (event == StepEvent.next) {
       if (index < state.questions[questionType].elvis.length - 1) {
         index = index + 1;
-      } else if (keyIndex < state.questions.keys.length - 1) {
-        questionType = state.questions.keys.elementAt(keyIndex + 1);
+      } else {
+        final questions = state.questions[questionType].elvis;
+        final scores = questions.map((x) => x.score);
+        final avg = scores.fold<double>(0, (a, c) => a + c) ~/ scores.length;
+        final acc = questions.first.maxSliderScore ~/ 10;
+        if (scores.any((x) => x > avg + acc || x < avg - acc) || keyIndex == 0) {
+          if (keyIndex < state.questions.keys.length - 1) {
+            questionType = state.questions.keys.elementAt(keyIndex + 1);
+          } else {
+            questionType = QuestionType.complete;
+          }
+        }
+
         index = 0;
       }
     } else if (event == StepEvent.back) {
       if (index > 0) {
         index = index - 1;
       } else if (keyIndex > 0) {
-        /*
         final prevKey = state.questions.keys.elementAt(keyIndex - 1);
-
-        questionType = prevKey;
         index = state.questions[prevKey].elvis.length - 1;
+        /*
+        questionType = prevKey;
         */
       }
     }
 
     this.index.value = index;
+    disabled = index == 0;
     this.questionType.value = questionType;
 
     if (state.videoStartedAt.millisecondsSinceEpoch != defaultDateTime.millisecondsSinceEpoch &&
@@ -150,7 +162,7 @@ class MainPageController extends GetController<MainPageModel> {
 
     final nextQuestion = state.questions[questionType].elvis.elementAt(index);
     isSkip.value = nextQuestion.isSkip;
-    isPlay.value = nextQuestion.volumes.length > 2;
+    isPlay.value = nextQuestion.volumes.isCheck;
 
     if (nextQuestion.file.isset) {
       await audioPlayer.setSource(AssetSource(nextQuestion.file));
@@ -191,7 +203,7 @@ class MainPageController extends GetController<MainPageModel> {
     final gender = surveyResult.results.where((x) => x.id == MainPage.genderIdentifier).firstOrNull?.results.firstOrNull?.valueIdentifier ?? '';
     final age = surveyResult.results.where((x) => x.id == MainPage.ageIdentifier).firstOrNull?.results.firstOrNull?.valueIdentifier ?? '';
     final prequestion =
-        surveyResult.results.where((x) => x.id == MainPage.PrequestionIdentifier).firstOrNull?.results.firstOrNull?.valueIdentifier ?? '';
+        surveyResult.results.where((x) => x.id == MainPage.prequestionIdentifier).firstOrNull?.results.firstOrNull?.valueIdentifier ?? '';
 
     CollectionReference userCollection = FirebaseFirestore.instance.collection('user');
     final userDocument = await userCollection.add({
@@ -227,7 +239,7 @@ class MainPageController extends GetController<MainPageModel> {
 
     final questionModel = state.questions[questionType][index];
 
-    if (questionModel is QuestionModel && questionModel.volumes.length > 2) {
+    if (questionModel is QuestionModel && questionModel.volumes.isCheck) {
       onChange(questionType, index, score: value);
       textEditingController.text = value.toStringAsFixed(0);
     }
@@ -290,7 +302,7 @@ class MainPageController extends GetController<MainPageModel> {
     // 50
     final questionModel = state.questions[questionType][index];
 
-    if (questionModel is QuestionModel && questionModel.volumes.length > 2) {
+    if (questionModel is QuestionModel && questionModel.volumes.isCheck) {
       // questionModel.maxTextScore 60
       // questionModel.maxSliderScore 100 -> UI쪽에서 maxSliderScore보다 작은 값을 할당
 
@@ -350,5 +362,25 @@ class MainPageController extends GetController<MainPageModel> {
 
       await videoPlayerController.play();
     }
+  }
+
+  StepIdentifier onCheck(int start, int end) {
+    final questionType = this.questionType.value;
+    final questions = state.questions[questionType].elvis;
+    final scores = questions.map((x) => x.score);
+
+    // TODO 신뢰도 체크 실패 시 값 초기화
+    if (scores.any((x) => x != 0)) {
+      Get.snackbar(
+        '알림',
+        '내용',
+        duration: const Duration(seconds: 5),
+      );
+      disabled = true;
+
+      return StepIdentifier(id: start.toString());
+    }
+
+    return StepIdentifier(id: end.toString());
   }
 }

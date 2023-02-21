@@ -3,6 +3,7 @@ enum QuestionType {
   hs1q2,
   hs1q3,
   hs1q4,
+  complete,
 }
 
 extension QuestionTypeEx on QuestionType {

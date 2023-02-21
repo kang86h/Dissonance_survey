@@ -50,6 +50,9 @@ extension IterableOptionalEx<T> on Iterable<T>? {
   bool get isNullOrEmpty => this == null || (this?.isEmpty).elvis;
 
   bool get isset => !isNullOrEmpty;
+
+  // bool get isCheck => length > 2;
+  bool get isCheck => true;
 }
 
 extension NumNullableEx on num? {

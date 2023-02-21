@@ -20,7 +20,15 @@ class MainPage extends GetView<MainPageController> {
 
   static StepIdentifier genderIdentifier = StepIdentifier(id: 'gender');
   static StepIdentifier ageIdentifier = StepIdentifier(id: 'age');
-  static StepIdentifier PrequestionIdentifier = StepIdentifier(id: 'prequestion');
+  static StepIdentifier prequestionIdentifier = StepIdentifier(id: 'prequestion');
+
+  static int q2Index = 7;
+  static int q3Index = 13;
+  static int q4Index = 19;
+
+  static StepIdentifier q2Identifier = StepIdentifier(id: q2Index.toString());
+  static StepIdentifier q3Identifier = StepIdentifier(id: q3Index.toString());
+  static StepIdentifier q4Identifier = StepIdentifier(id: q4Index.toString());
 
   @override
   Widget build(BuildContext context) {
@@ -194,7 +202,7 @@ class MainPage extends GetView<MainPageController> {
 
   QuestionStep getPrequestionStep() {
     return QuestionStep(
-      stepIdentifier: PrequestionIdentifier,
+      stepIdentifier: prequestionIdentifier,
       title: '당신이 생각하는 불협화음이란 어떤 것입니까?\n옳다고 생각하는 것을 모두 선택해 주세요\n원하시는 답이 없다면 직접 적어주세요.',
       answerFormat: MultipleChoiceAnswerFormat(
         textChoices: [
@@ -324,14 +332,21 @@ class MainPage extends GetView<MainPageController> {
     );
   }
 
-  QuestionStep getMainStep() {
+  QuestionStep getMainStep(int index) {
+    Get.log('index: $index');
+
     return QuestionStep(
+      stepIdentifier: StepIdentifier(id: '$index'),
       content: ConstrainedBox(
         constraints: BoxConstraints.tightFor(width: 500),
         child: Column(
           children: [
             controller.rx((state) {
               return controller.questionType.rx((rxQuestionType) {
+                if (rxQuestionType.value == QuestionType.complete) {
+                  return const SizedBox.shrink();
+                }
+
                 final name = rxQuestionType.value.title;
                 final keyIndex = state.questions.keys.skip(1).toList().indexOf(rxQuestionType.value);
                 final currentLength = state.questions.values.skip(1).take(keyIndex).map((x) => x.length).fold<int>(0, (a, c) => a + c);
@@ -438,6 +453,7 @@ class MainPage extends GetView<MainPageController> {
                         return controller.index.rx(
                           (rxValue) {
                             final question = questions[rxValue.value]!;
+                            Get.log('question: ${question}');
 
                             return FractionallySizedBox(
                               widthFactor: (question.maxSliderScore + ((maxSliderScore - question.maxSliderScore) * 0.15)) / maxSliderScore,
@@ -525,9 +541,20 @@ class MainPage extends GetView<MainPageController> {
         getPrequestionStep(),
         getVolume(),
         getTutirial(),
-        ...Iterable.generate(20, (_) => getMainStep()),
+        ...Iterable.generate(6, (i) => getMainStep(i)),
         getComplete(),
       ],
+      navigationRules: {
+        q2Identifier: ConditionalNavigationRule(
+          resultToStepIdentifierMapper: (_) => controller.onCheck(0, q2Index + 1),
+        ),
+        q3Identifier: ConditionalNavigationRule(
+          resultToStepIdentifierMapper: (_) => controller.onCheck(q2Index + 1, q3Index + 1),
+        ),
+        q4Identifier: ConditionalNavigationRule(
+          resultToStepIdentifierMapper: (_) => controller.onCheck(q3Index + 1, q4Index + 1),
+        ),
+      },
     );
   }
 }

@@ -19,6 +19,7 @@ class MainPageBinding extends Bindings {
               QuestionModel.volume(),
               QuestionModel.empty(),
             ],
+            // TODO 각 프로세스별 신뢰도 체크
             QuestionType.hs1q2: (QuestionType questionType) {
               final name = questionType.name.toUpperCase();
               final questions = List.generate(
@@ -73,6 +74,12 @@ class MainPageBinding extends Bindings {
 
               return questions;
             }(QuestionType.hs1q4),
+            QuestionType.complete: [
+              // TODO 마지막 신뢰도 체크
+              QuestionModel.empty(),
+              QuestionModel.empty(),
+              QuestionModel.empty(),
+            ],
           },
         ),
       ),
