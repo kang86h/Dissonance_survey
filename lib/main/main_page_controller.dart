@@ -125,10 +125,12 @@ class MainPageController extends GetController<MainPageModel> {
       if (index > 0) {
         index = index - 1;
       } else if (keyIndex > 0) {
+        /*
         final prevKey = state.questions.keys.elementAt(keyIndex - 1);
 
         questionType = prevKey;
         index = state.questions[prevKey].elvis.length - 1;
+        */
       }
     }
 
@@ -148,7 +150,7 @@ class MainPageController extends GetController<MainPageModel> {
 
     final nextQuestion = state.questions[questionType].elvis.elementAt(index);
     isSkip.value = nextQuestion.isSkip;
-    isPlay.value = nextQuestion.volumes.isset;
+    isPlay.value = nextQuestion.volumes.length > 2;
 
     if (nextQuestion.file.isset) {
       await audioPlayer.setSource(AssetSource(nextQuestion.file));
@@ -225,7 +227,7 @@ class MainPageController extends GetController<MainPageModel> {
 
     final questionModel = state.questions[questionType][index];
 
-    if (questionModel is QuestionModel && questionModel.volumes.isset) {
+    if (questionModel is QuestionModel && questionModel.volumes.length > 2) {
       onChange(questionType, index, score: value);
       textEditingController.text = value.toStringAsFixed(0);
     }
@@ -288,7 +290,7 @@ class MainPageController extends GetController<MainPageModel> {
     // 50
     final questionModel = state.questions[questionType][index];
 
-    if (questionModel is QuestionModel && questionModel.volumes.isset) {
+    if (questionModel is QuestionModel && questionModel.volumes.length > 2) {
       // questionModel.maxTextScore 60
       // questionModel.maxSliderScore 100 -> UI쪽에서 maxSliderScore보다 작은 값을 할당
 
