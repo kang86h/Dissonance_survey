@@ -15,6 +15,7 @@ class DoubleAnswerFormat implements AnswerFormat {
   final TextEditingController? controller;
   final RxBool? isSkip;
   final RxBool? isPlay;
+  final RxBool? isReset;
 
   const DoubleAnswerFormat({
     this.defaultValue,
@@ -22,6 +23,7 @@ class DoubleAnswerFormat implements AnswerFormat {
     this.controller,
     this.isSkip,
     this.isPlay,
+    this.isReset,
   }) : super();
 
   factory DoubleAnswerFormat.fromJson(Map<String, dynamic> json) => _$DoubleAnswerFormatFromJson(json);

@@ -80,6 +80,7 @@ class _SingleChoiceAnswerViewState extends State<SingleChoiceAnswerView> {
                         setState(() {});
                       },
                       isSelected: _selectedChoice == tc,
+                      child: tc.child,
                     );
                   },
                 ).toList(),
