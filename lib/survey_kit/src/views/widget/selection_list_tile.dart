@@ -6,6 +6,7 @@ class SelectionListTile extends StatelessWidget {
   final Function onTap;
   final bool isSelected;
   final TextEditingController? controller;
+  final Widget child;
 
   const SelectionListTile({
     Key? key,
@@ -13,6 +14,7 @@ class SelectionListTile extends StatelessWidget {
     required this.onTap,
     this.isSelected = false,
     this.controller,
+    this.child = const SizedBox.shrink(),
   }) : super(key: key);
 
   @override
@@ -30,6 +32,7 @@ class SelectionListTile extends StatelessWidget {
                     color: isSelected ? Theme.of(context).primaryColor : Theme.of(context).textTheme.headline5?.color,
                   ),
             ),
+            leading: child,
             trailing: isSelected
                 ? Icon(
                     Icons.check,

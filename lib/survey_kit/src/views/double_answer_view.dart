@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:surveykit_example/getx/extension.dart';
 import 'package:surveykit_example/getx/get_rx_impl.dart';
 
 import '../../survey_kit.dart';
@@ -34,8 +35,7 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
   @override
   void initState() {
     super.initState();
-    _doubleAnswerFormat =
-        widget.questionStep.answerFormat as DoubleAnswerFormat;
+    _doubleAnswerFormat = widget.questionStep.answerFormat as DoubleAnswerFormat;
     _startDate = DateTime.now();
 
     WidgetsBinding.instance?.addPostFrameCallback((_) {
@@ -61,19 +61,23 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
     final child = (() {
       final widgetBuilder = (RxBool? rx) => StepView(
             step: widget.questionStep,
-            textEditingController: widget.controller,
+            resultFunction: () => DoubleQuestionResult(
+              id: widget.questionStep.stepIdentifier,
+              startDate: _startDate,
+              endDate: DateTime.now(),
+              valueIdentifier: '',
+              result: 0,
+            ),
+            /*
             resultFunction: () => DoubleQuestionResult(
               id: widget.questionStep.stepIdentifier,
               startDate: _startDate,
               endDate: DateTime.now(),
               valueIdentifier: widget.controller?.text ?? '',
-              result: double.tryParse(widget.controller?.text ?? '') ??
-                  _doubleAnswerFormat.defaultValue ??
-                  null,
+              result: double.tryParse(widget.controller?.text ?? '') ?? _doubleAnswerFormat.defaultValue ?? null,
             ),
-            isValid: rx is RxBool && rx.value ||
-                _isValid ||
-                widget.questionStep.isOptional,
+            */
+            isValid: rx is RxBool && rx.value || _isValid || widget.questionStep.isOptional,
             title: widget.questionStep.title.isNotEmpty
                 ? Text(
                     widget.questionStep.title,

@@ -97,9 +97,10 @@ class MainPageController extends GetController<MainPageModel> {
   }
 
   void _onStep(StepEvent event) async {
-    isLoad.value = true;
+    isLoad.value = false;
     Get.focusScope?.unfocus();
 
+    var isReset = false;
     var questionType = this.questionType.value;
     var index = this.index.value;
     final question = state.questions[questionType].elvis.elementAt(index);
@@ -118,17 +119,19 @@ class MainPageController extends GetController<MainPageModel> {
     if (event == StepEvent.next) {
       if (index < state.questions[questionType].elvis.length - 1) {
         index = index + 1;
-      } else {
+      } else if (questionType != QuestionType.complete){
         final questions = state.questions[questionType].elvis;
         final scores = questions.map((x) => x.score);
         final avg = scores.fold<double>(0, (a, c) => a + c) ~/ scores.length;
-        final acc = questions.first.maxSliderScore ~/ 10;
+        final acc = (questions.firstOrNull?.maxSliderScore).elvis ~/ 10;
         if (scores.any((x) => x > avg + acc || x < avg - acc) || keyIndex == 0) {
           if (keyIndex < state.questions.keys.length - 1) {
             questionType = state.questions.keys.elementAt(keyIndex + 1);
           } else {
             questionType = QuestionType.complete;
           }
+        } else {
+          isReset = true;
         }
 
         index = 0;
@@ -136,26 +139,40 @@ class MainPageController extends GetController<MainPageModel> {
     } else if (event == StepEvent.back) {
       if (index > 0) {
         index = index - 1;
-      } else if (keyIndex > 0) {
-        final prevKey = state.questions.keys.elementAt(keyIndex - 1);
-        index = state.questions[prevKey].elvis.length - 1;
-        /*
-        questionType = prevKey;
-        */
       }
     }
 
     this.index.value = index;
-    disabled = index == 0;
+    disabled = index == 0 || questionType == QuestionType.complete;
     this.questionType.value = questionType;
 
-    if (state.videoStartedAt.millisecondsSinceEpoch != defaultDateTime.millisecondsSinceEpoch &&
-        state.videoEndedAt.millisecondsSinceEpoch == defaultDateTime.millisecondsSinceEpoch &&
-        questionType != QuestionType.none) {
-      change(state.copyWith(
-        videoEndedAt: DateTime.now(),
-      ));
-    }
+    final videoEndedAt = state.videoStartedAt.millisecondsSinceEpoch != defaultDateTime.millisecondsSinceEpoch &&
+            state.videoEndedAt.millisecondsSinceEpoch == defaultDateTime.millisecondsSinceEpoch &&
+            questionType != QuestionType.none
+        ? DateTime.now()
+        : null;
+
+    change(state.copyWith(
+      questions: isReset
+          ? {
+              ...state.questions.map((k, v) {
+                if (k == questionType) {
+                  return MapEntry(k, [
+                    ...v.map((x) => x.copyWith(
+                          score: 0,
+                          volumes: [],
+                          startedAt: [],
+                          endedAt: [],
+                        )),
+                  ]);
+                }
+
+                return MapEntry(k, v);
+              }),
+            }
+          : null,
+      videoEndedAt: videoEndedAt,
+    ));
 
     await videoPlayerController.pause();
     await audioPlayer.stop();
@@ -171,6 +188,10 @@ class MainPageController extends GetController<MainPageModel> {
       if (nextQuestion.isAutoPlay) {
         await audioPlayer.resume();
       }
+    }
+
+    if (int.tryParse(textEditingController.value.text).elvis == 0) {
+      onListenText();
     }
 
     isLoad.value = false;
@@ -241,7 +262,12 @@ class MainPageController extends GetController<MainPageModel> {
 
     if (questionModel is QuestionModel && questionModel.volumes.isCheck) {
       onChange(questionType, index, score: value);
-      textEditingController.text = value.toStringAsFixed(0);
+
+      if (value > 0) {
+        textEditingController.text = value.toStringAsFixed(0);
+      } else {
+        textEditingController.clear();
+      }
     }
   }
 
@@ -299,7 +325,6 @@ class MainPageController extends GetController<MainPageModel> {
     final index = this.index.value;
 
     final text = double.tryParse(textEditingController.value.text) ?? 0;
-    // 50
     final questionModel = state.questions[questionType][index];
 
     if (questionModel is QuestionModel && questionModel.volumes.isCheck) {
@@ -314,33 +339,43 @@ class MainPageController extends GetController<MainPageModel> {
         onChange(questionType, index, isSkip: false, score: score);
 
         if (text != score) {
-          textEditingController.text = score.toString();
-          textEditingController.selection = TextSelection(
-            baseOffset: score.toString().length,
-            extentOffset: score.toString().length,
-          );
+          if (score > 0) {
+            textEditingController.text = score.toString();
+            textEditingController.selection = TextSelection(
+              baseOffset: score.toString().length,
+              extentOffset: score.toString().length,
+            );
+          } else {
+            textEditingController.clear();
+          }
         }
       } else if (!isSkip.value && questionModel.score > 0) {
         // 이전, 다음 스텝으로 진행했을 때
-        textEditingController.text = questionModel.score.toStringAsFixed(0);
+        if (textEditingController.value.text.isset) {
+          textEditingController.text = questionModel.score.toStringAsFixed(0);
 
-        final length = questionModel.score.toString().length;
-        if (length > 0 && !questionModel.isSkip) {
-          textEditingController.selection = TextSelection(
-            baseOffset: length,
-            extentOffset: length,
-          );
+          final length = questionModel.score.toString().length;
+          if (length > 0 && !questionModel.isSkip) {
+            textEditingController.selection = TextSelection(
+              baseOffset: length,
+              extentOffset: length,
+            );
+          }
         }
+      } else {
+        textEditingController.clear();
       }
     } else {
       textEditingController.clear();
     }
   }
 
-  void onPressedState(PlayerState state) async {
+  void onPressedState(bool isIgnore, PlayerState state) async {
     if (!isLoad.value) {
       if (state == PlayerState.playing) {
-        await audioPlayer.pause();
+        if (!isIgnore) {
+          await audioPlayer.pause();
+        }
       } else if (state == PlayerState.paused) {
         await audioPlayer.resume();
       } else {
@@ -364,13 +399,10 @@ class MainPageController extends GetController<MainPageModel> {
     }
   }
 
-  StepIdentifier onCheck(int start, int end) {
+  StepIdentifier onCheck(QuestionType type, int start, int end) {
     final questionType = this.questionType.value;
-    final questions = state.questions[questionType].elvis;
-    final scores = questions.map((x) => x.score);
 
-    // TODO 신뢰도 체크 실패 시 값 초기화
-    if (scores.any((x) => x != 0)) {
+    if (questionType == type) {
       Get.snackbar(
         '알림',
         '내용',
@@ -382,5 +414,22 @@ class MainPageController extends GetController<MainPageModel> {
     }
 
     return StepIdentifier(id: end.toString());
+  }
+
+  void onPlay(QuestionType questionType, int index) async {
+    final question = state.questions[questionType].elvis.elementAt(index);
+    final assetSource = audioPlayer.source as AssetSource;
+
+    if (assetSource.path == question.file) {
+      await audioPlayer.stop();
+    } else {
+      await audioPlayer.stop();
+
+      if (question.file.isset) {
+        await audioPlayer.setSource(AssetSource(question.file));
+        await audioPlayer.seek(Duration.zero);
+        await audioPlayer.resume();
+      }
+    }
   }
 }

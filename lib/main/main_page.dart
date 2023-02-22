@@ -1,5 +1,3 @@
-import 'dart:html' as html;
-import 'dart:js';
 import 'dart:math';
 
 import 'package:audioplayers/audioplayers.dart';
@@ -22,9 +20,9 @@ class MainPage extends GetView<MainPageController> {
   static StepIdentifier ageIdentifier = StepIdentifier(id: 'age');
   static StepIdentifier prequestionIdentifier = StepIdentifier(id: 'prequestion');
 
-  static int q2Index = 7;
-  static int q3Index = 13;
-  static int q4Index = 19;
+  static int q2Index = 8;
+  static int q3Index = 15;
+  static int q4Index = 22;
 
   static StepIdentifier q2Identifier = StepIdentifier(id: q2Index.toString());
   static StepIdentifier q3Identifier = StepIdentifier(id: q3Index.toString());
@@ -250,7 +248,7 @@ class MainPage extends GetView<MainPageController> {
                       ),
                       controller.playerState.rx((rx) {
                         return InkWell(
-                          onTap: () => controller.onPressedState(rx.value),
+                          onTap: () => controller.onPressedState(false, rx.value),
                           child: Icon(
                             rx.value == PlayerState.playing ? Icons.pause_circle_outline : Icons.play_circle_outline,
                             size: 48,
@@ -285,6 +283,36 @@ class MainPage extends GetView<MainPageController> {
         ),
       ),
       buttonText: '다음으로',
+    );
+  }
+
+  QuestionStep getWarmingUpStep(QuestionType questionType, Iterable<int> index) {
+    return QuestionStep(
+      stepIdentifier: StepIdentifier(id: 'warmingUp-${questionType.name}'),
+      title: '제목',
+      isOptional: false,
+      answerFormat: SingleChoiceAnswerFormat(
+        textChoices: [
+          ...index.toList().asMap().entries.map((x) => TextChoice(
+                text: '${x.key + 1}번',
+                value: '${x.key + 1}',
+                child: InkWell(
+                  onTap: () => controller.onPlay(questionType, x.value),
+                  child: controller.rx((state) {
+                    return controller.playerState.rx((rx) {
+                      final question = state.questions[questionType].elvis.elementAt(x.value);
+                      final assetSource = controller.audioPlayer.source as AssetSource;
+
+                      return Icon(
+                        rx.value == PlayerState.playing && assetSource.path == question.file ? Icons.pause_circle_outline : Icons.play_circle_outline,
+                        size: 48,
+                      );
+                    });
+                  }),
+                ),
+              )),
+        ],
+      ),
     );
   }
 
@@ -333,8 +361,6 @@ class MainPage extends GetView<MainPageController> {
   }
 
   QuestionStep getMainStep(int index) {
-    Get.log('index: $index');
-
     return QuestionStep(
       stepIdentifier: StepIdentifier(id: '$index'),
       content: ConstrainedBox(
@@ -392,10 +418,11 @@ class MainPage extends GetView<MainPageController> {
                               ? CircularProgressIndicator()
                               : controller.playerState.rx((rx) {
                                   return InkWell(
-                                    onTap: () => controller.onPressedState(rx.value),
+                                    onTap: () => controller.onPressedState(true, rx.value),
                                     child: Icon(
-                                      rx.value == PlayerState.playing ? Icons.pause_circle_outline : Icons.play_circle_outline,
+                                      Icons.play_circle_outline,
                                       size: 48,
+                                      color: rx.value == PlayerState.playing ? Colors.grey : null,
                                     ),
                                   );
                                 })),
@@ -447,13 +474,16 @@ class MainPage extends GetView<MainPageController> {
                     ),
                     controller.questionType.rx(
                       (rxKey) {
+                        if (rxKey.value == QuestionType.complete) {
+                          return const SizedBox.shrink();
+                        }
+
                         final questions = state.questions[rxKey.value];
                         final maxSliderScore = state.questions.values.map((x) => x.map((y) => y.maxSliderScore).reduce(max)).reduce(max);
 
                         return controller.index.rx(
                           (rxValue) {
                             final question = questions[rxValue.value]!;
-                            Get.log('question: ${question}');
 
                             return FractionallySizedBox(
                               widthFactor: (question.maxSliderScore + ((maxSliderScore - question.maxSliderScore) * 0.15)) / maxSliderScore,
@@ -523,6 +553,183 @@ class MainPage extends GetView<MainPageController> {
     );
   }
 
+  QuestionStep getCompleteStep(int index) {
+    Get.log('getCompleteStep index: $index');
+
+    return QuestionStep(
+      stepIdentifier: StepIdentifier(id: 'complete-$index'),
+      content: ConstrainedBox(
+        constraints: BoxConstraints.tightFor(width: 500),
+        child: Column(
+          children: [
+            controller.rx((state) {
+              Get.log('getCompleteStep state: $state');
+
+              final keyIndex = state.questions.keys.skip(1).toList().indexOf(QuestionType.complete);
+              final currentLength = state.questions.values.skip(1).take(keyIndex).map((x) => x.length).fold<int>(0, (a, c) => a + c);
+              final totalLength = state.questions.values.skip(1).map((x) => x.length).fold<int>(0, (a, c) => a + c);
+
+              return Text(
+                '신뢰도 체크 ${index + 1}번문항.(${currentLength + index + 1}/$totalLength)\n지금 들려주는 화음을 듣고 점수를 매겨주세요\n지정된 만점보다 더 큰 점수를 주고 싶으실 경우\n직접 숫자를 입력해주세요.',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.black,
+                ),
+                textAlign: TextAlign.center,
+              );
+            }),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    width: 2,
+                    color: Colors.black,
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            '재생',
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.black,
+                            ),
+                          ),
+                          controller.isLoad.rx((rxBool) => rxBool.value
+                              ? CircularProgressIndicator()
+                              : controller.playerState.rx((rx) {
+                                  return InkWell(
+                                    onTap: () => controller.onPressedState(true, rx.value),
+                                    child: Icon(
+                                      Icons.play_circle_outline,
+                                      size: 48,
+                                      color: rx.value == PlayerState.playing ? Colors.grey : null,
+                                    ),
+                                  );
+                                })),
+                          Text(
+                            '볼륨조절',
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.black,
+                            ),
+                          ),
+                          Icon(
+                            Icons.volume_up_rounded,
+                            size: 48,
+                          ),
+                        ],
+                      ),
+                      Text(
+                        '아이폰, 아이패드 사용자는\n'
+                        '볼륨 버튼을 이용해 조절해주세요',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.black,
+                        ),
+                      ),
+                      controller.volume.rx((rx) {
+                        return Slider(
+                          onChanged: controller.onChangedVolume,
+                          min: 0,
+                          max: 1,
+                          value: rx.value,
+                        ); // score
+                      }),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            controller.rx(
+              (state) {
+                final questions = state.questions[QuestionType.complete];
+                Get.log('questions: ${questions}');
+                final maxSliderScore = state.questions.values.map((x) => x.map((y) => y.maxSliderScore).reduce(max)).reduce(max);
+                final question = questions[index];
+                Get.log('question: ${question}');
+
+                return Column(
+                  children: [
+                    Text(
+                      '불협화도 점수',
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.black,
+                      ),
+                    ),
+                    FractionallySizedBox(
+                      widthFactor: ((question?.maxSliderScore).elvis + ((maxSliderScore - (question?.maxSliderScore).elvis) * 0.15)) / maxSliderScore,
+                      child: Column(
+                        children: [
+                          controller.isSkip.rx((rx) {
+                            return Slider(
+                              onChanged: (value) => rx.value ? null : controller.onChangedScore(QuestionType.complete, index, value),
+                              min: 0,
+                              max: (question?.maxSliderScore).elvis,
+                              value: rx.value ? 0 : (question?.sliderScore).elvis,
+                            );
+                          }),
+                          Row(
+                            children: [
+                              SizedBox(
+                                width: 18.0,
+                              ),
+                              Text(
+                                '0',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              Spacer(),
+                              SizedBox(width: (question?.maxSliderScore).elvis > 0 ? ((question?.maxSliderScore).elvis - 20) / 6 : 0),
+                              Text(
+                                '${(question?.maxSliderScore).elvis / 2}',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              Spacer(),
+                              Text(
+                                '${question?.maxSliderScore.elvis}',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              SizedBox(
+                                width: 12.0,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+      answerFormat: DoubleAnswerFormat(
+        controller: controller.textEditingController,
+        isSkip: controller.isSkip,
+        isPlay: controller.isPlay,
+      ),
+    );
+  }
+
   CompletionStep getComplete() {
     return CompletionStep(
         title: '모든 설문이 끝났습니다.',
@@ -540,19 +747,23 @@ class MainPage extends GetView<MainPageController> {
         getAgeStep(),
         getPrequestionStep(),
         getVolume(),
+        getWarmingUpStep(QuestionType.hs1q2, [0, 1]),
+        getWarmingUpStep(QuestionType.hs1q3, [0, 1, 2]),
+        getWarmingUpStep(QuestionType.hs1q4, [0, 1, 2, 3]),
         getTutirial(),
-        ...Iterable.generate(6, (i) => getMainStep(i)),
+        ...Iterable.generate(q4Index + 1, (i) => getMainStep(i)),
+        ...Iterable.generate(3, (i) => getCompleteStep(i)),
         getComplete(),
       ],
       navigationRules: {
         q2Identifier: ConditionalNavigationRule(
-          resultToStepIdentifierMapper: (_) => controller.onCheck(0, q2Index + 1),
+          resultToStepIdentifierMapper: (_) => controller.onCheck(QuestionType.hs1q2, 0, q2Index + 1),
         ),
         q3Identifier: ConditionalNavigationRule(
-          resultToStepIdentifierMapper: (_) => controller.onCheck(q2Index + 1, q3Index + 1),
+          resultToStepIdentifierMapper: (_) => controller.onCheck(QuestionType.hs1q3, q2Index + 1, q3Index + 1),
         ),
         q4Identifier: ConditionalNavigationRule(
-          resultToStepIdentifierMapper: (_) => controller.onCheck(q3Index + 1, q4Index + 1),
+          resultToStepIdentifierMapper: (_) => controller.onCheck(QuestionType.hs1q4, q3Index + 1, q4Index + 1),
         ),
       },
     );
