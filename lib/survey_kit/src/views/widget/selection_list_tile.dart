@@ -25,19 +25,31 @@ class SelectionListTile extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 14.0),
           child: ListTile(
             contentPadding: EdgeInsets.only(left: 40),
-            title: Text(
-              text,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.headline5?.copyWith(
-                    color: isSelected ? Theme.of(context).primaryColor : Theme.of(context).textTheme.headline5?.color,
+            title: Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    text,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.headline5?.copyWith(
+                          color: isSelected
+                              ? Theme.of(context).primaryColor
+                              : Theme.of(context).textTheme.headline5?.color,
+                        ),
                   ),
+                  child,
+                ],
+              ),
             ),
-            leading: child,
             trailing: isSelected
                 ? Icon(
                     Icons.check,
                     size: 32,
-                    color: isSelected ? Theme.of(context).primaryColor : Colors.black,
+                    color: isSelected
+                        ? Theme.of(context).primaryColor
+                        : Colors.black,
                   )
                 : Container(
                     width: 32,
