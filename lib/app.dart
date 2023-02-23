@@ -25,3 +25,11 @@ class App extends StatelessWidget {
     );
   }
 }
+
+/*
+DI(Dependency Injection)
+
+의존성 주입
+
+int index = 0;
+*/

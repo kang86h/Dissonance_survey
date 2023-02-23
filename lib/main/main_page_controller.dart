@@ -119,12 +119,14 @@ class MainPageController extends GetController<MainPageModel> {
     if (event == StepEvent.next) {
       if (index < state.questions[questionType].elvis.length - 1) {
         index = index + 1;
-      } else if (questionType != QuestionType.complete){
+      } else if (questionType != QuestionType.complete) {
         final questions = state.questions[questionType].elvis;
         final scores = questions.map((x) => x.score);
         final avg = scores.fold<double>(0, (a, c) => a + c) ~/ scores.length;
         final acc = (questions.firstOrNull?.maxSliderScore).elvis ~/ 10;
+        // 각 문항별 신뢰도 체크
         if (scores.any((x) => x > avg + acc || x < avg - acc) || keyIndex == 0) {
+          // 다음 퀘스천 타입으로 넘어갈 수 있을 때
           if (keyIndex < state.questions.keys.length - 1) {
             questionType = state.questions.keys.elementAt(keyIndex + 1);
           } else {
@@ -220,7 +222,72 @@ class MainPageController extends GetController<MainPageModel> {
     }
   }
 
+  int getCount(QuestionType questionType, int questionId) {
+    Get.log('');
+    Get.log('getCount questionType: $questionType questionId: $questionId');
+    final questions = state.questions[questionType].elvis.where((x) => x.isWarmingUpCheck);
+    Get.log('getCount questions: $questions');
+    final choice = questions.where((x) => x.id == questionId).first;
+    Get.log('getCount choice: $choice');
+    final ret =
+        questions.where((x) => x.id != choice.id && (questionType == QuestionType.hs1q3 ? x.score > choice.score : x.score < choice.score)).length;
+    Get.log('getCount ret: $ret');
+    Get.log('');
+
+    return ret;
+  }
+
+  Iterable<double> getDeviation(QuestionType questionType) {
+    Get.log('');
+    Get.log('getDeviation questionType: $questionType');
+    final complete = state.questions[QuestionType.complete].elvis.where((x) => x.file.contains(questionType.name.toUpperCase())).first;
+    Get.log('getDeviation complete: $complete');
+    final questions = state.questions[questionType].elvis.where((x) => x.id == complete.id);
+    Get.log('getDeviation questions: $questions');
+    final scores = [complete, ...questions].map((x) => x.score).toList()..sort();
+    Get.log('getDeviation scores: $scores');
+    final ret = [scores[1] - scores[0], scores[1] - scores[2]];
+    Get.log('getDeviation ret: $ret');
+    Get.log('');
+
+    return ret;
+  }
+
   void onResult(SurveyResult surveyResult) async {
+    final count = [QuestionType.hs1q2, QuestionType.hs1q3, QuestionType.hs1q4].map((x) => getCount(
+        x,
+        int.tryParse((surveyResult.results.where((y) => y.id?.id == 'warmingUp-${x.name}').firstOrNull?.results.firstOrNull?.valueIdentifier).elvis)
+            .elvis));
+    Get.log('count: $count');
+    final q2Percent = count[0].elvis / 1;
+    Get.log('q2Percent: $q2Percent');
+    final q3Percent = count[1].elvis / 2;
+    Get.log('q3Percent: $q3Percent');
+    final q4Percent = count[2].elvis / 3;
+    Get.log('q4Percent: $q4Percent');
+    final isWarmingUpCheck = count.fold<int>(0, (a, c) => a + c) >= 5;
+    Get.log('isWarmingUpCheck: $isWarmingUpCheck');
+
+    final q2Deviation = getDeviation(QuestionType.hs1q2);
+    Get.log('q2Deviation: $q2Deviation');
+    final q3Deviation = getDeviation(QuestionType.hs1q3);
+    Get.log('q3Deviation: $q3Deviation');
+    final q4Deviation = getDeviation(QuestionType.hs1q4);
+    Get.log('q4Deviation: $q4Deviation');
+
+    final q2Length = q2Deviation.map((x) => x.abs()).where((x) => x < state.questions[QuestionType.hs1q2].elvis.first.maxSliderScore * 3 / 10).length;
+    Get.log('q2Length: $q2Length');
+    final q3Length = q3Deviation.map((x) => x.abs()).where((x) => x < state.questions[QuestionType.hs1q3].elvis.first.maxSliderScore * 3 / 10).length;
+    Get.log('q3Length: $q3Length');
+    final q4Length = q4Deviation.map((x) => x.abs()).where((x) => x < state.questions[QuestionType.hs1q4].elvis.first.maxSliderScore * 3 / 10).length;
+    Get.log('q4Length: $q4Length');
+    final isMiddleCheck = q2Length + q3Length + q4Length >= 5;
+    Get.log('isMiddleCheck: $isMiddleCheck');
+
+    final complete = state.questions[QuestionType.complete].elvis;
+    final q2Complete = complete.where((x) => x.file.contains(QuestionType.hs1q2.name.toUpperCase())).first;
+    final q2Questions = state.questions[QuestionType.hs1q2].elvis.where((x) => x.id == q2Complete.id);
+
     final gender = surveyResult.results.where((x) => x.id == MainPage.genderIdentifier).firstOrNull?.results.firstOrNull?.valueIdentifier ?? '';
     final age = surveyResult.results.where((x) => x.id == MainPage.ageIdentifier).firstOrNull?.results.firstOrNull?.valueIdentifier ?? '';
     final prequestion =
@@ -249,7 +316,7 @@ class MainPageController extends GetController<MainPageModel> {
       'createdAt': DateTime.now(),
     });
 
-    Get.toNamed('/complete');
+    await Get.toNamed('/complete');
 
     //html.window.open('https://naver.com', '_self');
   }
@@ -416,19 +483,25 @@ class MainPageController extends GetController<MainPageModel> {
     return StepIdentifier(id: end.toString());
   }
 
-  void onPlay(QuestionType questionType, int index) async {
-    final question = state.questions[questionType].elvis.elementAt(index);
-    final assetSource = audioPlayer.source as AssetSource;
+  void onPlay(QuestionType questionType, int id) async {
+    final question = state.questions[questionType].elvis.where((x) => x.id == id).firstOrNull;
+    final source = audioPlayer.source;
 
-    if (assetSource.path == question.file) {
-      await audioPlayer.stop();
-    } else {
-      await audioPlayer.stop();
+    if (question is QuestionModel) {
+      if (source is AssetSource && source.path == question.file) {
+        if (playerState.value == PlayerState.playing) {
+          await audioPlayer.stop();
+        } else {
+          await audioPlayer.resume();
+        }
+      } else {
+        await audioPlayer.stop();
 
-      if (question.file.isset) {
-        await audioPlayer.setSource(AssetSource(question.file));
-        await audioPlayer.seek(Duration.zero);
-        await audioPlayer.resume();
+        if (question.file.isset) {
+          await audioPlayer.setSource(AssetSource(question.file));
+          await audioPlayer.seek(Duration.zero);
+          await audioPlayer.resume();
+        }
       }
     }
   }

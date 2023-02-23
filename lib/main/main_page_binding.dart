@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:get/get.dart';
+import 'package:surveykit_example/main/main_page.dart';
 
 import 'main_page_controller.dart';
 import 'main_page_model.dart';
@@ -29,6 +30,7 @@ class MainPageBinding extends Bindings {
               maxSliderScore: 60,
               maxTextScore: 1000,
               isRecord: true,
+              isWarmingUpCheck: MainPage.q2WarmingUpCheckIndex.contains(i),
             ),
           );
           if (questionType.isRandom) {
@@ -58,6 +60,7 @@ class MainPageBinding extends Bindings {
               maxSliderScore: 100,
               maxTextScore: 1000,
               isRecord: true,
+              isWarmingUpCheck: MainPage.q3WarmingUpCheckIndex.contains(i),
             ),
           );
           if (questionType.isRandom) {
@@ -87,6 +90,7 @@ class MainPageBinding extends Bindings {
               maxSliderScore: 140,
               maxTextScore: 1000,
               isRecord: true,
+              isWarmingUpCheck: MainPage.q4WarmingUpCheckIndex.contains(i),
             ),
           );
           if (questionType.isRandom) {
