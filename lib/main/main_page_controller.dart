@@ -119,7 +119,7 @@ class MainPageController extends GetController<MainPageModel> {
     if (event == StepEvent.next) {
       if (index < state.questions[questionType].elvis.length - 1) {
         index = index + 1;
-      } else if (questionType != QuestionType.complete) {
+      } else if (questionType != QuestionType.check) {
         final questions = state.questions[questionType].elvis;
         final scores = questions.map((x) => x.score);
         final avg = scores.fold<double>(0, (a, c) => a + c) ~/ scores.length;
@@ -130,7 +130,7 @@ class MainPageController extends GetController<MainPageModel> {
           if (keyIndex < state.questions.keys.length - 1) {
             questionType = state.questions.keys.elementAt(keyIndex + 1);
           } else {
-            questionType = QuestionType.complete;
+            questionType = QuestionType.check;
           }
         } else {
           isReset = true;
@@ -145,7 +145,7 @@ class MainPageController extends GetController<MainPageModel> {
     }
 
     this.index.value = index;
-    disabled = index == 0 || questionType == QuestionType.complete;
+    disabled = index == 0 || questionType == QuestionType.check;
     this.questionType.value = questionType;
 
     final videoEndedAt = state.videoStartedAt.millisecondsSinceEpoch != defaultDateTime.millisecondsSinceEpoch &&
@@ -222,10 +222,10 @@ class MainPageController extends GetController<MainPageModel> {
     }
   }
 
-  int getCount(QuestionType questionType, int questionId) {
+  int getWarmUpCount(QuestionType questionType, int questionId) {
     Get.log('');
     Get.log('getCount questionType: $questionType questionId: $questionId');
-    final questions = state.questions[questionType].elvis.where((x) => x.isWarmingUpCheck);
+    final questions = state.questions[questionType].elvis.where((x) => x.isWarmUpCheck);
     Get.log('getCount questions: $questions');
     final choice = questions.where((x) => x.id == questionId).first;
     Get.log('getCount choice: $choice');
@@ -240,23 +240,23 @@ class MainPageController extends GetController<MainPageModel> {
   Iterable<double> getDeviation(QuestionType questionType) {
     Get.log('');
     Get.log('getDeviation questionType: $questionType');
-    final complete = state.questions[QuestionType.complete].elvis.where((x) => x.file.contains(questionType.name.toUpperCase())).first;
+    final complete = state.questions[QuestionType.check].elvis.where((x) => x.file.contains(questionType.name.toUpperCase())).first;
     Get.log('getDeviation complete: $complete');
     final questions = state.questions[questionType].elvis.where((x) => x.id == complete.id);
     Get.log('getDeviation questions: $questions');
     final scores = [complete, ...questions].map((x) => x.score).toList()..sort();
     Get.log('getDeviation scores: $scores');
-    final ret = [scores[1] - scores[0], scores[1] - scores[2]];
+    final ret = [scores[2] - scores[1], scores[0] - scores[1]];
     Get.log('getDeviation ret: $ret');
     Get.log('');
 
     return ret;
   }
 
-  void onResult(SurveyResult surveyResult) async {
-    final count = [QuestionType.hs1q2, QuestionType.hs1q3, QuestionType.hs1q4].map((x) => getCount(
+  Future<List> onSuitability(SurveyResult surveyResult) async {
+    final count = [QuestionType.hs1q2, QuestionType.hs1q3, QuestionType.hs1q4].map((x) => getWarmUpCount(
         x,
-        int.tryParse((surveyResult.results.where((y) => y.id?.id == 'warmingUp-${x.name}').firstOrNull?.results.firstOrNull?.valueIdentifier).elvis)
+        int.tryParse((surveyResult.results.where((y) => y.id?.id == 'warmUp-${x.name}').firstOrNull?.results.firstOrNull?.valueIdentifier).elvis)
             .elvis));
     Get.log('count: $count');
     final q2Percent = count[0].elvis / 1;
@@ -265,8 +265,8 @@ class MainPageController extends GetController<MainPageModel> {
     Get.log('q3Percent: $q3Percent');
     final q4Percent = count[2].elvis / 3;
     Get.log('q4Percent: $q4Percent');
-    final isWarmingUpCheck = count.fold<int>(0, (a, c) => a + c) >= 5;
-    Get.log('isWarmingUpCheck: $isWarmingUpCheck');
+    final iswarmUpCheck = count.fold<int>(0, (a, c) => a + c) >= 5;
+    Get.log('iswarmUpCheck: $iswarmUpCheck');
 
     final q2Deviation = getDeviation(QuestionType.hs1q2);
     Get.log('q2Deviation: $q2Deviation');
@@ -284,10 +284,17 @@ class MainPageController extends GetController<MainPageModel> {
     final isMiddleCheck = q2Length + q3Length + q4Length >= 5;
     Get.log('isMiddleCheck: $isMiddleCheck');
 
-    final complete = state.questions[QuestionType.complete].elvis;
+    final complete = state.questions[QuestionType.check].elvis;
     final q2Complete = complete.where((x) => x.file.contains(QuestionType.hs1q2.name.toUpperCase())).first;
+    final q3Complete = complete.where((x) => x.file.contains(QuestionType.hs1q3.name.toUpperCase())).first;
+    final q4Complete = complete.where((x) => x.file.contains(QuestionType.hs1q4.name.toUpperCase())).first;
     final q2Questions = state.questions[QuestionType.hs1q2].elvis.where((x) => x.id == q2Complete.id);
-
+    final q3Questions = state.questions[QuestionType.hs1q3].elvis.where((x) => x.id == q3Complete.id);
+    final q4Questions = state.questions[QuestionType.hs1q4].elvis.where((x) => x.id == q4Complete.id);
+    return [q2Questions, q3Questions, q4Questions];
+  }
+  
+  void onResult(SurveyResult surveyResult) async {
     final gender = surveyResult.results.where((x) => x.id == MainPage.genderIdentifier).firstOrNull?.results.firstOrNull?.valueIdentifier ?? '';
     final age = surveyResult.results.where((x) => x.id == MainPage.ageIdentifier).firstOrNull?.results.firstOrNull?.valueIdentifier ?? '';
     final prequestion =
@@ -471,8 +478,8 @@ class MainPageController extends GetController<MainPageModel> {
 
     if (questionType == type) {
       Get.snackbar(
-        '알림',
-        '내용',
+        '아무렇게나 점수를 주시면 설문조사의 의미가 없습니다',
+        '처음부터 다시 테스트를 시작합니다',
         duration: const Duration(seconds: 5),
       );
       disabled = true;

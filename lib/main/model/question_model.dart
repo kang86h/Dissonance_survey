@@ -15,7 +15,7 @@ class QuestionModel extends GetModel {
     required this.volumes,
     required this.isAutoPlay,
     required this.isRecord,
-    required this.isWarmingUpCheck,
+    required this.isWarmUpCheck,
     required this.isMiddleCheck,
     required this.startedAt,
     required this.endedAt,
@@ -32,7 +32,7 @@ class QuestionModel extends GetModel {
   final Iterable<double> volumes;
   final bool isAutoPlay;
   final bool isRecord;
-  final bool isWarmingUpCheck;
+  final bool isWarmUpCheck;
   final bool isMiddleCheck;
   final Iterable<DateTime> startedAt;
   final Iterable<DateTime> endedAt;
@@ -43,8 +43,9 @@ class QuestionModel extends GetModel {
 
   int get getTotalMilliseconds {
     final length = min(startedAt.length, endedAt.length);
-    final total =
-        Iterable.generate(length, (i) => endedAt.elementAt(i).difference(startedAt.elementAt(i))).fold<Duration>(Duration.zero, (a, c) => a + c);
+    final total = Iterable.generate(length,
+            (i) => endedAt.elementAt(i).difference(startedAt.elementAt(i)))
+        .fold<Duration>(Duration.zero, (a, c) => a + c);
     return total.inMilliseconds;
   }
 
@@ -58,7 +59,7 @@ class QuestionModel extends GetModel {
     volumes: const [],
     isAutoPlay: false,
     isRecord: false,
-    isWarmingUpCheck: false,
+    isWarmUpCheck: false,
     isMiddleCheck: false,
     startedAt: const [],
     endedAt: const [],
@@ -84,7 +85,8 @@ class QuestionModel extends GetModel {
   @override
   bool get isEmpty => this == _empty;
 
-  String get header => file.split('/').lastOrNull.elvis.split('.').firstOrNull.elvis;
+  String get header =>
+      file.split('/').lastOrNull.elvis.split('.').firstOrNull.elvis;
 
   @override
   QuestionModel copyWith({
@@ -97,7 +99,7 @@ class QuestionModel extends GetModel {
     Iterable<double>? volumes,
     bool? isAutoPlay,
     bool? isRecord,
-    bool? isWarmingUpCheck,
+    bool? iswarmUpCheck,
     bool? isMiddleCheck,
     Iterable<DateTime>? startedAt,
     Iterable<DateTime>? endedAt,
@@ -114,7 +116,7 @@ class QuestionModel extends GetModel {
       volumes: volumes ?? this.volumes,
       isAutoPlay: isAutoPlay ?? this.isAutoPlay,
       isRecord: isRecord ?? this.isRecord,
-      isWarmingUpCheck: isWarmingUpCheck ?? this.isWarmingUpCheck,
+      isWarmUpCheck: iswarmUpCheck ?? this.isWarmUpCheck,
       isMiddleCheck: isMiddleCheck ?? this.isMiddleCheck,
       startedAt: startedAt ?? this.startedAt,
       endedAt: endedAt ?? this.endedAt,
@@ -134,7 +136,7 @@ class QuestionModel extends GetModel {
         volumes,
         isAutoPlay,
         isRecord,
-        isWarmingUpCheck,
+        isWarmUpCheck,
         isMiddleCheck,
         startedAt,
         endedAt,
@@ -154,17 +156,20 @@ class QuestionModel extends GetModel {
         file: map['file'],
         score: double.tryParse(map['score'].toString()) ?? 0.0,
         volumes: [
-          ...Iterable.castFrom(map['volumes'] ?? []).map((x) => double.tryParse(x.toString()) ?? 0.0),
+          ...Iterable.castFrom(map['volumes'] ?? [])
+              .map((x) => double.tryParse(x.toString()) ?? 0.0),
         ],
-        totalMilliseconds: int.tryParse(map['total_milliseconds'].toString()) ?? 0,
+        totalMilliseconds:
+            int.tryParse(map['total_milliseconds'].toString()) ?? 0,
       );
 
   /*
   @override
   String toString() =>
-      'id: $id file: $file score: $score isSkip: $isSkip maxSliderScore: $maxSliderScore maxTextScore: $maxTextScore volumes: $volumes isAutoPlay: $isAutoPlay isRecord: $isRecord isWarmingUpCheck: $isWarmingUpCheck isMiddleCheck: $isMiddleCheck startedAt: $startedAt endedAt: $endedAt totalMilliseconds: $totalMilliseconds prequestion: $prequestion';
+      'id: $id file: $file score: $score isSkip: $isSkip maxSliderScore: $maxSliderScore maxTextScore: $maxTextScore volumes: $volumes isAutoPlay: $isAutoPlay isRecord: $isRecord iswarmUpCheck: $iswarmUpCheck isMiddleCheck: $isMiddleCheck startedAt: $startedAt endedAt: $endedAt totalMilliseconds: $totalMilliseconds prequestion: $prequestion';
   */
 
   @override
-  String toString() => 'id: $id file: $file score: $score isWarmingUpCheck: $isWarmingUpCheck isMiddleCheck: $isMiddleCheck';
+  String toString() =>
+      'id: $id file: $file score: $score isWarmUpCheck: $isWarmUpCheck isMiddleCheck: $isMiddleCheck';
 }

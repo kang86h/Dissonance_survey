@@ -30,7 +30,7 @@ class MainPageBinding extends Bindings {
               maxSliderScore: 60,
               maxTextScore: 1000,
               isRecord: true,
-              isWarmingUpCheck: MainPage.q2WarmingUpCheckIndex.contains(i),
+              iswarmUpCheck: MainPage.q2WarmUpCheckIndex.contains(i),
             ),
           );
           if (questionType.isRandom) {
@@ -60,7 +60,7 @@ class MainPageBinding extends Bindings {
               maxSliderScore: 100,
               maxTextScore: 1000,
               isRecord: true,
-              isWarmingUpCheck: MainPage.q3WarmingUpCheckIndex.contains(i),
+              iswarmUpCheck: MainPage.q3WarmUpCheckIndex.contains(i),
             ),
           );
           if (questionType.isRandom) {
@@ -90,7 +90,7 @@ class MainPageBinding extends Bindings {
               maxSliderScore: 140,
               maxTextScore: 1000,
               isRecord: true,
-              isWarmingUpCheck: MainPage.q4WarmingUpCheckIndex.contains(i),
+              iswarmUpCheck: MainPage.q4WarmUpCheckIndex.contains(i),
             ),
           );
           if (questionType.isRandom) {
@@ -116,12 +116,16 @@ class MainPageBinding extends Bindings {
         model: MainPageModel.empty().copyWith(
           questions: {
             ...questions,
-            QuestionType.complete: [
+            QuestionType.check: [
               ...questions.values.expand((x) => x).where((x) => x.isMiddleCheck),
             ],
+            QuestionType.complete:[
+              ...List.generate(2, (_) => QuestionModel.empty()),
+            ]
           },
         ),
       );
+      
     })());
   }
 }
