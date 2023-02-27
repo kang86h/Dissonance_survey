@@ -409,7 +409,7 @@ class MainPageController extends GetController<MainPageModel> {
     if (questionType == type) {
       Get.snackbar(
         '아무렇게나 점수를 주시면 설문조사의 의미가 없습니다',
-        '처음부터 다시 테스트를 시작합니다',
+        '이 단계의 처음부터 다시 테스트를 시작합니다',
         duration: const Duration(seconds: 5),
       );
       disabled = true;
@@ -419,6 +419,15 @@ class MainPageController extends GetController<MainPageModel> {
 
     return StepIdentifier(id: end.toString());
   }
+
+  StepIdentifier onComplete() {
+    if (state.isReliability && state.isConsistency) {
+      return StepIdentifier(id: 'succeed');
+    }
+
+    return StepIdentifier(id: 'failed');
+  }
+
 
   void onPlay(QuestionType questionType, int id) async {
     final question = state.questions[questionType].elvis.where((x) => x.id == id).firstOrNull;
@@ -442,12 +451,5 @@ class MainPageController extends GetController<MainPageModel> {
       }
     }
   }
-
-  StepIdentifier onComplete() {
-    if (state.isReliability && state.isConsistency) {
-      return StepIdentifier(id: 'complete');
-    }
-
-    return StepIdentifier(id: 'failed');
-  }
 }
+

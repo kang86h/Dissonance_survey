@@ -51,7 +51,7 @@ extension IterableOptionalEx<T> on Iterable<T>? {
 
   bool get isset => !isNullOrEmpty;
 
-  // bool get isCheck => length > 2;
+  //bool get isCheck => elvis.length > 2; //최소 재생횟수 설정
   bool get isCheck => true;
 }
 

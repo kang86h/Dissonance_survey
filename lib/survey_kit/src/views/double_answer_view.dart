@@ -92,7 +92,7 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Row(
+                    /*Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -110,7 +110,7 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
                         ),
                         Text('평가할 수 없음'),
                       ],
-                    ),
+                    ),*/
                     TextField(
                       decoration: textFieldInputDecoration(
                         hint: _doubleAnswerFormat.hint,

@@ -7,6 +7,7 @@ class SelectionListTile extends StatelessWidget {
   final bool isSelected;
   final TextEditingController? controller;
   final Widget child;
+  final Widget icon;
 
   const SelectionListTile({
     Key? key,
@@ -15,6 +16,7 @@ class SelectionListTile extends StatelessWidget {
     this.isSelected = false,
     this.controller,
     this.child = const SizedBox.shrink(),
+    this.icon = const Icon(Icons.check),
   }) : super(key: key);
 
   @override
@@ -33,26 +35,32 @@ class SelectionListTile extends StatelessWidget {
                   text,
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.headline5?.copyWith(
-                    color: isSelected
-                        ? Theme.of(context).primaryColor
-                        : Theme.of(context).textTheme.headline5?.color,
-                  ),
+                        color: isSelected
+                            ? Theme.of(context).primaryColor
+                            : Theme.of(context).textTheme.headline5?.color,
+                      ),
                 ),
                 child,
+                Stack(
+                  children: [
+                    Icon(
+                      Icons.check_box_outline_blank,
+                      color: isSelected
+                          ? Theme.of(context).primaryColor
+                          : Theme.of(context).textTheme.headline5?.color,
+                      size: 40,
+                    ),
+                    Icon(
+                      Icons.check_box_outlined,
+                      color: isSelected
+                          ? Theme.of(context).primaryColor
+                          : Colors.transparent,
+                      size: 40,
+                    ),
+                  ],
+                ),
               ],
             ),
-            trailing: isSelected
-                ? Icon(
-                    Icons.check,
-                    size: 32,
-                    color: isSelected
-                        ? Theme.of(context).primaryColor
-                        : Colors.black,
-                  )
-                : Container(
-                    width: 32,
-                    height: 32,
-                  ),
             onTap: () => onTap.call(),
           ),
         ),
