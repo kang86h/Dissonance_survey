@@ -17,4 +17,6 @@ extension QuestionTypeEx on QuestionType {
       '';
 
   bool get isRandom => [QuestionType.hs1q2, QuestionType.hs1q3, QuestionType.hs1q4].contains(this);
+
+  bool get isLength => isRandom || [QuestionType.check].contains(this);
 }

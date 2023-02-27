@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:surveykit_example/getx/extension.dart';
+import 'package:surveykit_example/main/main_page.dart';
+import 'package:surveykit_example/main/model/question_type.dart';
 
 import '../../survey_kit.dart';
 
@@ -24,10 +28,8 @@ class _SingleChoiceAnswerViewState extends State<SingleChoiceAnswerView> {
   @override
   void initState() {
     super.initState();
-    _singleChoiceAnswerFormat =
-        widget.questionStep.answerFormat as SingleChoiceAnswerFormat;
-    _selectedChoice =
-        widget.result?.result ?? _singleChoiceAnswerFormat.defaultSelection;
+    _singleChoiceAnswerFormat = widget.questionStep.answerFormat as SingleChoiceAnswerFormat;
+    _selectedChoice = widget.result?.result ?? _singleChoiceAnswerFormat.defaultSelection;
     _startDate = DateTime.now();
   }
 
@@ -67,23 +69,33 @@ class _SingleChoiceAnswerViewState extends State<SingleChoiceAnswerView> {
                 Divider(
                   color: Colors.cyan,
                 ),
-                ..._singleChoiceAnswerFormat.textChoices.map(
-                  (TextChoice tc) {
-                    return SelectionListTile(
-                      text: tc.text,
-                      onTap: () {
-                        if (_selectedChoice == tc) {
-                          _selectedChoice = null;
-                        } else {
-                          _selectedChoice = tc;
-                        }
-                        setState(() {});
-                      },
-                      isSelected: _selectedChoice == tc,
-                      child: tc.child,
-                    );
-                  },
-                ).toList(),
+                ..._singleChoiceAnswerFormat.textChoices
+                    .asMap()
+                    .entries
+                    .map((x) => SelectionListTile(
+                          text: x.value.text,
+                          onTap: () {
+                            final question = x.value.value.split("|").firstOrNull.elvis;
+
+                            if (question == QuestionType.hs1q2.name) {
+                              MainPage.q2WarmIndex = x.key;
+                            } else if (question == QuestionType.hs1q3.name) {
+                              MainPage.q3WarmIndex = x.key;
+                            } else if (question == QuestionType.hs1q4.name) {
+                              MainPage.q4WarmIndex = x.key;
+                            }
+
+                            if (_selectedChoice == x.value) {
+                              _selectedChoice = null;
+                            } else {
+                              _selectedChoice = x.value;
+                            }
+                            setState(() {});
+                          },
+                          isSelected: _selectedChoice == x.value,
+                          child: x.value.child,
+                        ))
+                    .toList(),
               ],
             ),
           ],
