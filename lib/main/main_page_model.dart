@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:surveykit_example/main/main_page.dart';
 import 'package:surveykit_example/main/model/question_model.dart';
 
@@ -33,20 +34,24 @@ class MainPageModel extends GetModel {
 
   int get q2ReliabilityCount {
     final current = questions[QuestionType.hs1q2].elvis.where((x) => x.isWarmUpCheck);
+    Get.log('current: $current');
     final choice = current.where((x) => x.id == MainPage.q2WarmUpCheckId[MainPage.q2WarmIndex]).first;
-    return current.where((x) => x.id != choice.id && x.score < choice.score).length;
+    Get.log('choice: $choice');
+    return current.where((x) => (x.id != choice.id) && (x.score < choice.score)).length;
   }
+
+
 
   int get q3ReliabilityCount {
     final current = questions[QuestionType.hs1q3].elvis.where((x) => x.isWarmUpCheck);
     final choice = current.where((x) => x.id == MainPage.q3WarmUpCheckId[MainPage.q3WarmIndex]).first;
-    return current.where((x) => x.id != choice.id && x.score > choice.score).length;
+    return current.where((x) => (x.id != choice.id) && (x.score > choice.score)).length;
   }
 
   int get q4ReliabilityCount {
     final current = questions[QuestionType.hs1q4].elvis.where((x) => x.isWarmUpCheck);
     final choice = current.where((x) => x.id == MainPage.q4WarmUpCheckId[MainPage.q4WarmIndex]).first;
-    return current.where((x) => x.id != choice.id && x.score < choice.score).length;
+    return current.where((x) => (x.id != choice.id) && (x.score < choice.score)).length;
   }
 
   int get totalReliabilityCount => q2ReliabilityCount + q3ReliabilityCount + q4ReliabilityCount;

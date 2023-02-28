@@ -946,21 +946,19 @@ class MainPage extends GetView<MainPageController> {
     );
   }
 
-  CompletionStep getFailed() {
-    return CompletionStep(
-      stepIdentifier: StepIdentifier(id: 'failed'),
-      title: '모든 설문이 끝났습니다.',
-      text: '실패',
-      buttonText: '참여완료',
-    );
-  }
-
   CompletionStep getComplete() {
     return CompletionStep(
-      stepIdentifier: StepIdentifier(id: 'succeed'),
+      stepIdentifier: StepIdentifier(id: 'complete'),
       title: '모든 설문이 끝났습니다.',
-      text: '참여완료 버튼을 누르시면 모든 설문이 종료됩니다.\n'
-          '모든 설문을 종료하시겠습니까?',
+      content: controller.rx((state) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14),
+          child: Text((state.isReliability && state.isConsistency)
+              ? '신뢰성 평가 결과 적합 판정\n일관성 평가 결과 적합 판정으로\n모든 테스트 결과를 신뢰할 수 있겠습니다\n설문에 참여해 주셔서 감사합니다'
+              : '신뢰성 평가 결과 ${state.isReliability ? '적합' : '부적합'} 판정\n일관성 평가 결과 ${state.isConsistency ? '적합' : '부적합'} 판정으로\n테스트 결과를 신뢰하기 어렵습니다\n유감스럽게도 보상에 불이익이 예상됩니다'),
+        );
+      }),
+      text: '',
       buttonText: '참여완료',
     );
   }
@@ -984,7 +982,6 @@ class MainPage extends GetView<MainPageController> {
         getCheckReliabilityStep(),
         getCheckConsistencyStep(),
         getComplete(),
-        getFailed(),
       ],
       navigationRules: {
         q2Identifier: ConditionalNavigationRule(
