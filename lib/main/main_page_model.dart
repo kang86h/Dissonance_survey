@@ -34,23 +34,25 @@ class MainPageModel extends GetModel {
 
   int get q2ReliabilityCount {
     final current = questions[QuestionType.hs1q2].elvis.where((x) => x.isWarmUpCheck);
-    Get.log('current: $current');
+    Get.log('current: $current.id');
     final choice = current.where((x) => x.id == MainPage.q2WarmUpCheckId[MainPage.q2WarmIndex]).first;
-    Get.log('choice: $choice');
+    Get.log('choice: $choice.id');
     return current.where((x) => (x.id != choice.id) && (x.score < choice.score)).length;
   }
 
-
-
   int get q3ReliabilityCount {
     final current = questions[QuestionType.hs1q3].elvis.where((x) => x.isWarmUpCheck);
+    Get.log('current: $current.id');
     final choice = current.where((x) => x.id == MainPage.q3WarmUpCheckId[MainPage.q3WarmIndex]).first;
+    Get.log('choice: $choice.id');
     return current.where((x) => (x.id != choice.id) && (x.score > choice.score)).length;
   }
 
   int get q4ReliabilityCount {
     final current = questions[QuestionType.hs1q4].elvis.where((x) => x.isWarmUpCheck);
+    Get.log('current: $current.id');
     final choice = current.where((x) => x.id == MainPage.q4WarmUpCheckId[MainPage.q4WarmIndex]).first;
+    Get.log('choice: $choice.id');
     return current.where((x) => (x.id != choice.id) && (x.score < choice.score)).length;
   }
 

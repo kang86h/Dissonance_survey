@@ -137,10 +137,12 @@ class MainPageController extends GetController<MainPageModel> {
         final scores = questions.map((x) => x.score);
         final avg = scores.fold<double>(0, (a, c) => a + c) ~/ scores.length;
         final acc = (questions.firstOrNull?.maxSliderScore).elvis ~/ 10;
-        // 각 문항별 신뢰도 체크
-        // [1, 10, 12, 15, 17, 20, 300, 500, 502, 504, 506]
-        // [9, 2, 3, 2, 3, 280, 200, 2, 2, 2]
-        if (scores.any((x) => x > avg + acc || x < avg - acc) ||
+        final sorted = scores.toList()..sort();
+        final range = List.generate((scores.length / 2).ceil(),
+            (i) => sorted[i + (scores.length / 2).floor()] - sorted[i]);
+
+        if (((scores.any((x) => x > avg + acc || x < avg - acc)) &&
+                (range.every((y) => y > acc))) ||
             keyIndex == 0) {
           // 다음 퀘스천 타입으로 넘어갈 수 있을 때
           if (keyIndex < state.questions.keys.length - 1) {
