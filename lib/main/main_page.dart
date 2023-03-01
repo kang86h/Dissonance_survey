@@ -452,7 +452,7 @@ class MainPage extends GetView<MainPageController> {
                   return Column(
                     children: [
                       Text(
-                        '$name ${rxIndex.value + 1}번문항.(${currentLength + rxIndex.value + 1}/$totalLength)\n지금 들려주는 화음을 듣고 점수를 매겨주세요\n지정된 만점보다 더 큰 점수를 주고 싶으실 경우\n직접 숫자를 입력해주세요',
+                        '$name ${rxIndex.value + 1}번문항.(${currentLength + rxIndex.value + 1}/$totalLength)\n화음을 듣고 점수를 매겨주세요\n만점보다 더 큰 점수를 주고 싶으실 경우\n직접 숫자를 입력해주세요',
                         style: TextStyle(
                           fontSize: 20,
                           color: Colors.black,
@@ -532,6 +532,28 @@ class MainPage extends GetView<MainPageController> {
                                     ),
                                   );
                                 })),
+                          Text('(재생횟수',
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.black,
+                            ),
+                          ),
+                          controller.rx((state) {
+                            return Text(
+                                '${(state.getPlayCount)}회',//Todo 재생 클릭할때 재생횟수 올라가도록 카운트
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.red,
+                              ),
+                            );
+                          }),
+                          Text('/3회)',
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.black,
+                            ),
+                          ),
                           Text(
                             '볼륨조절',
                             style: TextStyle(
@@ -572,7 +594,7 @@ class MainPage extends GetView<MainPageController> {
                 return Column(
                   children: [
                     Text(
-                      '불협화도 점수',
+                      '불협화도 점수(높을수록 불협화)',
                       style: TextStyle(
                         fontSize: 20,
                         color: Colors.black,
@@ -701,7 +723,7 @@ class MainPage extends GetView<MainPageController> {
               return Column(
                 children: [
                   Text(
-                    '일관성 체크 ${index + 1}번문항.(${currentLength + index + 1}/$totalLength)\n지금 들려주는 화음을 듣고 점수를 매겨주세요\n지정된 만점보다 더 큰 점수를 주고 싶으실 경우\n직접 숫자를 입력해주세요',
+                    '일관성 체크 ${index + 1}번문항.(${currentLength + index + 1}/$totalLength)\n화음을 듣고 점수를 매겨주세요\n만점보다 더 큰 점수를 주고 싶으실 경우\n직접 숫자를 입력해주세요',
                     style: TextStyle(
                       fontSize: 20,
                       color: Colors.black,
@@ -825,7 +847,7 @@ class MainPage extends GetView<MainPageController> {
                 return Column(
                   children: [
                     Text(
-                      '불협화도 점수',
+                      '불협화도 점수(높을수록 불협화)',
                       style: TextStyle(
                         fontSize: 20,
                         color: Colors.black,

@@ -30,14 +30,10 @@ class MainPageModel extends GetModel {
   @override
   bool get isEmpty => this == _empty;
 
+  get getPlayCount => 0;//Todo 재생 클릭할때 재생횟수 올라가도록 카운트
+
   int get getVideoMilliseconds =>
       videoEndedAt.difference(videoStartedAt).inMilliseconds;
-
-  int get q2Warmup {
-    final current =
-        questions[QuestionType.hs1q2].elvis.where((x) => x.isWarmUpCheck);
-    return current.length - 1;
-  }
 
   List<int> get q2ReliabilityCount {
     final current =

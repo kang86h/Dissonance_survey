@@ -50,7 +50,6 @@ class MainPageController extends GetController<MainPageModel> {
   late final Rx<PlayerState> playerState = PlayerState.stopped.obs
     ..bindStream(audioPlayer.onPlayerStateChanged);
   final Rx<double> volume = 1.0.obs;
-
   final Rx<QuestionType> questionType = QuestionType.none.obs;
   final Rx<int> index = 0.obs;
   final RxBool isSkip = false.obs;
@@ -356,6 +355,7 @@ class MainPageController extends GetController<MainPageModel> {
         }),
       ),
     );
+
   }
 
   void toAdmin() async {
