@@ -915,10 +915,10 @@ class MainPage extends GetView<MainPageController> {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14),
           child: Text(
-            '''워밍업 첫번째 문항의 신뢰도는 ${(state.q2ReliabilityCount / 1 * 100).toStringAsFixed(0)}%입니다
-워밍업 두번째 문항의 신뢰도는 ${(state.q3ReliabilityCount / 2 * 100).toStringAsFixed(0)}%입니다
-워밍업 세번째 문항의 신뢰도는 ${(state.q4ReliabilityCount / 3 * 100).toStringAsFixed(0)}%입니다
-워밍업 전체의 신뢰도는 ${(state.totalReliabilityCount / (1 + 2 + 3) * 100).toStringAsFixed(0)}%으로 신뢰도 ${state.isReliability ? '적합' : '부적합'} 판정입니다''',
+            '''워밍업 첫번째 문항의 신뢰도는 ${(state.q2ReliabilityCount[0] / state.q2ReliabilityCount[1] * 100).toStringAsFixed(0)}%입니다
+워밍업 두번째 문항의 신뢰도는 ${(state.q3ReliabilityCount[0] / state.q3ReliabilityCount[1] * 100).toStringAsFixed(0)}%입니다
+워밍업 세번째 문항의 신뢰도는 ${(state.q4ReliabilityCount[0] / state.q4ReliabilityCount[1] * 100).toStringAsFixed(0)}%입니다
+워밍업 전체의 신뢰도는 ${(state.totalReliabilityCount / state.totalReliabilityTotalcase * 100).toStringAsFixed(0)}%으로 신뢰도 ${state.isReliability ? '적합' : '부적합'} 판정입니다''',
             textAlign: TextAlign.left,
           ),
         );
