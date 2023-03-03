@@ -24,7 +24,7 @@ class SelectionListTile extends StatelessWidget {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14.0),
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: ListTile(
             title: Row(
               mainAxisAlignment: MainAxisAlignment.center,
