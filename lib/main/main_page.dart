@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:surveykit_example/getx/extension.dart';
 import 'package:surveykit_example/main/model/question_model.dart';
 import 'package:video_player/video_player.dart';
@@ -179,13 +180,13 @@ class MainPage extends GetView<MainPageController> {
       stepIdentifier: StepIdentifier(id: 'start'),
       title: '이 설문조사는 화음을 듣고\n'
           '불협화도 점수를 매기는 조사입니다',
-      text: '약 3초간 화음을 듣고\n'
-          '화음의 불협화도 점수를 매겨주시면 됩니다\n'
-          '협화적인 화음일수록 낮은 점수를\n'
-          '불협화적인 화음일수록 높은 점수를 매기세요\n'
-          '점수는 숫자로 기입하시거나\n'
-          '슬라이더에서 위치를 조절하셔서 매기세요\n'
-          '화음에 사용된 음의 갯수에따라 최고점이 다릅니다\n'
+      text: '1. 약 3초간 화음을 듣고\n'
+          '화음의 불협화도 점수를 매겨주시면 됩니다\n\n'
+          '2. 협화적인 화음일수록 낮은 점수를\n'
+          '불협화적인 화음일수록 높은 점수를 매기세요\n\n'
+          '3. 점수는 숫자로 기입하시거나\n'
+          '슬라이더에서 위치를 조절하셔서 매기세요\n\n'
+          '4. 화음에 사용된 음의 갯수에따라 최고점이 다릅니다\n'
           '2음화음 최대 60점\n'
           '3음화음 최대 100점\n'
           '4음화음 최대 140점\n',
@@ -196,14 +197,206 @@ class MainPage extends GetView<MainPageController> {
   InstructionStep getNotice() {
     return InstructionStep(
       stepIdentifier: StepIdentifier(id: 'notice'),
-      title: '조사결과 보상 기준\n',
+      title: '조사결과 보상 기준',
       text: '설문조사 안에는\n'
-          '답변의 신뢰성을 평가하는 문항이 있습니다\n'
-          '또한 답변의 일관성을 평가합니다\n'
+          '답변의 신뢰성을 평가하는 문항이 있습니다\n\n'
+          '또한 답변의 일관성을 평가합니다\n\n'
           '신뢰성과 일관성이 일정 기준치를 충족하지 못하면\n'
           '부적합한 조사결과로 처리되며\n'
-          '보상에 불이익이 있습니다\n'
+          '보상을 받으실 수 없습니다\n\n'
           '진지하게 조사에 임해주시면 감사하겠습니다\n',
+      buttonText: '다음으로',
+    );
+  }
+
+  InstructionStep getAgreement() {
+    return InstructionStep(
+      stepIdentifier: StepIdentifier(id: 'agreement'),
+      isOptional: (controller.agreement1.value &&
+          controller.agreement2.value &&
+          controller.agreement3.value &&
+          controller.agreement1.value),
+      // isOptional이 왜 안먹는지??
+
+      title: '설문조사 동의서',
+      text: '',
+      content: Obx(
+        () => ConstrainedBox(
+          constraints: BoxConstraints.tightFor(width: 500),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Column(
+              children: [
+                Text('각 사항에 동의하시면 체크하시고 다음으로 넘어가세요\n동의하시지 않으면 창을 닫아주세요\n'),
+                Row(
+                  children: [
+                    Expanded(
+                      child: RichText(
+                        maxLines: 3,
+                        softWrap: true,
+                        overflow: TextOverflow.visible,
+                        text: TextSpan(children: [
+                          TextSpan(
+                            text: '1. 너무 비슷한 값을 여러번 매기시면 각 세션의 ',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                          TextSpan(
+                              text: '처음으로 ',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold)),
+                          TextSpan(
+                            text: '되돌아가게 됩니다.',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        ]),
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('동의하십니까?'),
+                    Checkbox(
+                      value: controller.agreement1.value,
+                      onChanged: (newValue) {
+                        controller.toggleAgreement1();
+                      },
+                    ),
+                  ],
+                ),
+                Divider(),
+                Row(
+                  children: [
+                    Expanded(
+                      child: RichText(
+                        maxLines: 3,
+                        softWrap: true,
+                        overflow: TextOverflow.visible,
+                        text: TextSpan(children: [
+                          TextSpan(
+                            text:
+                                '2. 워밍업 테스트 결과와 모순되는 점수를 매기신 경우 신뢰도가 감소됩니다. 최종 신뢰도가 ',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                          TextSpan(
+                              text: '80%미만',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold)),
+                          TextSpan(
+                            text: '일 경우 보상을 받으실 수 없습니다.',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        ]),
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('동의하십니까?'),
+                    Checkbox(
+                      value: controller.agreement2.value,
+                      onChanged: (newValue) {
+                        controller.toggleAgreement2();
+                      },
+                    ),
+                  ],
+                ),
+                Divider(),
+                Row(
+                  children: [
+                    Expanded(
+                      child: RichText(
+                        maxLines: 3,
+                        softWrap: true,
+                        overflow: TextOverflow.visible,
+                        text: TextSpan(children: [
+                          TextSpan(
+                            text:
+                                '3. 같은 음원에 대한 점수의 차이가 만점의 30% 이상일 경우 일관성 점수가 감점됩니다. 일관성 점수가 6점만점에 ',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                          TextSpan(
+                              text: '5점 미만',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold)),
+                          TextSpan(
+                            text: '일 경우 보상을 받으실 수 없습니다.',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        ]),
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('동의하십니까?'),
+                    Checkbox(
+                      value: controller.agreement3.value,
+                      onChanged: (newValue) {
+                        controller.toggleAgreement3();
+                      },
+                    ),
+                  ],
+                ),
+                Divider(),
+                Row(
+                  children: [
+                    Expanded(
+                      child: RichText(
+                        maxLines: 3,
+                        softWrap: true,
+                        overflow: TextOverflow.visible,
+                        text: TextSpan(children: [
+                          TextSpan(
+                            text: '4. 모든 음원은 반드시 ',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                          TextSpan(
+                              text: '3회',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold)),
+                          TextSpan(
+                            text: '이상 들으셔야 점수를 매기실 수 있습니다.',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        ]),
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      '동의하십니까?',
+                    ),
+                    Checkbox(
+                      value: controller.agreement4.value,
+                      onChanged: (newValue) {
+                        controller.toggleAgreement4();
+                      },
+                    ),
+                  ],
+                ),
+                Divider(),
+              ],
+            ),
+          ),
+        ),
+      ),
       buttonText: '다음으로',
     );
   }
@@ -532,7 +725,8 @@ class MainPage extends GetView<MainPageController> {
                                     ),
                                   );
                                 })),
-                          Text('(재생횟수',
+                          Text(
+                            '(재생횟수',
                             style: TextStyle(
                               fontSize: 20,
                               color: Colors.black,
@@ -540,7 +734,8 @@ class MainPage extends GetView<MainPageController> {
                           ),
                           controller.rx((state) {
                             return Text(
-                                '${(state.getPlayCount)}회',//Todo 재생 클릭할때 재생횟수 올라가도록 카운트
+                              '${(state.getPlayCount)}회',
+                              //Todo 재생 클릭할때 재생횟수 올라가도록 카운트
                               style: TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -548,7 +743,8 @@ class MainPage extends GetView<MainPageController> {
                               ),
                             );
                           }),
-                          Text('/3회)',
+                          Text(
+                            '/3회)',
                             style: TextStyle(
                               fontSize: 20,
                               color: Colors.black,
@@ -991,6 +1187,7 @@ class MainPage extends GetView<MainPageController> {
       steps: [
         getStart(),
         getNotice(),
+        getAgreement(),
         getGenderStep(),
         getAgeStep(),
         getPrequestionStep(),

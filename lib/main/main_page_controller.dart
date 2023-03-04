@@ -57,8 +57,30 @@ class MainPageController extends GetController<MainPageModel> {
   final RxBool isLoad = false.obs;
   final Rx<double> videoBuffered = 0.0.obs;
   final Rx<double> videoPlayed = 0.0.obs;
+  RxBool agreement1 = false.obs;
+  RxBool agreement2 = false.obs;
+  RxBool agreement3 = false.obs;
+  RxBool agreement4 = false.obs;
+
 
   @override
+  bool toggleAgreement1(){
+    agreement1.value = !agreement1.value;
+    return agreement1.value;
+  }
+  bool toggleAgreement2(){
+    agreement2.value = !agreement2.value;
+    return agreement2.value;
+  }
+  bool toggleAgreement3(){
+    agreement3.value = !agreement3.value;
+    return agreement3.value;
+  }
+  bool toggleAgreement4(){
+    agreement4.value = !agreement4.value;
+    return agreement4.value;
+  }
+
   void onInit() async {
     super.onInit();
     await videoPlayerController.initialize();

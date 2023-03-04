@@ -14,7 +14,7 @@ class MainPageBinding extends Bindings {
     Get.put<MainPageController>((() {
       final questions = {
         QuestionType.none: [
-          ...List.generate(4, (_) => QuestionModel.empty()),
+          ...List.generate(5, (_) => QuestionModel.empty()),
           //볼륨조절 전 스텝 갯수
           QuestionModel.prequestion(),
           QuestionModel.volume(),
