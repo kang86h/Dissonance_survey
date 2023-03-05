@@ -20,6 +20,7 @@ class InstructionStep extends Step {
     required this.title,
     this.text = '',
     this.content = const SizedBox.shrink(),
+    bool isOptional = true,
     String buttonText = 'Next',
     StepIdentifier? stepIdentifier,
     bool? canGoBack,
@@ -27,6 +28,7 @@ class InstructionStep extends Step {
     bool showAppBar = true,
   }) : super(
           stepIdentifier: stepIdentifier,
+          isOptional: isOptional,
           buttonText: buttonText,
           canGoBack: canGoBack ?? true,
           showProgress: showProgress ?? true,
@@ -42,6 +44,7 @@ class InstructionStep extends Step {
 
   factory InstructionStep.fromJson(Map<String, dynamic> json) =>
       _$InstructionStepFromJson(json);
+
   Map<String, dynamic> toJson() => _$InstructionStepToJson(this);
 
   bool operator ==(o) =>
@@ -49,5 +52,6 @@ class InstructionStep extends Step {
       o is InstructionStep &&
       o.title == title &&
       o.text == text;
+
   int get hashCode => super.hashCode ^ title.hashCode ^ text.hashCode;
 }

@@ -22,6 +22,7 @@ class InstructionView extends StatelessWidget {
         _startDate,
         DateTime.now(),
       ),
+      isValid: instructionStep.isOptional,//isValid값을 isOptional로
       child: (() {
         final Widget sizedBox = instructionStep.content;
         if (sizedBox is SizedBox &&

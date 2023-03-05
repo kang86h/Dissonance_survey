@@ -46,7 +46,7 @@ class StepView extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: OutlinedButton(
-                    onPressed: isValid || step.isOptional
+                    onPressed: isValid || step.isOptional //버튼활성화 isValid값
                         ? () {
                             surveyController.nextStep(context, resultFunction);
                           }
