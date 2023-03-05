@@ -20,7 +20,6 @@ class InstructionStep extends Step {
     required this.title,
     this.text = '',
     this.content = const SizedBox.shrink(),
-    bool isOptional = false,
     String buttonText = 'Next',
     StepIdentifier? stepIdentifier,
     bool? canGoBack,
@@ -28,7 +27,6 @@ class InstructionStep extends Step {
     bool showAppBar = true,
   }) : super(
           stepIdentifier: stepIdentifier,
-          isOptional: isOptional,
           buttonText: buttonText,
           canGoBack: canGoBack ?? true,
           showProgress: showProgress ?? true,

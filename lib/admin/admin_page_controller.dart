@@ -26,7 +26,7 @@ class AdminPageController extends GetController<AdminPageModel> {
   final rx.BehaviorSubject<List<QueryDocumentSnapshot<Map<String, dynamic>>>> userStream = rx.BehaviorSubject.seeded([])
     ..addStream(FirebaseFirestore.instance.collection('user').orderBy('createdAt', descending: true).snapshots().map((x) => x.docs));
   final rx.BehaviorSubject<List<QueryDocumentSnapshot<Map<String, dynamic>>>> resultStream = rx.BehaviorSubject.seeded([])
-    ..addStream(FirebaseFirestore.instance.collection('result').orderBy('createdAt', descending: true).snapshots().map((x) => x.docs));
+    ..addStream(FirebaseFirestore.instance.collection('result').orderBy('createdAt', descending: true).snapshots().take(1).map((x) => x.docs));
 
   late final RxList<QueryDocumentSnapshot<Map<String, dynamic>>> filterUserList = <QueryDocumentSnapshot<Map<String, dynamic>>>[].obs;
   late final RxList<QueryDocumentSnapshot<Map<String, dynamic>>> filterResultList = <QueryDocumentSnapshot<Map<String, dynamic>>>[].obs;

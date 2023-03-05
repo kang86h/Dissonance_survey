@@ -43,9 +43,7 @@ class QuestionModel extends GetModel {
 
   int get getTotalMilliseconds {
     final length = min(startedAt.length, endedAt.length);
-    final total = Iterable.generate(length,
-            (i) => endedAt.elementAt(i).difference(startedAt.elementAt(i)))
-        .fold<Duration>(Duration.zero, (a, c) => a + c);
+    final total = Iterable.generate(length, (i) => endedAt.elementAt(i).difference(startedAt.elementAt(i))).fold<Duration>(Duration.zero, (a, c) => a + c);
     return total.inMilliseconds;
   }
 
@@ -85,8 +83,7 @@ class QuestionModel extends GetModel {
   @override
   bool get isEmpty => this == _empty;
 
-  String get header =>
-      file.split('/').lastOrNull.elvis.split('.').firstOrNull.elvis;
+  String get header => file.split('/').lastOrNull.elvis.split('.').firstOrNull.elvis;
 
   @override
   QuestionModel copyWith({
@@ -150,17 +147,16 @@ class QuestionModel extends GetModel {
         'play_count': volumes.length,
         'volumes': volumes,
         'total_milliseconds': getTotalMilliseconds,
+        'is_middle_check': isMiddleCheck,
       };
 
   factory QuestionModel.fromJson(Map<String, dynamic> map) => _empty.copyWith(
         file: map['file'],
         score: double.tryParse(map['score'].toString()) ?? 0.0,
         volumes: [
-          ...Iterable.castFrom(map['volumes'] ?? [])
-              .map((x) => double.tryParse(x.toString()) ?? 0.0),
+          ...Iterable.castFrom(map['volumes'] ?? []).map((x) => double.tryParse(x.toString()) ?? 0.0),
         ],
-        totalMilliseconds:
-            int.tryParse(map['total_milliseconds'].toString()) ?? 0,
+        totalMilliseconds: int.tryParse(map['total_milliseconds'].toString()) ?? 0,
       );
 
   /*
@@ -170,6 +166,5 @@ class QuestionModel extends GetModel {
   */
 
   @override
-  String toString() =>
-      'id: $id file: $file score: $score isWarmUpCheck: $isWarmUpCheck isMiddleCheck: $isMiddleCheck';
+  String toString() => 'id: $id file: $file score: $score isWarmUpCheck: $isWarmUpCheck isMiddleCheck: $isMiddleCheck';
 }
