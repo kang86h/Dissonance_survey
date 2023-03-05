@@ -215,7 +215,7 @@ class MainPage extends GetView<MainPageController> {
       isOptional: (controller.agreement1.value &&
           controller.agreement2.value &&
           controller.agreement3.value &&
-          controller.agreement1.value),
+          controller.agreement4.value),
       // isOptional이 왜 안먹는지??
 
       title: '설문조사 동의서',
@@ -238,7 +238,10 @@ class MainPage extends GetView<MainPageController> {
                         text: TextSpan(children: [
                           TextSpan(
                             text: '1. 너무 비슷한 값을 여러번 매기시면 각 세션의 ',
-                            style: TextStyle(fontSize: 18),
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.black,
+                            ),
                           ),
                           TextSpan(
                               text: '처음으로 ',
@@ -248,7 +251,10 @@ class MainPage extends GetView<MainPageController> {
                                   fontWeight: FontWeight.bold)),
                           TextSpan(
                             text: '되돌아가게 됩니다.',
-                            style: TextStyle(fontSize: 18),
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.black,
+                            ),
                           ),
                         ]),
                       ),
@@ -279,7 +285,10 @@ class MainPage extends GetView<MainPageController> {
                           TextSpan(
                             text:
                                 '2. 워밍업 테스트 결과와 모순되는 점수를 매기신 경우 신뢰도가 감소됩니다. 최종 신뢰도가 ',
-                            style: TextStyle(fontSize: 18),
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.black,
+                            ),
                           ),
                           TextSpan(
                               text: '80%미만',
@@ -289,7 +298,10 @@ class MainPage extends GetView<MainPageController> {
                                   fontWeight: FontWeight.bold)),
                           TextSpan(
                             text: '일 경우 보상을 받으실 수 없습니다.',
-                            style: TextStyle(fontSize: 18),
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.black,
+                            ),
                           ),
                         ]),
                       ),
@@ -320,7 +332,10 @@ class MainPage extends GetView<MainPageController> {
                           TextSpan(
                             text:
                                 '3. 같은 음원에 대한 점수의 차이가 만점의 30% 이상일 경우 일관성 점수가 감점됩니다. 일관성 점수가 6점만점에 ',
-                            style: TextStyle(fontSize: 18),
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.black,
+                            ),
                           ),
                           TextSpan(
                               text: '5점 미만',
@@ -330,7 +345,10 @@ class MainPage extends GetView<MainPageController> {
                                   fontWeight: FontWeight.bold)),
                           TextSpan(
                             text: '일 경우 보상을 받으실 수 없습니다.',
-                            style: TextStyle(fontSize: 18),
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.black,
+                            ),
                           ),
                         ]),
                       ),
@@ -360,7 +378,10 @@ class MainPage extends GetView<MainPageController> {
                         text: TextSpan(children: [
                           TextSpan(
                             text: '4. 모든 음원은 반드시 ',
-                            style: TextStyle(fontSize: 18),
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.black,
+                            ),
                           ),
                           TextSpan(
                               text: '3회',
@@ -370,7 +391,10 @@ class MainPage extends GetView<MainPageController> {
                                   fontWeight: FontWeight.bold)),
                           TextSpan(
                             text: '이상 들으셔야 점수를 매기실 수 있습니다.',
-                            style: TextStyle(fontSize: 18),
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.black,
+                            ),
                           ),
                         ]),
                       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../survey_kit.dart';
 
@@ -82,6 +83,9 @@ class _IntegerAnswerViewState extends State<IntegerAnswerView> {
             onChanged: (String value) {
               _checkValidation(value);
             },
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+            ],
             keyboardType: TextInputType.number,
             textAlign: TextAlign.center,
           ),
