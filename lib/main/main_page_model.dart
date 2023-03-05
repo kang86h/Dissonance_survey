@@ -30,8 +30,6 @@ class MainPageModel extends GetModel {
   @override
   bool get isEmpty => this == _empty;
 
-  get getPlayCount => 0;//Todo 재생 클릭할때 재생횟수 올라가도록 카운트
-
   int get getVideoMilliseconds =>
       videoEndedAt.difference(videoStartedAt).inMilliseconds;
 
@@ -157,7 +155,7 @@ class MainPageModel extends GetModel {
 
   Map<String, dynamic> toJson() => Map.fromEntries({
         ...questions.entries
-            .where((x) => x.key != QuestionType.none)
+            .where((x) => x.key.isLength)
             .map((x) => MapEntry(x.key.name, x.value.map((y) => y.toJson()))),
       });
 
