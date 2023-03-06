@@ -30,9 +30,9 @@ class MainPage extends GetView<MainPageController> {
   static int q3WarmIndex = -1;
   static int q4WarmIndex = -1;
 
-  static Iterable<int> q2WarmUpCheckId = [6, 2];
-  static Iterable<int> q3WarmUpCheckId = [5, 1, 6];
-  static Iterable<int> q4WarmUpCheckId = [2, 5, 1, 3];
+  static List<int> q2WarmUpCheckId = [2, 6]..shuffle(Random());
+  static List<int> q3WarmUpCheckId = [1, 5, 6]..shuffle(Random());
+  static List<int> q4WarmUpCheckId = [1, 2, 3, 5]..shuffle(Random());
 
   static StepIdentifier q2Identifier = StepIdentifier(id: q2Index.toString());
   static StepIdentifier q3Identifier = StepIdentifier(id: q3Index.toString());
