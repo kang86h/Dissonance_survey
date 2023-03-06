@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:surveykit_example/getx/extension.dart';
 import 'package:surveykit_example/main/main_page.dart';
 import 'package:surveykit_example/main/model/question_type.dart';
