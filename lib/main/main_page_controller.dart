@@ -270,7 +270,8 @@ class MainPageController extends GetController<MainPageModel> {
         'totalConsistencyLength': 6,
       });
 
-      await Get.toNamed('/complete');
+      //await Get.toNamed('/complete');
+      html.window.open('https://google.com', '_self');
     } else {
       // 신뢰성 체크 실패 시
       html.window.open('https://naver.com', '_self');
