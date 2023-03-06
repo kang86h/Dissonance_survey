@@ -62,11 +62,13 @@ class MainPageController extends GetController<MainPageModel> {
   RxBool agreement2 = false.obs;
   RxBool agreement3 = false.obs;
   RxBool agreement4 = false.obs;
+  RxInt agree = 0.obs;
 
   @override
   void toggleAgreement1() {
     agreement1.value = !agreement1.value;
     Get.log('agreement agreement1: $agreement1');
+
   }
 
   bool toggleAgreement2() {

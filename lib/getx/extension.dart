@@ -27,6 +27,7 @@ extension IntOptionalEx on int? {
   int get elvis => this ?? 0;
 
   int plus(int other) => this.elvis + other;
+
 }
 
 extension IterableOptionalEx<T> on Iterable<T>? {
@@ -53,6 +54,7 @@ extension IterableOptionalEx<T> on Iterable<T>? {
 
   //bool get isCheck => elvis.length > 2; //최소 재생횟수 설정
   bool get isCheck => true;
+
 }
 
 extension NumNullableEx on num? {
