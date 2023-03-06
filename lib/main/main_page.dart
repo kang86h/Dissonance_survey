@@ -171,14 +171,14 @@ class MainPage extends GetView<MainPageController> {
     return InstructionStep(
       stepIdentifier: StepIdentifier(id: 'start'),
       title: '이 설문조사는 화음을 듣고\n'
-          '불협화도 점수를 매기는 조사입니다',
+          '불협화도 점수를 매기는 조사입니다.',
       text: '1. 약 3초간 화음을 듣고\n'
-          '화음의 불협화도 점수를 매겨주시면 됩니다\n\n'
+          '화음의 불협화도 점수를 매겨주시면 됩니다.\n\n'
           '2. 협화적인 화음일수록 낮은 점수를\n'
-          '불협화적인 화음일수록 높은 점수를 매기세요\n\n'
+          '불협화적인 화음일수록 높은 점수를 매기세요.\n\n'
           '3. 점수는 숫자로 기입하시거나\n'
-          '슬라이더에서 위치를 조절하셔서 매기세요\n\n'
-          '4. 화음에 사용된 음의 갯수에따라 최고점이 다릅니다\n'
+          '슬라이더에서 위치를 조절하셔서 매기세요.\n\n'
+          '4. 화음에 사용된 음의 갯수에따라 최고점이 다릅니다.\n'
           '2음화음 최대 60점\n'
           '3음화음 최대 100점\n'
           '4음화음 최대 140점\n',
@@ -189,14 +189,14 @@ class MainPage extends GetView<MainPageController> {
   InstructionStep getNotice() {
     return InstructionStep(
       stepIdentifier: StepIdentifier(id: 'notice'),
-      title: '조사결과 보상 기준',
+      title: '설문조사는 약 5분에 걸쳐 진행됩니다.',
       text: '설문조사 안에는\n'
-          '답변의 신뢰성을 평가하는 문항이 있습니다\n\n'
-          '또한 답변의 일관성을 평가합니다\n\n'
+          '답변의 신뢰성을 평가하는 문항이 있습니다.\n\n'
+          '또한 답변의 일관성을 평가합니다.\n\n'
           '신뢰성과 일관성이 일정 기준치를 충족하지 못하면\n'
           '부적합한 조사결과로 처리되며\n'
-          '보상을 받으실 수 없습니다\n\n'
-          '진지하게 조사에 임해주시면 감사하겠습니다\n',
+          '보상을 받으실 수 없습니다.\n\n'
+          '진지하게 조사에 임해주시면 감사하겠습니다.\n',
       buttonText: '다음으로',
     );
   }
@@ -215,7 +215,7 @@ class MainPage extends GetView<MainPageController> {
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Column(
               children: [
-                Text('각 사항에 동의하시면 체크하시고 다음으로 넘어가세요\n동의하시지 않으면 창을 닫아주세요\n'),
+                Text('각 사항에 동의하시면 체크하시고 다음으로 넘어가세요.\n동의하시지 않으면 창을 닫아주세요.\n'),
                 Row(
                   children: [
                     Expanded(
@@ -226,12 +226,12 @@ class MainPage extends GetView<MainPageController> {
                         text: TextSpan(children: [
                           TextSpan(
                             text: '1. 너무 비슷한 값을 여러번 매기시면 각 세션의 ',
-                            style: TextStyle(fontSize: 18),
+                            style: TextStyle(fontSize: 18, color: Colors.black),
                           ),
                           TextSpan(text: '처음으로 ', style: TextStyle(fontSize: 18, color: Colors.red, fontWeight: FontWeight.bold)),
                           TextSpan(
                             text: '되돌아가게 됩니다.',
-                            style: TextStyle(fontSize: 18),
+                            style: TextStyle(fontSize: 18 , color: Colors.black),
                           ),
                         ]),
                       ),
@@ -259,12 +259,12 @@ class MainPage extends GetView<MainPageController> {
                         text: TextSpan(children: [
                           TextSpan(
                             text: '2. 워밍업 테스트 결과와 모순되는 점수를 매기신 경우 신뢰도가 감소됩니다. 최종 신뢰도가 ',
-                            style: TextStyle(fontSize: 18),
+                            style: TextStyle(fontSize: 18, color: Colors.black),
                           ),
                           TextSpan(text: '80%미만', style: TextStyle(fontSize: 18, color: Colors.red, fontWeight: FontWeight.bold)),
                           TextSpan(
                             text: '일 경우 보상을 받으실 수 없습니다.',
-                            style: TextStyle(fontSize: 18),
+                            style: TextStyle(fontSize: 18, color: Colors.black),
                           ),
                         ]),
                       ),
@@ -292,12 +292,12 @@ class MainPage extends GetView<MainPageController> {
                         text: TextSpan(children: [
                           TextSpan(
                             text: '3. 같은 음원에 대한 점수의 차이가 만점의 30% 이상일 경우 일관성 점수가 감점됩니다. 일관성 점수가 6점만점에 ',
-                            style: TextStyle(fontSize: 18),
+                            style: TextStyle(fontSize: 18, color: Colors.black),
                           ),
                           TextSpan(text: '5점 미만', style: TextStyle(fontSize: 18, color: Colors.red, fontWeight: FontWeight.bold)),
                           TextSpan(
                             text: '일 경우 보상을 받으실 수 없습니다.',
-                            style: TextStyle(fontSize: 18),
+                            style: TextStyle(fontSize: 18, color: Colors.black),
                           ),
                         ]),
                       ),
@@ -325,12 +325,12 @@ class MainPage extends GetView<MainPageController> {
                         text: TextSpan(children: [
                           TextSpan(
                             text: '4. 모든 음원은 반드시 ',
-                            style: TextStyle(fontSize: 18),
+                            style: TextStyle(fontSize: 18, color: Colors.black),
                           ),
                           TextSpan(text: '3회', style: TextStyle(fontSize: 18, color: Colors.red, fontWeight: FontWeight.bold)),
                           TextSpan(
                             text: '이상 들으셔야 점수를 매기실 수 있습니다.',
-                            style: TextStyle(fontSize: 18),
+                            style: TextStyle(fontSize: 18, color: Colors.black),
                           ),
                         ]),
                       ),
@@ -385,7 +385,7 @@ class MainPage extends GetView<MainPageController> {
   QuestionStep getPrequestionStep() {
     return QuestionStep(
       stepIdentifier: prequestionIdentifier,
-      title: '당신이 생각하는 불협화음이란 어떤 것입니까?\n옳다고 생각하는 것을 모두 선택해 주세요\n원하시는 답이 없다면 직접 적어주세요.',
+      title: '당신이 생각하는 불협화음이란 어떤 것입니까?\n옳다고 생각하는 것을 모두 선택해 주세요.\n원하시는 답이 없다면 직접 적어주세요.',
       answerFormat: MultipleChoiceAnswerFormat(
         textChoices: [
           TextChoice(text: '1. 거칠게 느껴지는 음', value: '1'),
@@ -401,9 +401,9 @@ class MainPage extends GetView<MainPageController> {
   InstructionStep getVolume() {
     return InstructionStep(
       stepIdentifier: StepIdentifier(id: 'volume'),
-      title: '테스트에 적절한 볼륨으로 조절해주세요\n'
-          '(아이폰, 아이패드 사용자는\n'
-          '볼륨버튼을 사용해서 조절해주세요)',
+      title: '테스트에 적절한 볼륨으로 조절해주세요.\n'
+          '아이폰, 아이패드 사용자는\n'
+          '볼륨버튼을 사용해서 조절해주세요.',
       text: '',
       content: ConstrainedBox(
         constraints: BoxConstraints.tightFor(width: 500),
@@ -475,9 +475,9 @@ class MainPage extends GetView<MainPageController> {
     return QuestionStep(
       stepIdentifier: StepIdentifier(id: 'warmUp-${questionType.name}'),
       title: {
-        QuestionType.hs1q2: '워밍업 1\n다음중 가장 <불협화>한 화음을 고르시오',
-        QuestionType.hs1q3: '워밍업 2\n다음중 가장 <협화>한 화음을 고르시오',
-        QuestionType.hs1q4: '워밍업 3\n다음중 가장 <불협화>한 화음을 고르시오',
+        QuestionType.hs1q2: '워밍업 1\n다음중 가장 <불협화>한 화음을 고르시오.',
+        QuestionType.hs1q3: '워밍업 2\n다음중 가장 <협화>한 화음을 고르시오.',
+        QuestionType.hs1q4: '워밍업 3\n다음중 가장 <불협화>한 화음을 고르시오.',
       }[questionType]
           .elvis,
       isOptional: false,
@@ -578,7 +578,7 @@ class MainPage extends GetView<MainPageController> {
                   return Column(
                     children: [
                       Text(
-                        '$name ${rxIndex.value + 1}번문항.(${currentLength + rxIndex.value + 1}/$totalLength)\n화음을 듣고 점수를 매겨주세요\n만점보다 더 큰 점수를 주고 싶으실 경우\n직접 숫자를 입력해주세요',
+                        '$name ${rxIndex.value + 1}번문항.(${currentLength + rxIndex.value + 1}/$totalLength)\n화음을 듣고 점수를 매겨주세요.\n만점보다 더 큰 점수를 주고 싶으실 경우\n직접 숫자를 입력해주세요.',
                         style: TextStyle(
                           fontSize: 20,
                           color: Colors.black,
@@ -602,7 +602,7 @@ class MainPage extends GetView<MainPageController> {
                             textAlign: TextAlign.center,
                           ),
                           Text(
-                            '듣고 점수를 매겨주세요',
+                            '듣고 점수를 매겨주세요.',
                             style: TextStyle(
                               fontSize: 20,
                               color: Colors.black,
@@ -700,7 +700,7 @@ class MainPage extends GetView<MainPageController> {
                       ),
                       Text(
                         '아이폰, 아이패드 사용자는\n'
-                        '볼륨 버튼을 이용해 조절해주세요',
+                        '볼륨 버튼을 이용해 조절해주세요.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 20,
@@ -828,7 +828,7 @@ class MainPage extends GetView<MainPageController> {
               return Column(
                 children: [
                   Text(
-                    '일관성 체크 ${index + 1}번문항.(${currentLength + index + 1}/$totalLength)\n화음을 듣고 점수를 매겨주세요\n만점보다 더 큰 점수를 주고 싶으실 경우\n직접 숫자를 입력해주세요',
+                    '일관성 체크 ${index + 1}번문항.(${currentLength + index + 1}/$totalLength)\n화음을 듣고 점수를 매겨주세요.\n만점보다 더 큰 점수를 주고 싶으실 경우\n직접 숫자를 입력해주세요.',
                     style: TextStyle(
                       fontSize: 20,
                       color: Colors.black,
@@ -852,7 +852,7 @@ class MainPage extends GetView<MainPageController> {
                         textAlign: TextAlign.center,
                       ),
                       Text(
-                        '듣고 점수를 매겨주세요',
+                        '듣고 점수를 매겨주세요.',
                         style: TextStyle(
                           fontSize: 20,
                           color: Colors.black,
@@ -915,7 +915,7 @@ class MainPage extends GetView<MainPageController> {
                       ),
                       Text(
                         '아이폰, 아이패드 사용자는\n'
-                        '볼륨 버튼을 이용해 조절해주세요',
+                        '볼륨 버튼을 이용해 조절해주세요.',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 20,
@@ -1016,15 +1016,15 @@ class MainPage extends GetView<MainPageController> {
 
   InstructionStep getCheckReliabilityStep() {
     return InstructionStep(
-      title: '신뢰성 테스트 결과입니다',
+      title: '신뢰성 테스트 결과입니다.',
       content: controller.rx((state) {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14),
           child: Text(
-            '''워밍업 첫번째 문항의 신뢰도는 ${(state.q2ReliabilityCount[0] / state.q2ReliabilityCount[1] * 100).toStringAsFixed(0)}%입니다
-워밍업 두번째 문항의 신뢰도는 ${(state.q3ReliabilityCount[0] / state.q3ReliabilityCount[1] * 100).toStringAsFixed(0)}%입니다
-워밍업 세번째 문항의 신뢰도는 ${(state.q4ReliabilityCount[0] / state.q4ReliabilityCount[1] * 100).toStringAsFixed(0)}%입니다
-워밍업 전체의 신뢰도는 ${(state.totalReliabilityCount / state.totalReliabilityTotalcase * 100).toStringAsFixed(0)}%으로 신뢰도 ${state.isReliability ? '적합' : '부적합'} 판정입니다''',
+            '''워밍업 첫번째 문항의 신뢰도는 ${(state.q2ReliabilityCount[0] / state.q2ReliabilityCount[1] * 100).toStringAsFixed(0)}%입니다.
+워밍업 두번째 문항의 신뢰도는 ${(state.q3ReliabilityCount[0] / state.q3ReliabilityCount[1] * 100).toStringAsFixed(0)}%입니다.
+워밍업 세번째 문항의 신뢰도는 ${(state.q4ReliabilityCount[0] / state.q4ReliabilityCount[1] * 100).toStringAsFixed(0)}%입니다.
+워밍업 전체의 신뢰도는 ${(state.totalReliabilityCount / state.totalReliabilityTotalcase * 100).toStringAsFixed(0)}%으로 신뢰도 ${state.isReliability ? '적합' : '부적합'} 판정입니다.''',
             textAlign: TextAlign.left,
           ),
         );
@@ -1035,15 +1035,15 @@ class MainPage extends GetView<MainPageController> {
 
   InstructionStep getCheckConsistencyStep() {
     return InstructionStep(
-      title: '일관성 테스트 결과입니다',
+      title: '일관성 테스트 결과입니다.',
       content: controller.rx((state) {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14),
           child: Text(
-            '''2음화음 일관성 편차는 ${state.q2Consistency.firstOrNull.elvis > 0 ? '+' : ''}${(state.q2Consistency.firstOrNull.elvis).toStringAsFixed(0)}점 ${(state.q2Consistency.secondOrNull.elvis).toStringAsFixed(0)}점 입니다
-3음화음 일관성 편차는 ${state.q3Consistency.firstOrNull.elvis > 0 ? '+' : ''}${(state.q3Consistency.firstOrNull.elvis).toStringAsFixed(0)}점 ${(state.q3Consistency.secondOrNull.elvis).toStringAsFixed(0)}점 입니다
-4음화음 일관성 편차는 ${state.q4Consistency.firstOrNull.elvis > 0 ? '+' : ''}${(state.q4Consistency.firstOrNull.elvis).toStringAsFixed(0)}점 ${(state.q4Consistency.secondOrNull.elvis).toStringAsFixed(0)}점 입니다
-일관성 전체 결과는 기준범위내에 ${state.totalConsistencyCount}개/${1 + 2 + 3}개로 ${state.isConsistency ? '적합' : '부적합'} 판정입니다''',
+            '''2음화음 일관성 편차는 ${state.q2Consistency.firstOrNull.elvis > 0 ? '+' : ''}${(state.q2Consistency.firstOrNull.elvis).toStringAsFixed(0)}점 ${(state.q2Consistency.secondOrNull.elvis).toStringAsFixed(0)}점 입니다.
+3음화음 일관성 편차는 ${state.q3Consistency.firstOrNull.elvis > 0 ? '+' : ''}${(state.q3Consistency.firstOrNull.elvis).toStringAsFixed(0)}점 ${(state.q3Consistency.secondOrNull.elvis).toStringAsFixed(0)}점 입니다.
+4음화음 일관성 편차는 ${state.q4Consistency.firstOrNull.elvis > 0 ? '+' : ''}${(state.q4Consistency.firstOrNull.elvis).toStringAsFixed(0)}점 ${(state.q4Consistency.secondOrNull.elvis).toStringAsFixed(0)}점 입니다.
+일관성 전체 결과는 기준범위내에 ${state.totalConsistencyCount}개/${1 + 2 + 3}개로 ${state.isConsistency ? '적합' : '부적합'} 판정입니다.''',
           ),
         );
       }),
@@ -1058,8 +1058,8 @@ class MainPage extends GetView<MainPageController> {
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 14),
           child: Text((state.isReliability && state.isConsistency)
-              ? '신뢰성 평가 결과 적합 판정\n일관성 평가 결과 적합 판정으로\n모든 테스트 결과를 신뢰할 수 있겠습니다\n설문에 참여해 주셔서 감사합니다'
-              : '신뢰성 평가 결과 ${state.isReliability ? '적합' : '부적합'} 판정\n일관성 평가 결과 ${state.isConsistency ? '적합' : '부적합'} 판정으로\n테스트 결과를 신뢰하기 어렵습니다\n유감스럽게도 보상에 불이익이 예상됩니다'),
+              ? '신뢰성 평가 결과 적합 판정\n일관성 평가 결과 적합 판정으로\n모든 테스트 결과를 신뢰할 수 있겠습니다.\n설문에 참여해 주셔서 감사합니다.'
+              : '신뢰성 평가 결과 ${state.isReliability ? '적합' : '부적합'} 판정\n일관성 평가 결과 ${state.isConsistency ? '적합' : '부적합'} 판정으로\n테스트 결과를 신뢰하기 어렵습니다\n유감스럽게도 보상을 받으실 수 없습니다.'),
         );
       }),
       text: '',
