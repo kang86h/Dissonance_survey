@@ -100,7 +100,7 @@ class QuestionModel extends GetModel {
     Iterable<double>? volumes,
     bool? isAutoPlay,
     bool? isRecord,
-    bool? iswarmUpCheck,
+    bool? isWarmUpCheck,
     bool? isMiddleCheck,
     bool? isFinalCheck,
     Iterable<DateTime>? startedAt,
@@ -118,7 +118,7 @@ class QuestionModel extends GetModel {
       volumes: volumes ?? this.volumes,
       isAutoPlay: isAutoPlay ?? this.isAutoPlay,
       isRecord: isRecord ?? this.isRecord,
-      isWarmUpCheck: iswarmUpCheck ?? this.isWarmUpCheck,
+      isWarmUpCheck: isWarmUpCheck ?? this.isWarmUpCheck,
       isMiddleCheck: isMiddleCheck ?? this.isMiddleCheck,
       isFinalCheck: isFinalCheck ?? this.isFinalCheck,
       startedAt: startedAt ?? this.startedAt,
@@ -154,6 +154,7 @@ class QuestionModel extends GetModel {
         'play_count': volumes.length,
         'volumes': volumes,
         'total_milliseconds': getTotalMilliseconds,
+        'is_warmUp_check': isWarmUpCheck,
         'is_middle_check': isMiddleCheck,
         'is_final_check': isFinalCheck,
       };
@@ -165,6 +166,9 @@ class QuestionModel extends GetModel {
           ...Iterable.castFrom(map['volumes'] ?? []).map((x) => double.tryParse(x.toString()) ?? 0.0),
         ],
         totalMilliseconds: int.tryParse(map['total_milliseconds'].toString()) ?? 0,
+        isWarmUpCheck: map['is_warmUp_check'],
+        isMiddleCheck: map['is_middle_check'],
+        isFinalCheck: map['is_final_check'],
       );
 
   /*

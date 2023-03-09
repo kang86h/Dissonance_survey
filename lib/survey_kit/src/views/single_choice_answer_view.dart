@@ -68,6 +68,7 @@ class _SingleChoiceAnswerViewState extends State<SingleChoiceAnswerView> {
                 Divider(
                   color: Colors.cyan,
                 ),
+                // 조건이 앤서 뷰 내부에 있음
                 ..._singleChoiceAnswerFormat.textChoices
                     .asMap()
                     .entries

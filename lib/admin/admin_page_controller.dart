@@ -373,6 +373,54 @@ class AdminPageController extends GetController<AdminPageModel> {
       final stream = Stream.fromIterable(encode(csv));
       download(stream, '${tab.name}_${DateTime.now().toIso8601String()}.csv');
     });
+
+    final rows = [
+      [
+        'user_id',
+        'q2ReliabilityCount',
+        'q2ReliabilityLength',
+        'q3ReliabilityCount',
+        'q3ReliabilityLength',
+        'q4ReliabilityCount',
+        'q4ReliabilityLength',
+        'totalReliabilityCount',
+        'totalReliabilityLength',
+        'q2ConsistencyPlus',
+        'q2ConsistencyMinus',
+        'q3ConsistencyPlus',
+        'q3ConsistencyMinus',
+        'q4ConsistencyPlus',
+        'q4ConsistencyMinus',
+        'totalConsistencyCount',
+        'totalConsistencyLength',
+      ],
+      ...filterResultList.value.map((x) {
+        final data = x.data();
+
+        return [
+          data['user_id'],
+          data['q2ReliabilityCount'],
+          data['q2ReliabilityLength'],
+          data['q3ReliabilityCount'],
+          data['q3ReliabilityLength'],
+          data['q4ReliabilityCount'],
+          data['q4ReliabilityLength'],
+          data['totalReliabilityCount'],
+          data['totalReliabilityLength'],
+          data['q2ConsistencyPlus'],
+          data['q2ConsistencyMinus'],
+          data['q3ConsistencyPlus'],
+          data['q3ConsistencyMinus'],
+          data['q4ConsistencyPlus'],
+          data['q4ConsistencyMinus'],
+          data['totalConsistencyCount'],
+          data['totalConsistencyLength'],
+        ];
+      }),
+    ];
+    final csv = ListToCsvConverter().convert(rows);
+    final stream = Stream.fromIterable(encode(csv));
+    download(stream, 'suitability_${DateTime.now().toIso8601String()}.csv');
   }
 
   void onPressedRemoveCondition(int index) {

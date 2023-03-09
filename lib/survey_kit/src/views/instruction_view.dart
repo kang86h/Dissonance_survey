@@ -6,6 +6,9 @@ import '../../survey_kit.dart';
 class InstructionView extends StatefulWidget {
   final InstructionStep instructionStep;
   RxBool? isOption;
+  // bool -> true, false
+  // true -> false: UI Rebuild (X)
+  // Rxbool -> (true, false <- 관찰) UI Rebuild(O)
 
   InstructionView({
     required this.instructionStep,

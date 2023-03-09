@@ -30,7 +30,7 @@ class MainPageBinding extends Bindings {
               maxSliderScore: 60,
               maxTextScore: 1000,
               isRecord: true,
-              iswarmUpCheck: MainPage.q2WarmUpCheckId.contains(i + 1),
+              isWarmUpCheck: MainPage.q2WarmUpCheckId.contains(i + 1),
             ),
           );
           if (questionType.isRandom) {
@@ -60,7 +60,7 @@ class MainPageBinding extends Bindings {
               maxSliderScore: 100,
               maxTextScore: 1000,
               isRecord: true,
-              iswarmUpCheck: MainPage.q3WarmUpCheckId.contains(i + 1),
+              isWarmUpCheck: MainPage.q3WarmUpCheckId.contains(i + 1),
             ),
           );
           if (questionType.isRandom) {
@@ -90,7 +90,7 @@ class MainPageBinding extends Bindings {
               maxSliderScore: 140,
               maxTextScore: 1000,
               isRecord: true,
-              iswarmUpCheck: MainPage.q4WarmUpCheckId.contains(i + 1),
+              isWarmUpCheck: MainPage.q4WarmUpCheckId.contains(i + 1),
             ),
           );
           if (questionType.isRandom) {
