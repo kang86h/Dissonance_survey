@@ -117,7 +117,10 @@ class MainPageBinding extends Bindings {
           questions: {
             ...questions,
             QuestionType.check: [
-              ...questions.values.expand((x) => x).where((x) => x.isMiddleCheck),
+              ...questions.values.expand((x) => x).where((x) => x.isMiddleCheck).map((x) => x.copyWith(
+                    isMiddleCheck: false,
+                    isFinalCheck: true,
+                  )),
             ],
             QuestionType.complete: [
               ...List.generate(2, (_) => QuestionModel.empty()),

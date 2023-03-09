@@ -16,6 +16,7 @@ class MainPageModel extends GetModel {
     required this.agrees,
   });
 
+  // 멤버 변수
   final Map<QuestionType, Iterable<QuestionModel>> questions;
   final DateTime videoStartedAt;
   final DateTime videoEndedAt;
@@ -36,6 +37,7 @@ class MainPageModel extends GetModel {
   int get getVideoMilliseconds => videoEndedAt.difference(videoStartedAt).inMilliseconds;
 
   List<int> get q2ReliabilityCount {
+    // 로컬 변수, 지역 변수
     final current = questions[QuestionType.hs1q2].elvis.where((x) => x.isWarmUpCheck);
     final choice = current.where((x) => x.id == MainPage.q2WarmUpCheckId[MainPage.q2WarmIndex]);
     final unChosen = current.where((x) => x.id != MainPage.q2WarmUpCheckId[MainPage.q2WarmIndex]);

@@ -17,6 +17,7 @@ class QuestionModel extends GetModel {
     required this.isRecord,
     required this.isWarmUpCheck,
     required this.isMiddleCheck,
+    required this.isFinalCheck,
     required this.startedAt,
     required this.endedAt,
     required this.totalMilliseconds,
@@ -34,6 +35,7 @@ class QuestionModel extends GetModel {
   final bool isRecord;
   final bool isWarmUpCheck;
   final bool isMiddleCheck;
+  final bool isFinalCheck;
   final Iterable<DateTime> startedAt;
   final Iterable<DateTime> endedAt;
   final int totalMilliseconds;
@@ -43,7 +45,8 @@ class QuestionModel extends GetModel {
 
   int get getTotalMilliseconds {
     final length = min(startedAt.length, endedAt.length);
-    final total = Iterable.generate(length, (i) => endedAt.elementAt(i).difference(startedAt.elementAt(i))).fold<Duration>(Duration.zero, (a, c) => a + c);
+    final total =
+        Iterable.generate(length, (i) => endedAt.elementAt(i).difference(startedAt.elementAt(i))).fold<Duration>(Duration.zero, (a, c) => a + c);
     return total.inMilliseconds;
   }
 
@@ -59,6 +62,7 @@ class QuestionModel extends GetModel {
     isRecord: false,
     isWarmUpCheck: false,
     isMiddleCheck: false,
+    isFinalCheck: false,
     startedAt: const [],
     endedAt: const [],
     totalMilliseconds: 0,
@@ -98,6 +102,7 @@ class QuestionModel extends GetModel {
     bool? isRecord,
     bool? iswarmUpCheck,
     bool? isMiddleCheck,
+    bool? isFinalCheck,
     Iterable<DateTime>? startedAt,
     Iterable<DateTime>? endedAt,
     int? totalMilliseconds,
@@ -115,6 +120,7 @@ class QuestionModel extends GetModel {
       isRecord: isRecord ?? this.isRecord,
       isWarmUpCheck: iswarmUpCheck ?? this.isWarmUpCheck,
       isMiddleCheck: isMiddleCheck ?? this.isMiddleCheck,
+      isFinalCheck: isFinalCheck ?? this.isFinalCheck,
       startedAt: startedAt ?? this.startedAt,
       endedAt: endedAt ?? this.endedAt,
       totalMilliseconds: totalMilliseconds ?? this.totalMilliseconds,
@@ -135,6 +141,7 @@ class QuestionModel extends GetModel {
         isRecord,
         isWarmUpCheck,
         isMiddleCheck,
+        isFinalCheck,
         startedAt,
         endedAt,
         totalMilliseconds,
@@ -148,6 +155,7 @@ class QuestionModel extends GetModel {
         'volumes': volumes,
         'total_milliseconds': getTotalMilliseconds,
         'is_middle_check': isMiddleCheck,
+        'is_final_check': isFinalCheck,
       };
 
   factory QuestionModel.fromJson(Map<String, dynamic> map) => _empty.copyWith(
@@ -166,5 +174,5 @@ class QuestionModel extends GetModel {
   */
 
   @override
-  String toString() => 'id: $id file: $file score: $score isWarmUpCheck: $isWarmUpCheck isMiddleCheck: $isMiddleCheck';
+  String toString() => 'id: $id file: $file score: $score isWarmUpCheck: $isWarmUpCheck isMiddleCheck: $isMiddleCheck isFinalCheck: $isFinalCheck';
 }

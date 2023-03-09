@@ -324,29 +324,49 @@ class AdminPageController extends GetController<AdminPageModel> {
     }).toList();
 
     ResultFieldType.values.where((x) => x.isDropdown).forEach((tab) {
+      final func = (QuestionModel question) {
+        if (tab == ResultFieldType.score) {
+          return question.score.toStringAsFixed(2);
+        } else if (tab == ResultFieldType.volumes) {
+          return question.volumes.map((x) => x.toStringAsFixed(2)).join(" ");
+        } else if (tab == ResultFieldType.play_count) {
+          return question.volumes.length;
+        } else if (tab == ResultFieldType.totalMilliseconds) {
+          return question.totalMilliseconds;
+        }
+
+        return '';
+      };
       final rows = [
         [
           'user_id',
-          ...sorted.take(1).expand((x) => x.whereType<MapEntry<String, QuestionModel>>().map((y) => y.value.header)),
+          ...sorted.take(1).expand((x) => x
+              .whereType<MapEntry<String, QuestionModel>>()
+              .where((x) => !x.value.isMiddleCheck && !x.value.isFinalCheck)
+              .map((y) => y.value.header)),
+          'HS1Q2_check',
+          'HS1Q3_check',
+          'HS1Q4_check',
+          'HS1Q2_middle_check',
+          'HS1Q3_middle_check',
+          'HS1Q4_middle_check',
+          'HS1Q2_final_check',
+          'HS1Q3_final_check',
+          'HS1Q4_final_check',
         ],
         ...sorted.map((x) => [
-              ...x.map((y) {
+              ...x.where((y) => y is String || (y is MapEntry<String, QuestionModel> && !y.value.isMiddleCheck && !y.value.isFinalCheck)).map((y) {
                 if (y is String) {
                   return y;
                 } else if (y is MapEntry<String, QuestionModel>) {
-                  if (tab == ResultFieldType.score) {
-                    return y.value.score.toStringAsFixed(2);
-                  } else if (tab == ResultFieldType.volumes) {
-                    return y.value.volumes.map((x) => x.toStringAsFixed(2)).join(" ");
-                  } else if (tab == ResultFieldType.play_count) {
-                    return y.value.volumes.length;
-                  } else if (tab == ResultFieldType.totalMilliseconds) {
-                    return y.value.totalMilliseconds;
-                  }
+                  return func(y.value);
                 }
 
                 return '';
               }),
+              ...x.whereType<MapEntry<String, QuestionModel>>().where((y) => y.value.isMiddleCheck).map((y) => y.value).map((x) => x.header),
+              ...x.whereType<MapEntry<String, QuestionModel>>().where((y) => y.value.isMiddleCheck).map((y) => y.value).map(func),
+              ...x.whereType<MapEntry<String, QuestionModel>>().where((y) => y.value.isFinalCheck).map((y) => y.value).map(func),
             ]),
       ];
       final csv = ListToCsvConverter().convert(rows);

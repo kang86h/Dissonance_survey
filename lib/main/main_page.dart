@@ -30,9 +30,9 @@ class MainPage extends GetView<MainPageController> {
   static int q3WarmIndex = -1;
   static int q4WarmIndex = -1;
 
-  static List<int> q2WarmUpCheckId = [2, 6]..shuffle(Random());
-  static List<int> q3WarmUpCheckId = [1, 5, 6]..shuffle(Random());
-  static List<int> q4WarmUpCheckId = [1, 2, 3, 5]..shuffle(Random());
+  static List<int> q2WarmUpCheckId = [2, 6]..shuffle();
+  static List<int> q3WarmUpCheckId = [1, 5, 6]..shuffle();
+  static List<int> q4WarmUpCheckId = [1, 2, 3, 5]..shuffle();
 
   static StepIdentifier q2Identifier = StepIdentifier(id: q2Index.toString());
   static StepIdentifier q3Identifier = StepIdentifier(id: q3Index.toString());
@@ -231,7 +231,7 @@ class MainPage extends GetView<MainPageController> {
                           TextSpan(text: '처음으로 ', style: TextStyle(fontSize: 18, color: Colors.red, fontWeight: FontWeight.bold)),
                           TextSpan(
                             text: '되돌아가게 됩니다.',
-                            style: TextStyle(fontSize: 18 , color: Colors.black),
+                            style: TextStyle(fontSize: 18, color: Colors.black),
                           ),
                         ]),
                       ),
