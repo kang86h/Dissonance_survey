@@ -51,8 +51,8 @@ extension IterableOptionalEx<T> on Iterable<T>? {
 
   bool get isset => !isNullOrEmpty;
 
-  //bool get isCheck => elvis.length > 2; //최소 재생횟수
-  bool get isCheck => true;// 설정
+  bool get isCheck => elvis.length > 1; //최소 재생횟수
+  //bool get isCheck => true;// 설정
 }
 
 extension NumNullableEx on num? {
