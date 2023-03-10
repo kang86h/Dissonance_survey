@@ -16,6 +16,8 @@ void main() async {
   runApp(App());
 }
 
+//find ./lib -exec perl -pi -e 's/{기존}/{치환}/g' {} \;
+//grep -R 'surveykit_example' ./lib
 
 //flutter build web --no-sound-null-safety
 //firebase init

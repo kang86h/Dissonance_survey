@@ -389,7 +389,7 @@ class MainPage extends GetView<MainPageController> {
       answerFormat: MultipleChoiceAnswerFormat(
         textChoices: [
           TextChoice(text: '1. 거칠게 느껴지는 음', value: '1'),
-          TextChoice(text: '2. 한 음으로 합쳐져 들리지 않는 음', value: '2'),
+          TextChoice(text: '2. 익숙하지 않은 음', value: '2'),
           TextChoice(text: '3. 어울리지 않는 음', value: '3'),
           TextChoice(text: '4. 기타', value: '', controller: controller.multipleEditingController),
         ],
@@ -762,27 +762,27 @@ class MainPage extends GetView<MainPageController> {
                                         width: 18.0,
                                       ),
                                       Text(
-                                        '0',
+                                        '0(협화)',
                                         style: TextStyle(
                                           fontSize: 20,
-                                          color: Colors.black,
+                                          color: Color.fromRGBO(0, 0, 255, 1.0),
                                         ),
                                       ),
                                       Spacer(),
                                       SizedBox(width: question.maxSliderScore > 0 ? (question.maxSliderScore - 20) / 6 : 0),
                                       Text(
-                                        '${question.maxSliderScore / 2}',
+                                        '    ${question.maxSliderScore / 2}',
                                         style: TextStyle(
                                           fontSize: 20,
-                                          color: Colors.black,
+                                          color: Color.fromRGBO(127, 0, 127, 1.0),
                                         ),
                                       ),
                                       Spacer(),
                                       Text(
-                                        '${question.maxSliderScore}',
+                                        '(불협화)${question.maxSliderScore}',
                                         style: TextStyle(
                                           fontSize: 20,
-                                          color: Colors.black,
+                                            color: Color.fromRGBO(255, 0, 0, 1.0),
                                         ),
                                       ),
                                       SizedBox(

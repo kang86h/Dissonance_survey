@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:surveykit_example/getx/extension.dart';
 import 'package:surveykit_example/getx/get_rx_impl.dart';
+
 
 import '../../survey_kit.dart';
 
@@ -53,6 +53,7 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
   void onListenText() {
     setState(() {
       _isValid = score > 0 || widget.isSkip?.value == true;
+
     });
   }
 
@@ -115,6 +116,9 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
                       decoration: textFieldInputDecoration(
                         hint: _doubleAnswerFormat.hint,
                       ),
+                      style: (TextStyle(
+                        color: Color.fromRGBO(255, 0, 0, 1.0)
+                      )),
                       enabled: !(rx is RxBool && rx.value),
                       controller: widget.controller!,
                       keyboardType: TextInputType.number,
