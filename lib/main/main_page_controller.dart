@@ -286,8 +286,9 @@ class MainPageController extends GetController<MainPageModel> {
       onChange(questionType, index, score: value);
 
       textEditingController.text = value.floor().toString();
-      final r = max(2, (min(1, value / questionModel.maxSliderScore) * 255).floor());
-      color.value = Color.fromRGBO(r, 0, 1 - r, 1);
+      final ratioR = (sin(((value - (questionModel.maxSliderScore * 0.5)) / questionModel.maxSliderScore) * pi) * 0.5) + 0.5;
+      final r = max(2, (min(1, ratioR) * 255).floor());
+      color.value = Color.fromRGBO(r, 0, 257 - r, 1);
     }
   }
 

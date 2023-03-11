@@ -20,7 +20,8 @@ class MainPage extends GetView<MainPageController> {
 
   static StepIdentifier genderIdentifier = StepIdentifier(id: 'gender');
   static StepIdentifier ageIdentifier = StepIdentifier(id: 'age');
-  static StepIdentifier prequestionIdentifier = StepIdentifier(id: 'prequestion');
+  static StepIdentifier prequestionIdentifier =
+      StepIdentifier(id: 'prequestion');
 
   static int q2Index = 8;
   static int q3Index = 15;
@@ -45,7 +46,9 @@ class MainPage extends GetView<MainPageController> {
         child: FutureBuilder<Task>(
           future: getSampleTask(),
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done && snapshot.hasData && snapshot.data != null) {
+            if (snapshot.connectionState == ConnectionState.done &&
+                snapshot.hasData &&
+                snapshot.data != null) {
               final task = snapshot.data!;
               return controller.rx((state) {
                 return SurveyKit(
@@ -110,7 +113,10 @@ class MainPage extends GetView<MainPageController> {
                         textStyle: MaterialStateProperty.resolveWith(
                           (Set<MaterialState> state) {
                             if (state.contains(MaterialState.disabled)) {
-                              return Theme.of(context).textTheme.button?.copyWith(
+                              return Theme.of(context)
+                                  .textTheme
+                                  .button
+                                  ?.copyWith(
                                     color: Colors.grey,
                                   );
                             }
@@ -228,7 +234,12 @@ class MainPage extends GetView<MainPageController> {
                             text: '1. 너무 비슷한 값을 여러번 매기시면 각 세션의 ',
                             style: TextStyle(fontSize: 18, color: Colors.black),
                           ),
-                          TextSpan(text: '처음으로 ', style: TextStyle(fontSize: 18, color: Colors.red, fontWeight: FontWeight.bold)),
+                          TextSpan(
+                              text: '처음으로 ',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold)),
                           TextSpan(
                             text: '되돌아가게 됩니다.',
                             style: TextStyle(fontSize: 18, color: Colors.black),
@@ -258,10 +269,16 @@ class MainPage extends GetView<MainPageController> {
                         overflow: TextOverflow.visible,
                         text: TextSpan(children: [
                           TextSpan(
-                            text: '2. 워밍업 테스트 결과와 모순되는 점수를 매기신 경우 신뢰도가 감소됩니다. 최종 신뢰도가 ',
+                            text:
+                                '2. 워밍업 테스트 결과와 모순되는 점수를 매기신 경우 신뢰도가 감소됩니다. 최종 신뢰도가 ',
                             style: TextStyle(fontSize: 18, color: Colors.black),
                           ),
-                          TextSpan(text: '80%미만', style: TextStyle(fontSize: 18, color: Colors.red, fontWeight: FontWeight.bold)),
+                          TextSpan(
+                              text: '80%미만',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold)),
                           TextSpan(
                             text: '일 경우 보상을 받으실 수 없습니다.',
                             style: TextStyle(fontSize: 18, color: Colors.black),
@@ -291,10 +308,16 @@ class MainPage extends GetView<MainPageController> {
                         overflow: TextOverflow.visible,
                         text: TextSpan(children: [
                           TextSpan(
-                            text: '3. 같은 음원에 대한 점수의 차이가 만점의 30% 이상일 경우 일관성 점수가 감점됩니다. 일관성 점수가 6점만점에 ',
+                            text:
+                                '3. 같은 음원에 대한 점수의 차이가 만점의 30% 이상일 경우 일관성 점수가 감점됩니다. 일관성 점수가 6점만점에 ',
                             style: TextStyle(fontSize: 18, color: Colors.black),
                           ),
-                          TextSpan(text: '5점 미만', style: TextStyle(fontSize: 18, color: Colors.red, fontWeight: FontWeight.bold)),
+                          TextSpan(
+                              text: '5점 미만',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold)),
                           TextSpan(
                             text: '일 경우 보상을 받으실 수 없습니다.',
                             style: TextStyle(fontSize: 18, color: Colors.black),
@@ -327,7 +350,12 @@ class MainPage extends GetView<MainPageController> {
                             text: '4. 모든 음원은 반드시 ',
                             style: TextStyle(fontSize: 18, color: Colors.black),
                           ),
-                          TextSpan(text: '2회', style: TextStyle(fontSize: 18, color: Colors.red, fontWeight: FontWeight.bold)),
+                          TextSpan(
+                              text: '2회',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold)),
                           TextSpan(
                             text: '이상 들으셔야 점수를 매기실 수 있습니다.',
                             style: TextStyle(fontSize: 18, color: Colors.black),
@@ -385,13 +413,17 @@ class MainPage extends GetView<MainPageController> {
   QuestionStep getPrequestionStep() {
     return QuestionStep(
       stepIdentifier: prequestionIdentifier,
-      title: '당신이 생각하는 불협화음이란 어떤 것입니까?\n옳다고 생각하는 것을 모두 선택해 주세요.\n원하시는 답이 없다면 직접 적어주세요.',
+      title:
+          '당신이 생각하는 불협화음이란 어떤 것입니까?\n옳다고 생각하는 것을 모두 선택해 주세요.\n원하시는 답이 없다면 직접 적어주세요.',
       answerFormat: MultipleChoiceAnswerFormat(
         textChoices: [
           TextChoice(text: '1. 거칠게 느껴지는 음', value: '1'),
           TextChoice(text: '2. 익숙하지 않은 음', value: '2'),
           TextChoice(text: '3. 어울리지 않는 음', value: '3'),
-          TextChoice(text: '4. 기타', value: '', controller: controller.multipleEditingController),
+          TextChoice(
+              text: '4. 기타',
+              value: '',
+              controller: controller.multipleEditingController),
         ],
       ),
       isOptional: false,
@@ -433,9 +465,12 @@ class MainPage extends GetView<MainPageController> {
                       ),
                       controller.playerState.rx((rx) {
                         return InkWell(
-                          onTap: () => controller.onPressedState(false, rx.value),
+                          onTap: () =>
+                              controller.onPressedState(false, rx.value),
                           child: Icon(
-                            rx.value == PlayerState.playing ? Icons.pause_circle_outline : Icons.play_circle_outline,
+                            rx.value == PlayerState.playing
+                                ? Icons.pause_circle_outline
+                                : Icons.play_circle_outline,
                             size: 48,
                           ),
                         );
@@ -489,14 +524,18 @@ class MainPage extends GetView<MainPageController> {
                 child: InkWell(
                   onTap: () => controller.onPlay(questionType, x.value),
                   child: controller.rx((state) {
-                    final question = state.questions[questionType].elvis.where((y) => y.id == x.value).firstOrNull;
+                    final question = state.questions[questionType].elvis
+                        .where((y) => y.id == x.value)
+                        .firstOrNull;
 
                     if (question is QuestionModel) {
                       return controller.playerState.rx((rx) {
                         return Icon(
                           Icons.play_circle_outline,
                           size: 48,
-                          color: rx.value == PlayerState.playing ? Colors.grey : Colors.cyan,
+                          color: rx.value == PlayerState.playing
+                              ? Colors.grey
+                              : Colors.cyan,
                         );
                       });
                     } else {
@@ -540,7 +579,9 @@ class MainPage extends GetView<MainPageController> {
                   child: Padding(
                     padding: const EdgeInsets.all(15),
                     child: Icon(
-                      rx.value == VideoStatus.play ? Icons.pause_circle_outline : Icons.play_circle_outline,
+                      rx.value == VideoStatus.play
+                          ? Icons.pause_circle_outline
+                          : Icons.play_circle_outline,
                       color: Colors.black,
                       size: 48,
                     ),
@@ -569,15 +610,20 @@ class MainPage extends GetView<MainPageController> {
                 }
 
                 final name = rxQuestionType.value.title;
-                final entries = state.questions.entries.where((x) => x.key.isLength);
-                final keyIndex =
-                    0; /* entries
+                final entries =
+                    state.questions.entries.where((x) => x.key.isLength);
+                final keyIndex = entries
                     .map((x) => x.key)
                     .toList()
                     .indexOf(rxQuestionType.value);
-                    */
-                final currentLength = entries.take(keyIndex).map((x) => x.value.length).fold<int>(0, (a, c) => a + c);
-                final totalLength = entries.map((x) => x.value.length).fold<int>(0, (a, c) => a + c);
+
+                final currentLength = entries
+                    .take(keyIndex)
+                    .map((x) => x.value.length)
+                    .fold<int>(0, (a, c) => a + c);
+                final totalLength = entries
+                    .map((x) => x.value.length)
+                    .fold<int>(0, (a, c) => a + c);
 
                 return controller.index.rx((rxIndex) {
                   return Column(
@@ -603,7 +649,10 @@ class MainPage extends GetView<MainPageController> {
                           ),
                           Text(
                             '2회이상 ',
-                            style: TextStyle(fontSize: 20, color: Colors.red, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                                fontSize: 20,
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold),
                             textAlign: TextAlign.center,
                           ),
                           Text(
@@ -649,11 +698,14 @@ class MainPage extends GetView<MainPageController> {
                               ? CircularProgressIndicator()
                               : controller.playerState.rx((rx) {
                                   return InkWell(
-                                    onTap: () => controller.onPressedState(true, rx.value),
+                                    onTap: () => controller.onPressedState(
+                                        true, rx.value),
                                     child: Icon(
                                       Icons.play_circle_outline,
                                       size: 48,
-                                      color: rx.value == PlayerState.playing ? Colors.grey : null,
+                                      color: rx.value == PlayerState.playing
+                                          ? Colors.grey
+                                          : null,
                                     ),
                                   );
                                 })),
@@ -670,7 +722,8 @@ class MainPage extends GetView<MainPageController> {
 
                               return controller.index.rx((rxIndex) {
                                 final index = rxIndex.value;
-                                final question = state.questions[questionType][index];
+                                final question =
+                                    state.questions[questionType][index];
 
                                 return Text(
                                   '${(question?.volumes.length).elvis}회',
@@ -743,18 +796,27 @@ class MainPage extends GetView<MainPageController> {
                         }
 
                         final questions = state.questions[rxKey.value];
-                        final maxSliderScore = state.questions.values.map((x) => x.map((y) => y.maxSliderScore).reduce(max)).reduce(max);
+                        final maxSliderScore = state.questions.values
+                            .map((x) =>
+                                x.map((y) => y.maxSliderScore).reduce(max))
+                            .reduce(max);
 
                         return controller.index.rx(
                           (rxValue) {
                             final question = questions[rxValue.value]!;
 
                             return FractionallySizedBox(
-                              widthFactor: (question.maxSliderScore + ((maxSliderScore - question.maxSliderScore) * 0.15)) / maxSliderScore,
+                              widthFactor: (question.maxSliderScore +
+                                      ((maxSliderScore -
+                                              question.maxSliderScore) *
+                                          0.15)) /
+                                  maxSliderScore,
                               child: Column(
                                 children: [
                                   Slider(
-                                    onChanged: (value) => controller.onChangedScore(rxKey.value, rxValue.value, value),
+                                    onChanged: (value) =>
+                                        controller.onChangedScore(
+                                            rxKey.value, rxValue.value, value),
                                     min: 0,
                                     max: question.maxSliderScore,
                                     value: question.sliderScore,
@@ -768,6 +830,7 @@ class MainPage extends GetView<MainPageController> {
                                         '0(협화)',
                                         style: TextStyle(
                                           fontSize: 20,
+                                          fontWeight: FontWeight.bold,
                                           color: Color.fromRGBO(0, 0, 255, 1.0),
                                         ),
                                       ),
@@ -787,6 +850,7 @@ class MainPage extends GetView<MainPageController> {
                                         '(불협화)${question.maxSliderScore}',
                                         style: TextStyle(
                                           fontSize: 20,
+                                          fontWeight: FontWeight.bold,
                                           color: Color.fromRGBO(255, 0, 0, 1.0),
                                         ),
                                       ),
@@ -825,15 +889,20 @@ class MainPage extends GetView<MainPageController> {
         child: Column(
           children: [
             controller.rx((state) {
-              final entries = state.questions.entries.where((x) => x.key.isLength);
-              final keyIndex =
-                  0; /* entries
+              final entries =
+                  state.questions.entries.where((x) => x.key.isLength);
+              final keyIndex = entries
                   .map((x) => x.key)
                   .toList()
                   .indexOf(QuestionType.check);
-                  */
-              final currentLength = entries.take(keyIndex).map((x) => x.value.length).fold<int>(0, (a, c) => a + c);
-              final totalLength = entries.map((x) => x.value.length).fold<int>(0, (a, c) => a + c);
+
+              final currentLength = entries
+                  .take(keyIndex)
+                  .map((x) => x.value.length)
+                  .fold<int>(0, (a, c) => a + c);
+              final totalLength = entries
+                  .map((x) => x.value.length)
+                  .fold<int>(0, (a, c) => a + c);
 
               return Column(
                 children: [
@@ -858,7 +927,10 @@ class MainPage extends GetView<MainPageController> {
                       ),
                       Text(
                         '2회이상 ',
-                        style: TextStyle(fontSize: 20, color: Colors.red, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold),
                         textAlign: TextAlign.center,
                       ),
                       Text(
@@ -902,11 +974,14 @@ class MainPage extends GetView<MainPageController> {
                               ? CircularProgressIndicator()
                               : controller.playerState.rx((rx) {
                                   return InkWell(
-                                    onTap: () => controller.onPressedState(true, rx.value),
+                                    onTap: () => controller.onPressedState(
+                                        true, rx.value),
                                     child: Icon(
                                       Icons.play_circle_outline,
                                       size: 48,
-                                      color: rx.value == PlayerState.playing ? Colors.grey : null,
+                                      color: rx.value == PlayerState.playing
+                                          ? Colors.grey
+                                          : null,
                                     ),
                                   );
                                 })),
@@ -923,7 +998,8 @@ class MainPage extends GetView<MainPageController> {
 
                               return controller.index.rx((rxIndex) {
                                 final index = rxIndex.value;
-                                final question = state.questions[questionType][index];
+                                final question =
+                                    state.questions[questionType][index];
 
                                 return Text(
                                   '${(question?.volumes.length).elvis}회',
@@ -981,7 +1057,9 @@ class MainPage extends GetView<MainPageController> {
             controller.rx(
               (state) {
                 final questions = state.questions[QuestionType.check];
-                final maxSliderScore = state.questions.values.map((x) => x.map((y) => y.maxSliderScore).reduce(max)).reduce(max);
+                final maxSliderScore = state.questions.values
+                    .map((x) => x.map((y) => y.maxSliderScore).reduce(max))
+                    .reduce(max);
                 final question = questions[index];
 
                 return Column(
@@ -994,11 +1072,16 @@ class MainPage extends GetView<MainPageController> {
                       ),
                     ),
                     FractionallySizedBox(
-                      widthFactor: ((question?.maxSliderScore).elvis + ((maxSliderScore - (question?.maxSliderScore).elvis) * 0.15)) / maxSliderScore,
+                      widthFactor: ((question?.maxSliderScore).elvis +
+                              ((maxSliderScore -
+                                      (question?.maxSliderScore).elvis) *
+                                  0.15)) /
+                          maxSliderScore,
                       child: Column(
                         children: [
                           Slider(
-                            onChanged: (value) => controller.onChangedScore(QuestionType.check, index, value),
+                            onChanged: (value) => controller.onChangedScore(
+                                QuestionType.check, index, value),
                             min: 0,
                             max: (question?.maxSliderScore).elvis,
                             value: (question?.sliderScore).elvis,
@@ -1009,18 +1092,20 @@ class MainPage extends GetView<MainPageController> {
                                 width: 18.0,
                               ),
                               Text(
-                                '0',
+                                '0(협화)',
                                 style: TextStyle(
                                   fontSize: 20,
-                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color.fromRGBO(0, 0, 255, 1.0),
                                 ),
                               ),
                               Spacer(),
                               Text(
-                                '${question?.maxSliderScore.elvis}',
+                                '(불협화)${question?.maxSliderScore.elvis}',
                                 style: TextStyle(
                                   fontSize: 20,
-                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color.fromRGBO(255, 0, 0, 1.0),
                                 ),
                               ),
                               SizedBox(
@@ -1103,13 +1188,11 @@ class MainPage extends GetView<MainPageController> {
     return NavigableTask(
       id: TaskIdentifier(),
       steps: [
-        /*
         getStart(),
         getNotice(),
         getAgreement(),
         getGenderStep(),
         getAgeStep(),
-        */
         getPrequestionStep(),
         getVolume(),
         getWarmUpStep(QuestionType.hs1q2, MainPage.q2WarmUpCheckId),
@@ -1124,13 +1207,16 @@ class MainPage extends GetView<MainPageController> {
       ],
       navigationRules: {
         q2Identifier: ConditionalNavigationRule(
-          resultToStepIdentifierMapper: (_) => controller.onCheck(QuestionType.hs1q2, 0, q2Index + 1),
+          resultToStepIdentifierMapper: (_) =>
+              controller.onCheck(QuestionType.hs1q2, 0, q2Index + 1),
         ),
         q3Identifier: ConditionalNavigationRule(
-          resultToStepIdentifierMapper: (_) => controller.onCheck(QuestionType.hs1q3, q2Index + 1, q3Index + 1),
+          resultToStepIdentifierMapper: (_) =>
+              controller.onCheck(QuestionType.hs1q3, q2Index + 1, q3Index + 1),
         ),
         q4Identifier: ConditionalNavigationRule(
-          resultToStepIdentifierMapper: (_) => controller.onCheck(QuestionType.hs1q4, q3Index + 1, q4Index + 1),
+          resultToStepIdentifierMapper: (_) =>
+              controller.onCheck(QuestionType.hs1q4, q3Index + 1, q4Index + 1),
         ),
       },
     );

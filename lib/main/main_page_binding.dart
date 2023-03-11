@@ -14,17 +14,12 @@ class MainPageBinding extends Bindings {
     Get.put<MainPageController>((() {
       final questions = {
         QuestionType.none: [
-          ...List.generate(6, (_) => QuestionModel.empty()),
-        ],
-        /*
-        QuestionType.none: [
           ...List.generate(5, (_) => QuestionModel.empty()),
           //볼륨조절 전 스텝 갯수
           QuestionModel.prequestion(),
           QuestionModel.volume(),
           ...List.generate(4, (_) => QuestionModel.empty()),
         ],
-        */
         QuestionType.hs1q2: (QuestionType questionType) {
           final name = questionType.name.toUpperCase();
           final questions = List.generate(
@@ -125,10 +120,13 @@ class MainPageBinding extends Bindings {
           questions: {
             ...questions,
             QuestionType.check: [
-              ...questions.values.expand((x) => x).where((x) => x.isMiddleCheck).map((x) => x.copyWith(
-                    isMiddleCheck: false,
-                    isFinalCheck: true,
-                  )),
+              ...questions.values
+                  .expand((x) => x)
+                  .where((x) => x.isMiddleCheck)
+                  .map((x) => x.copyWith(
+                        isMiddleCheck: false,
+                        isFinalCheck: true,
+                      )),
             ],
             QuestionType.complete: [
               ...List.generate(2, (_) => QuestionModel.empty()),

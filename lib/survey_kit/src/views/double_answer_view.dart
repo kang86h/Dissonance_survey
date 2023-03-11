@@ -86,7 +86,7 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
                       decoration: textFieldInputDecoration(
                         hint: _doubleAnswerFormat.hint,
                       ),
-                      style: TextStyle(color: color is Rx<Color> ? color.value : Colors.transparent),
+                      style: TextStyle(color: color is Rx<Color> ? color.value : Colors.transparent, fontWeight: FontWeight.bold),
                       readOnly: !(isCheck is RxBool && isCheck.value),
                       controller: widget.controller!,
                       keyboardType: TextInputType.number,
