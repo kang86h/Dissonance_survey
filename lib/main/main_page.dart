@@ -570,7 +570,12 @@ class MainPage extends GetView<MainPageController> {
 
                 final name = rxQuestionType.value.title;
                 final entries = state.questions.entries.where((x) => x.key.isLength);
-                final keyIndex = entries.map((x) => x.key).toList().indexOf(rxQuestionType.value);
+                final keyIndex =
+                    0; /* entries
+                    .map((x) => x.key)
+                    .toList()
+                    .indexOf(rxQuestionType.value);
+                    */
                 final currentLength = entries.take(keyIndex).map((x) => x.value.length).fold<int>(0, (a, c) => a + c);
                 final totalLength = entries.map((x) => x.value.length).fold<int>(0, (a, c) => a + c);
 
@@ -821,7 +826,12 @@ class MainPage extends GetView<MainPageController> {
           children: [
             controller.rx((state) {
               final entries = state.questions.entries.where((x) => x.key.isLength);
-              final keyIndex = entries.map((x) => x.key).toList().indexOf(QuestionType.check);
+              final keyIndex =
+                  0; /* entries
+                  .map((x) => x.key)
+                  .toList()
+                  .indexOf(QuestionType.check);
+                  */
               final currentLength = entries.take(keyIndex).map((x) => x.value.length).fold<int>(0, (a, c) => a + c);
               final totalLength = entries.map((x) => x.value.length).fold<int>(0, (a, c) => a + c);
 
@@ -1093,11 +1103,13 @@ class MainPage extends GetView<MainPageController> {
     return NavigableTask(
       id: TaskIdentifier(),
       steps: [
+        /*
         getStart(),
         getNotice(),
         getAgreement(),
         getGenderStep(),
         getAgeStep(),
+        */
         getPrequestionStep(),
         getVolume(),
         getWarmUpStep(QuestionType.hs1q2, MainPage.q2WarmUpCheckId),
