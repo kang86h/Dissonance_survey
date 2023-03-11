@@ -27,6 +27,7 @@ class MainPageBinding extends Bindings {
             (i) => QuestionModel.empty().copyWith(
               id: i + 1,
               file: '$name/$name-${i + 1}.mp3',
+              score: 60 / 2,
               maxSliderScore: 60,
               maxTextScore: 1000,
               isRecord: true,
@@ -57,6 +58,7 @@ class MainPageBinding extends Bindings {
             (i) => QuestionModel.empty().copyWith(
               id: i + 1,
               file: '$name/$name-${i + 1}.mp3',
+              score: 100 / 2,
               maxSliderScore: 100,
               maxTextScore: 1000,
               isRecord: true,
@@ -87,6 +89,7 @@ class MainPageBinding extends Bindings {
             (i) => QuestionModel.empty().copyWith(
               id: i + 1,
               file: '$name/$name-${i + 1}.mp3',
+              score: 140 / 2,
               maxSliderScore: 140,
               maxTextScore: 1000,
               isRecord: true,
