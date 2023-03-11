@@ -163,7 +163,7 @@ class MainPageController extends GetController<MainPageModel> {
                 if (k == questionType) {
                   return MapEntry(k, [
                     ...v.map((x) => x.copyWith(
-                          score: 0,
+                          score: x.maxSliderScore / 2,
                           volumes: [],
                           startedAt: [],
                           endedAt: [],
@@ -193,9 +193,8 @@ class MainPageController extends GetController<MainPageModel> {
       }
     }
 
-    if (int.tryParse(textEditingController.value.text).elvis == 0) {
-      onListenText();
-    }
+    // 강제로 onListenText를 호출하여 텍스트 컨트롤러 값 초기화
+    onListenText(true);
 
     isLoad.value = false;
   }
@@ -335,17 +334,14 @@ class MainPageController extends GetController<MainPageModel> {
     volume.value = value;
   }
 
-  void onListenText() {
+  void onListenText([bool? isStep]) {
     final questionType = this.questionType.value;
     final index = this.index.value;
 
-    final text = double.tryParse(textEditingController.value.text) ?? -1;
+    final text = textEditingController.value.text.isset ? double.tryParse(textEditingController.value.text) ?? -1.0 : -1.0;
     final questionModel = state.questions[questionType][index];
 
     if (questionModel is QuestionModel && questionModel.volumes.isCheck) {
-      // questionModel.maxTextScore 60
-      // questionModel.maxSliderScore 100 -> UI쪽에서 maxSliderScore보다 작은 값을 할당
-
       final maxScore = max(questionModel.maxTextScore, questionModel.maxSliderScore);
 
       if (text >= 0) {
@@ -365,16 +361,18 @@ class MainPageController extends GetController<MainPageModel> {
         color.value = Color.fromRGBO(r, 0, 1 - r, 1);
       } else if (questionModel.score >= 0) {
         // 이전, 다음 스텝으로 진행했을 때
-        if (textEditingController.value.text.isset) {
-          textEditingController.text = questionModel.score.floor().toString();
+        textEditingController.text = questionModel.score.floor().toString();
 
-          final length = questionModel.score.toString().length;
-          if (length > 0) {
-            textEditingController.selection = TextSelection(
-              baseOffset: length,
-              extentOffset: length,
-            );
-          }
+        final length = questionModel.score.toString().length;
+        if (length > 0) {
+          textEditingController.selection = TextSelection(
+            baseOffset: length,
+            extentOffset: length,
+          );
+        }
+
+        if (!isStep.elvis) {
+          onChangedScore(questionType, index, 0);
         }
       } else {
         textEditingController.clear();

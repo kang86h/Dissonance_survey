@@ -40,7 +40,6 @@ class _DoubleAnswerViewState extends State<DoubleAnswerView> {
 
     WidgetsBinding.instance?.addPostFrameCallback((_) {
       widget.controller?.addListener(onListenText);
-      widget.controller?.text = widget.result?.result?.toString() ?? '';
     });
   }
 
