@@ -9,7 +9,6 @@ class QuestionModel extends GetModel {
     required this.id,
     required this.file,
     required this.score,
-    required this.isSkip,
     required this.maxSliderScore,
     required this.maxTextScore,
     required this.volumes,
@@ -27,7 +26,6 @@ class QuestionModel extends GetModel {
   final int id;
   final String file;
   final double score;
-  final bool isSkip;
   final double maxSliderScore;
   final double maxTextScore;
   final Iterable<double> volumes;
@@ -54,7 +52,6 @@ class QuestionModel extends GetModel {
     id: 0,
     file: '',
     score: 0,
-    isSkip: false,
     maxSliderScore: 0,
     maxTextScore: 0,
     volumes: const [],
@@ -94,7 +91,6 @@ class QuestionModel extends GetModel {
     int? id,
     String? file,
     double? score,
-    bool? isSkip,
     double? maxSliderScore,
     double? maxTextScore,
     Iterable<double>? volumes,
@@ -112,7 +108,6 @@ class QuestionModel extends GetModel {
       id: id ?? this.id,
       file: file ?? this.file,
       score: score ?? this.score,
-      isSkip: isSkip ?? this.isSkip,
       maxSliderScore: maxSliderScore ?? this.maxSliderScore,
       maxTextScore: maxTextScore ?? this.maxTextScore,
       volumes: volumes ?? this.volumes,
@@ -133,7 +128,6 @@ class QuestionModel extends GetModel {
         id,
         file,
         score,
-        isSkip,
         maxSliderScore,
         maxTextScore,
         volumes,
@@ -170,12 +164,6 @@ class QuestionModel extends GetModel {
         isMiddleCheck: map['is_middle_check'],
         isFinalCheck: map['is_final_check'],
       );
-
-  /*
-  @override
-  String toString() =>
-      'id: $id file: $file score: $score isSkip: $isSkip maxSliderScore: $maxSliderScore maxTextScore: $maxTextScore volumes: $volumes isAutoPlay: $isAutoPlay isRecord: $isRecord iswarmUpCheck: $iswarmUpCheck isMiddleCheck: $isMiddleCheck startedAt: $startedAt endedAt: $endedAt totalMilliseconds: $totalMilliseconds prequestion: $prequestion';
-  */
 
   @override
   String toString() => 'id: $id file: $file score: $score isWarmUpCheck: $isWarmUpCheck isMiddleCheck: $isMiddleCheck isFinalCheck: $isFinalCheck';

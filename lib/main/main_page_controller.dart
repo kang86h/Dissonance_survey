@@ -49,12 +49,14 @@ class MainPageController extends GetController<MainPageModel> {
   final Rx<double> volume = 1.0.obs;
   final Rx<QuestionType> questionType = QuestionType.none.obs;
   final Rx<int> index = 0.obs;
-  final RxBool isSkip = false.obs;
-  final RxBool isPlay = false.obs;
+  final Rx<Color> color = Colors.transparent.obs;
+  final RxBool isCheck = false.obs;
   final RxBool isLoad = false.obs;
   final RxBool isOption = false.obs;
   final Rx<double> videoBuffered = 0.0.obs;
   final Rx<double> videoPlayed = 0.0.obs;
+
+  String get uid => Uri.dataFromString(html.window.location.href).queryParameters['uid'].elvis;
 
   void onInit() async {
     super.onInit();
@@ -83,6 +85,8 @@ class MainPageController extends GetController<MainPageModel> {
       final question = map[QuestionModel];
 
       if (question is QuestionModel) {
+        isCheck.value = question.volumes.isCheck;
+
         onChange(
           map[QuestionType] as QuestionType,
           map[int] as int,
@@ -90,8 +94,6 @@ class MainPageController extends GetController<MainPageModel> {
           startedAt: question.startedAt,
         );
       }
-
-      isPlay.value = true;
     });
     onChangedVolume(1 / 2);
   }
@@ -109,8 +111,6 @@ class MainPageController extends GetController<MainPageModel> {
     onChange(
       questionType,
       index,
-      score: isSkip.value ? 0 : null,
-      isSkip: isSkip.value,
       endedAt: endedAt,
     );
 
@@ -182,8 +182,7 @@ class MainPageController extends GetController<MainPageModel> {
     await audioPlayer.stop();
 
     final nextQuestion = state.questions[questionType].elvis.elementAt(index);
-    isSkip.value = nextQuestion.isSkip;
-    isPlay.value = nextQuestion.volumes.isCheck;
+    isCheck.value = nextQuestion.volumes.isCheck;
 
     if (nextQuestion.file.isset) {
       await audioPlayer.setSource(AssetSource(nextQuestion.file));
@@ -207,7 +206,7 @@ class MainPageController extends GetController<MainPageModel> {
     videoPlayerController.dispose();
     multipleEditingController.dispose();
     textEditingController.dispose();
-    [playerState, volume, isSkip, isPlay, isLoad, isOption, videoBuffered, videoPlayed].forEach((x) => x.close());
+    [playerState, volume, isCheck, isLoad, isOption, videoBuffered, videoPlayed].forEach((x) => x.close());
     super.onClose();
   }
 
@@ -228,11 +227,11 @@ class MainPageController extends GetController<MainPageModel> {
     if (state.isReliability && state.isConsistency) {
       final gender = surveyResult.results.where((x) => x.id == MainPage.genderIdentifier).firstOrNull?.results.firstOrNull?.valueIdentifier ?? '';
       final age = surveyResult.results.where((x) => x.id == MainPage.ageIdentifier).firstOrNull?.results.firstOrNull?.valueIdentifier ?? '';
-      final prequestion =
-          surveyResult.results.where((x) => x.id == MainPage.prequestionIdentifier).firstOrNull?.results.firstOrNull?.valueIdentifier ?? '';
+      final prequestion = surveyResult.results.where((x) => x.id == MainPage.prequestionIdentifier).firstOrNull?.results.firstOrNull?.valueIdentifier ?? '';
 
       CollectionReference userCollection = FirebaseFirestore.instance.collection('user');
       final userDocument = await userCollection.add({
+        'uid': uid,
         'age': int.tryParse(age) ?? 0,
         'gender': gender,
         'prequestion': (() {
@@ -287,11 +286,9 @@ class MainPageController extends GetController<MainPageModel> {
     if (questionModel is QuestionModel && questionModel.volumes.isCheck) {
       onChange(questionType, index, score: value);
 
-      if (value > 0) {
-        textEditingController.text = value.toStringAsFixed(0);
-      } else {
-        textEditingController.clear();
-      }
+      textEditingController.text = value.floor().toString();
+      final r = max(2, (min(1, value / questionModel.maxSliderScore) * 255).floor());
+      color.value = Color.fromRGBO(r, 0, 1 - r, 1);
     }
   }
 
@@ -300,7 +297,6 @@ class MainPageController extends GetController<MainPageModel> {
     int index, {
     String? file,
     double? score,
-    bool? isSkip,
     double? maxSliderScore,
     double? maxTextScore,
     Iterable<double>? volumes,
@@ -318,7 +314,6 @@ class MainPageController extends GetController<MainPageModel> {
                             ? z.value.copyWith(
                                 file: file,
                                 score: score,
-                                isSkip: isSkip,
                                 maxSliderScore: maxSliderScore,
                                 maxTextScore: maxTextScore,
                                 volumes: volumes,
@@ -344,7 +339,7 @@ class MainPageController extends GetController<MainPageModel> {
     final questionType = this.questionType.value;
     final index = this.index.value;
 
-    final text = double.tryParse(textEditingController.value.text) ?? 0;
+    final text = double.tryParse(textEditingController.value.text) ?? -1;
     final questionModel = state.questions[questionType][index];
 
     if (questionModel is QuestionModel && questionModel.volumes.isCheck) {
@@ -353,29 +348,28 @@ class MainPageController extends GetController<MainPageModel> {
 
       final maxScore = max(questionModel.maxTextScore, questionModel.maxSliderScore);
 
-      if (text > 0) {
+      if (text >= 0) {
         // 스킵하지 않고 텍스트 컨트롤러의 값이 있을 때
         final score = maxScore > 0 ? min(maxScore, text) : text;
-        onChange(questionType, index, isSkip: false, score: score);
+        onChange(questionType, index, score: score);
 
         if (text != score) {
-          if (score > 0) {
-            textEditingController.text = score.toString();
-            textEditingController.selection = TextSelection(
-              baseOffset: score.toString().length,
-              extentOffset: score.toString().length,
-            );
-          } else {
-            textEditingController.clear();
-          }
+          textEditingController.text = score.toString();
+          textEditingController.selection = TextSelection(
+            baseOffset: score.toString().length,
+            extentOffset: score.toString().length,
+          );
         }
-      } else if (!isSkip.value && questionModel.score > 0) {
+
+        final r = max(2, (min(1, score / questionModel.maxSliderScore) * 255).floor());
+        color.value = Color.fromRGBO(r, 0, 1 - r, 1);
+      } else if (questionModel.score >= 0) {
         // 이전, 다음 스텝으로 진행했을 때
         if (textEditingController.value.text.isset) {
-          textEditingController.text = questionModel.score.toStringAsFixed(0);
+          textEditingController.text = questionModel.score.floor().toString();
 
           final length = questionModel.score.toString().length;
-          if (length > 0 && !questionModel.isSkip) {
+          if (length > 0) {
             textEditingController.selection = TextSelection(
               baseOffset: length,
               extentOffset: length,
@@ -445,7 +439,6 @@ class MainPageController extends GetController<MainPageModel> {
       final question = state.questions[questionType].elvis.where((x) => x.id == id).firstOrNull;
       // final source = AssetSource((question?.file).elvis);
       final source = audioPlayer.source;
-
 
       if (question is QuestionModel) {
         // 현재 재생중인 문항을 한 번 더 클릭했을 때

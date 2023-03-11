@@ -13,17 +13,15 @@ class DoubleAnswerFormat implements AnswerFormat {
   final double? defaultValue;
   final String hint;
   final TextEditingController? controller;
-  final RxBool? isSkip;
-  final RxBool? isPlay;
-  final RxBool? isReset;
+  final Rx<Color>? color;
+  final RxBool? isCheck;
 
   const DoubleAnswerFormat({
     this.defaultValue,
     this.hint = '',
     this.controller,
-    this.isSkip,
-    this.isPlay,
-    this.isReset,
+    this.color,
+    this.isCheck,
   }) : super();
 
   factory DoubleAnswerFormat.fromJson(Map<String, dynamic> json) => _$DoubleAnswerFormatFromJson(json);
