@@ -269,7 +269,7 @@ class MainPageController extends GetController<MainPageModel> {
       });
 
       //await Get.toNamed('/complete');
-      html.window.open('https://google.com', '_self');
+      html.window.open('https://google.com/?uid=$uid', '_self');
     } else {
       // 신뢰성 체크 실패 시
       html.window.open('https://naver.com', '_self');

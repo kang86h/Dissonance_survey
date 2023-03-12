@@ -177,17 +177,19 @@ class MainPage extends GetView<MainPageController> {
     return InstructionStep(
       stepIdentifier: StepIdentifier(id: 'start'),
       title: '이 설문조사는 화음을 듣고\n'
-          '불협화도 점수를 매기는 조사입니다.',
+          '불협화한 느낌의 정도를\n'
+          '점수로 매기는 조사입니다.',
       text: '1. 약 2초간 화음을 듣고\n'
-          '화음의 불협화도 점수를 매겨주시면 됩니다.\n\n'
+          '화음의 불협화하게 느껴지는 정도에 따라\n'
+          '점수를 매겨주시면 됩니다.\n\n'
           '2. 협화적인 화음일수록 낮은 점수를\n'
           '불협화적인 화음일수록 높은 점수를 매기세요.\n\n'
           '3. 점수는 숫자로 기입하시거나\n'
           '슬라이더에서 위치를 조절하셔서 매기세요.\n\n'
           '4. 화음에 사용된 음의 갯수에따라 최고점이 다릅니다.\n'
-          '2음화음 최대 60점\n'
-          '3음화음 최대 100점\n'
-          '4음화음 최대 140점\n',
+          '   2음화음 최대 60점\n'
+          '   3음화음 최대 100점\n'
+          '   4음화음 최대 140점\n',
       buttonText: '시작',
     );
   }
@@ -231,17 +233,17 @@ class MainPage extends GetView<MainPageController> {
                         overflow: TextOverflow.visible,
                         text: TextSpan(children: [
                           TextSpan(
-                            text: '1. 너무 비슷한 값을 여러번 매기시면 각 세션의 ',
+                            text: '1. 이 설문조사의 결과는 ',
                             style: TextStyle(fontSize: 18, color: Colors.black),
                           ),
                           TextSpan(
-                              text: '처음으로 ',
+                              text: '음악의 지각과 인지의 연구 목적으로 ',
                               style: TextStyle(
                                   fontSize: 18,
                                   color: Colors.red,
                                   fontWeight: FontWeight.bold)),
                           TextSpan(
-                            text: '되돌아가게 됩니다.',
+                            text: '사용됩니다.',
                             style: TextStyle(fontSize: 18, color: Colors.black),
                           ),
                         ]),
@@ -252,7 +254,7 @@ class MainPage extends GetView<MainPageController> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('동의하십니까?'),
+                    Text('결과 공개에 동의하십니까?'),
                     Checkbox(
                       value: state.agrees[0],
                       onChanged: (value) => controller.onChangeAgree(0, value),
@@ -269,18 +271,17 @@ class MainPage extends GetView<MainPageController> {
                         overflow: TextOverflow.visible,
                         text: TextSpan(children: [
                           TextSpan(
-                            text:
-                                '2. 워밍업 테스트 결과와 모순되는 점수를 매기신 경우 신뢰도가 감소됩니다. 최종 신뢰도가 ',
+                            text: '2. 너무 비슷한 값을 여러번 매기시면 각 세션의 ',
                             style: TextStyle(fontSize: 18, color: Colors.black),
                           ),
                           TextSpan(
-                              text: '80%미만',
+                              text: '처음으로 ',
                               style: TextStyle(
                                   fontSize: 18,
                                   color: Colors.red,
                                   fontWeight: FontWeight.bold)),
                           TextSpan(
-                            text: '일 경우 보상을 받으실 수 없습니다.',
+                            text: '되돌아가게 됩니다.',
                             style: TextStyle(fontSize: 18, color: Colors.black),
                           ),
                         ]),
@@ -309,11 +310,11 @@ class MainPage extends GetView<MainPageController> {
                         text: TextSpan(children: [
                           TextSpan(
                             text:
-                                '3. 같은 음원에 대한 점수의 차이가 만점의 30% 이상일 경우 일관성 점수가 감점됩니다. 일관성 점수가 6점만점에 ',
+                                '3. 워밍업 테스트 결과와 모순되는 점수를 매기신 경우 신뢰도가 감소됩니다. 최종 신뢰도가 ',
                             style: TextStyle(fontSize: 18, color: Colors.black),
                           ),
                           TextSpan(
-                              text: '5점 미만',
+                              text: '80%미만',
                               style: TextStyle(
                                   fontSize: 18,
                                   color: Colors.red,
@@ -347,7 +348,46 @@ class MainPage extends GetView<MainPageController> {
                         overflow: TextOverflow.visible,
                         text: TextSpan(children: [
                           TextSpan(
-                            text: '4. 모든 음원은 반드시 ',
+                            text:
+                                '4. 같은 음원에 대한 점수의 차이가 만점의 30% 이상일 경우 일관성 점수가 감점됩니다. 일관성 점수가 6점만점에 ',
+                            style: TextStyle(fontSize: 18, color: Colors.black),
+                          ),
+                          TextSpan(
+                              text: '5점 미만',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.red,
+                                  fontWeight: FontWeight.bold)),
+                          TextSpan(
+                            text: '일 경우 보상을 받으실 수 없습니다.',
+                            style: TextStyle(fontSize: 18, color: Colors.black),
+                          ),
+                        ]),
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text('동의하십니까?'),
+                    Checkbox(
+                      value: state.agrees[3],
+                      onChanged: (value) => controller.onChangeAgree(3, value),
+                    ),
+                  ],
+                ),
+                Divider(),
+                Row(
+                  children: [
+                    Expanded(
+                      child: RichText(
+                        maxLines: 3,
+                        softWrap: true,
+                        overflow: TextOverflow.visible,
+                        text: TextSpan(children: [
+                          TextSpan(
+                            text: '5. 모든 음원은 반드시 ',
                             style: TextStyle(fontSize: 18, color: Colors.black),
                           ),
                           TextSpan(
@@ -372,8 +412,8 @@ class MainPage extends GetView<MainPageController> {
                       '동의하십니까?',
                     ),
                     Checkbox(
-                      value: state.agrees[3],
-                      onChanged: (value) => controller.onChangeAgree(3, value),
+                      value: state.agrees[4],
+                      onChanged: (value) => controller.onChangeAgree(4, value),
                     ),
                   ],
                 ),
@@ -418,10 +458,10 @@ class MainPage extends GetView<MainPageController> {
       answerFormat: MultipleChoiceAnswerFormat(
         textChoices: [
           TextChoice(text: '1. 거칠게 느껴지는 음', value: '1'),
-          TextChoice(text: '2. 익숙하지 않은 음', value: '2'),
-          TextChoice(text: '3. 어울리지 않는 음', value: '3'),
+          TextChoice(text: '2. 불쾌한 음', value: '2'),
+          TextChoice(text: '3. 탁한 음', value: '3'),
           TextChoice(
-              text: '4. 기타',
+              text: '4. 기타(직접 적어주세요\n예시:어울리지 않는 음\n긴장을 유발하는 음 등)',
               value: '',
               controller: controller.multipleEditingController),
         ],

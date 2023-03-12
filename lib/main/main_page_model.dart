@@ -26,7 +26,7 @@ class MainPageModel extends GetModel {
     questions: const {},
     videoStartedAt: defaultDateTime,
     videoEndedAt: defaultDateTime,
-    agrees: const [false, false, false, false],
+    agrees: const [false, false, false, false, false],
   );
 
   factory MainPageModel.empty() => _empty;
