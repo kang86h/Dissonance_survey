@@ -278,7 +278,7 @@ class AdminPage extends GetView<AdminPageController> {
                                     ...UserFieldType.values
                                         .where((x) => !data.keys.contains(x.name) && x.name != 'id')
                                         .map((x) => MapEntry(x.name, '')),
-                                    ...data.entries,
+                                    ...data.entries.where((x) => UserFieldType.values.map((y) => y.name).contains(x.key)),
                                   ].sorted((a, b) => getUserFieldIndex(name: a.key).compareTo(getUserFieldIndex(name: b.key)));
 
                                   return TableRow(
