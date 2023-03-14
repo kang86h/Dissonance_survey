@@ -203,7 +203,7 @@ class MainPage extends GetView<MainPageController> {
           '또한 답변의 일관성을 평가합니다.\n\n'
           '신뢰성과 일관성이 일정 기준치를 충족하지 못하면\n'
           '부적합한 조사결과로 처리되며\n'
-          '보상을 받으실 수 없습니다.\n\n'
+          '추가보상을 받으실 수 없습니다.\n\n'
           '진지하게 조사에 임해주시면 감사하겠습니다.\n',
       buttonText: '다음으로',
     );
@@ -320,7 +320,7 @@ class MainPage extends GetView<MainPageController> {
                                   color: Colors.red,
                                   fontWeight: FontWeight.bold)),
                           TextSpan(
-                            text: '일 경우 보상을 받으실 수 없습니다.',
+                            text: '일 경우 추가보상을 받으실 수 없습니다.',
                             style: TextStyle(fontSize: 18, color: Colors.black),
                           ),
                         ]),
@@ -359,7 +359,7 @@ class MainPage extends GetView<MainPageController> {
                                   color: Colors.red,
                                   fontWeight: FontWeight.bold)),
                           TextSpan(
-                            text: '일 경우 보상을 받으실 수 없습니다.',
+                            text: '일 경우 추가보상을 받으실 수 없습니다.',
                             style: TextStyle(fontSize: 18, color: Colors.black),
                           ),
                         ]),
@@ -549,13 +549,76 @@ class MainPage extends GetView<MainPageController> {
   QuestionStep getWarmUpStep(QuestionType questionType, Iterable<int> id) {
     return QuestionStep(
       stepIdentifier: StepIdentifier(id: 'warmUp-${questionType.name}'),
-      title: {
-        QuestionType.hs1q2: '워밍업 1\n다음중 가장 <불협화>한 화음을 고르시오.',
-        QuestionType.hs1q3: '워밍업 2\n다음중 가장 <협화>한 화음을 고르시오.',
-        QuestionType.hs1q4: '워밍업 3\n다음중 가장 <불협화>한 화음을 고르시오.',
-      }[questionType]
-          .elvis,
       isOptional: false,
+      content: ConstrainedBox(
+        constraints: BoxConstraints.tightFor(width: 500),
+        child: Center(
+          child: Column(
+            children: [
+              RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: {
+                        QuestionType.hs1q2: '워밍업 1',
+                        QuestionType.hs1q3: '워밍업 2',
+                        QuestionType.hs1q4: '워밍업 3',
+                      }[questionType]
+                          .elvis,
+                      style: TextStyle(
+                        fontSize: 28,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: '다음중 가장 ',
+                      style: TextStyle(
+                        fontSize: 24,
+                        color: Colors.black,
+                      ),
+                    ),
+                    TextSpan(
+                      text: {
+                        QuestionType.hs1q2: '불협화한 화음',
+                        QuestionType.hs1q3: '협화한 화음',
+                        QuestionType.hs1q4: '불협화한 화음',
+                      }[questionType]
+                          .elvis,
+                      style: {
+                        QuestionType.hs1q2: TextStyle(
+                            fontSize: 26,
+                            color: Color.fromRGBO(255, 0, 0, 1),
+                            fontWeight: FontWeight.bold),
+                        QuestionType.hs1q3: TextStyle(
+                            fontSize: 26,
+                            color: Color.fromRGBO(0, 0, 255, 1),
+                            fontWeight: FontWeight.bold),
+                        QuestionType.hs1q4: TextStyle(
+                            fontSize: 26,
+                            color: Color.fromRGBO(255, 0, 0, 1),
+                            fontWeight: FontWeight.bold),
+                      }[questionType],
+                    ),
+                    TextSpan(
+                      text: '을 고르시오',
+                      style: TextStyle(
+                        fontSize: 24,
+                        color: Colors.black,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
       answerFormat: SingleChoiceAnswerFormat(
         textChoices: [
           ...id.toList().asMap().entries.map((x) => TextChoice(
@@ -1216,7 +1279,7 @@ class MainPage extends GetView<MainPageController> {
           padding: const EdgeInsets.symmetric(horizontal: 14),
           child: Text((state.isReliability && state.isConsistency)
               ? '신뢰성 평가 결과 적합 판정\n일관성 평가 결과 적합 판정으로\n모든 테스트 결과를 신뢰할 수 있겠습니다.\n설문에 참여해 주셔서 감사합니다.'
-              : '신뢰성 평가 결과 ${state.isReliability ? '적합' : '부적합'} 판정\n일관성 평가 결과 ${state.isConsistency ? '적합' : '부적합'} 판정으로\n테스트 결과를 신뢰하기 어렵습니다\n유감스럽게도 보상을 받으실 수 없습니다.'),
+              : '신뢰성 평가 결과 ${state.isReliability ? '적합' : '부적합'} 판정\n일관성 평가 결과 ${state.isConsistency ? '적합' : '부적합'} 판정으로\n테스트 결과를 신뢰하기 어렵습니다\n유감스럽게도 추가보상을 받으실 수 없습니다.'),
         );
       }),
       text: '',
