@@ -53,7 +53,7 @@ class MainPageModel extends GetModel {
     final unChosen = current.where((x) => x.id != MainPage.q3WarmUpCheckId[MainPage.q3WarmIndex]);
     final totalCase = choice.length * unChosen.length;
     final sub = choice.expand((x) => unChosen.map((y) => x.score - y.score)).toList();
-    final result = sub.where((x) => x < 0).length;
+    final result = sub.where((x) => x > 0).length; //협화한걸 고르라고 했으면 x < 0으로
     return [result, totalCase];
   }
 
@@ -95,13 +95,13 @@ class MainPageModel extends GetModel {
   }
 
   int get q2ConsistencyCount =>
-      q2Consistency.map((x) => x.abs()).where((x) => x < questions[QuestionType.hs1q2].elvis.first.maxSliderScore * 3 / 10).length;
+      q2Consistency.map((x) => x.abs()).where((x) => x < questions[QuestionType.hs1q2].elvis.first.maxSliderScore * 2 / 10).length;
 
   int get q3ConsistencyCount =>
-      q3Consistency.map((x) => x.abs()).where((x) => x < questions[QuestionType.hs1q3].elvis.first.maxSliderScore * 3 / 10).length;
+      q3Consistency.map((x) => x.abs()).where((x) => x < questions[QuestionType.hs1q3].elvis.first.maxSliderScore * 2 / 10).length;
 
   int get q4ConsistencyCount =>
-      q4Consistency.map((x) => x.abs()).where((x) => x < questions[QuestionType.hs1q4].elvis.first.maxSliderScore * 3 / 10).length;
+      q4Consistency.map((x) => x.abs()).where((x) => x < questions[QuestionType.hs1q4].elvis.first.maxSliderScore * 2 / 10).length;
 
   int get totalConsistencyCount => q2ConsistencyCount + q3ConsistencyCount + q4ConsistencyCount;
 
