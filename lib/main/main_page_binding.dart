@@ -58,8 +58,8 @@ class MainPageBinding extends Bindings {
             (i) => QuestionModel.empty().copyWith(
               id: i + 1,
               file: '$name/$name-${i + 1}.mp3',
-              score: 88 / 2,
-              maxSliderScore: 88,
+              score: 86 / 2,
+              maxSliderScore: 86,
               maxTextScore: 1000,
               isRecord: true,
               isWarmUpCheck: MainPage.q3WarmUpCheckId.contains(i + 1),
@@ -89,8 +89,8 @@ class MainPageBinding extends Bindings {
             (i) => QuestionModel.empty().copyWith(
               id: i + 1,
               file: '$name/$name-${i + 1}.mp3',
-              score: 133 / 2,
-              maxSliderScore: 133,
+              score: 127 / 2,
+              maxSliderScore: 127,
               maxTextScore: 1000,
               isRecord: true,
               isWarmUpCheck: MainPage.q4WarmUpCheckId.contains(i + 1),
