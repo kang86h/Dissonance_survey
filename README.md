@@ -1,4 +1,4 @@
-# surveykit_example
+# dissonance_survey_1
 
 Demonstrates how to use the surveykit plugin.
 

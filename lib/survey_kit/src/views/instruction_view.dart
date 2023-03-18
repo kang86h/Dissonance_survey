@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:surveykit_example/getx/get_rx_impl.dart';
+import 'package:dissonance_survey_1/getx/get_rx_impl.dart';
 
 import '../../survey_kit.dart';
 

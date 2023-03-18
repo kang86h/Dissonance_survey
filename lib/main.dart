@@ -17,7 +17,7 @@ void main() async {
 }
 
 //find ./lib -exec perl -pi -e 's/{기존}/{치환}/g' {} \;
-//grep -R 'surveykit_example' ./lib
+//grep -R 'dissonance_survey_1' ./lib
 
 //flutter build web --no-sound-null-safety
 //firebase init

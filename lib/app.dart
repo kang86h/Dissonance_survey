@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:surveykit_example/complete/complete_page.dart';
-import 'package:surveykit_example/main/main_page_binding.dart';
-import 'package:surveykit_example/admin/admin_page_binding.dart';
+import 'package:dissonance_survey_1/complete/complete_page.dart';
+import 'package:dissonance_survey_1/main/main_page_binding.dart';
+import 'package:dissonance_survey_1/admin/admin_page_binding.dart';
 import 'admin/admin_page.dart';
 import 'main/main_page.dart';
 
