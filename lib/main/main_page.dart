@@ -204,9 +204,13 @@ class MainPage extends GetView<MainPageController> {
           '답변의 신뢰성을 평가하는 문항이 있습니다.\n\n'
           '또한 답변의 일관성을 평가합니다.\n\n'
           '신뢰성과 일관성이 일정 기준치를 충족하지 못하면\n'
-          '부적합한 조사결과로 처리되며\n'
+          '부적합한 조사결과로 처리됩니다.\n',
+      /*
+          '부적합한 조사결과로 처리며\n'
           '추가보상을 받으실 수 없습니다.\n\n'
           '진지하게 조사에 임해주시면 감사하겠습니다.\n',
+      */
+
       buttonText: '다음으로',
     );
   }
@@ -322,7 +326,7 @@ class MainPage extends GetView<MainPageController> {
                                   color: Colors.red,
                                   fontWeight: FontWeight.bold)),
                           TextSpan(
-                            text: '일 경우 추가보상을 받으실 수 없습니다.',
+                            text: '일 경우 부적합한 조사 결과로 처리됩니다',//'일 경우 추가보상을 받으실 수 없습니다.',
                             style: TextStyle(fontSize: 18, color: Colors.black),
                           ),
                         ]),
@@ -361,7 +365,7 @@ class MainPage extends GetView<MainPageController> {
                                   color: Colors.red,
                                   fontWeight: FontWeight.bold)),
                           TextSpan(
-                            text: '일 경우 추가보상을 받으실 수 없습니다.',
+                            text: '일 경우 부적합한 조사 결과로 처리됩니다',//'일 경우 추가보상을 받으실 수 없습니다.',
                             style: TextStyle(fontSize: 18, color: Colors.black),
                           ),
                         ]),
@@ -1325,7 +1329,7 @@ class MainPage extends GetView<MainPageController> {
           padding: const EdgeInsets.symmetric(horizontal: 14),
           child: Text((state.isReliability && state.isConsistency)
               ? '신뢰성 평가 결과 적합 판정\n일관성 평가 결과 적합 판정으로\n모든 테스트 결과를 신뢰할 수 있겠습니다.\n설문에 참여해 주셔서 감사합니다.'
-              : '신뢰성 평가 결과 ${state.isReliability ? '적합' : '부적합'} 판정\n일관성 평가 결과 ${state.isConsistency ? '적합' : '부적합'} 판정으로\n테스트 결과를 신뢰하기 어렵습니다\n유감스럽게도 추가보상을 받으실 수 없습니다.'),
+              : '신뢰성 평가 결과 ${state.isReliability ? '적합' : '부적합'} 판정\n일관성 평가 결과 ${state.isConsistency ? '적합' : '부적합'} 판정으로\n테스트 결과를 신뢰하기 어렵습니다.'),//\n유감스럽게도 추가보상을 받으실 수 없습니다.'),
         );
       }),
       text: '',
