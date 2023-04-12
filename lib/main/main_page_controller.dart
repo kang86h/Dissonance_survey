@@ -35,13 +35,10 @@ class MainPageController extends GetController<MainPageModel> {
   static bool disabled = false;
 
   final AudioPlayer audioPlayer = AudioPlayer();
-  final VideoPlayerController videoPlayerController =
-      VideoPlayerController.asset('assets/tutorial.mp4');
+  final VideoPlayerController videoPlayerController = VideoPlayerController.asset('assets/tutorial.mp4');
 
-  final TextEditingController multipleEditingController =
-      TextEditingController();
-  late final TextEditingController textEditingController =
-      TextEditingController()..addListener(onListenText);
+  final TextEditingController multipleEditingController = TextEditingController();
+  late final TextEditingController textEditingController = TextEditingController()..addListener(onListenText);
   late final SurveyController surveyController = SurveyController(
     onNextStep: (_, __) => _onStep(StepEvent.next),
     onStepBack: (_, __) => _onStep(StepEvent.back),
@@ -49,7 +46,10 @@ class MainPageController extends GetController<MainPageModel> {
 
   late final Rx<VideoStatus> videoStatus = VideoStatus.empty.obs;
   late final Rx<PlayerState> playerState = PlayerState.stopped.obs
-    ..bindStream(audioPlayer.onPlayerStateChanged);
+    ..bindStream(audioPlayer.onPlayerStateChanged.delayWhen((x) {
+      return rx.Rx.timer(x, Duration(seconds: [PlayerState.stopped, PlayerState.completed].contains(x) ? 1 : 0));
+    }));
+
   final Rx<double> volume = 1.0.obs;
   final Rx<QuestionType> questionType = QuestionType.none.obs;
   final Rx<int> index = 0.obs;
@@ -61,9 +61,7 @@ class MainPageController extends GetController<MainPageModel> {
   final Rx<double> videoBuffered = 0.0.obs;
   final Rx<double> videoPlayed = 0.0.obs;
 
-  String get uid => Uri.dataFromString(html.window.location.href)
-      .queryParameters['uid']
-      .elvis;
+  String get uid => Uri.dataFromString(html.window.location.href).queryParameters['uid'].elvis;
 
   void onInit() async {
     super.onInit();
@@ -73,15 +71,9 @@ class MainPageController extends GetController<MainPageModel> {
 
     playerState.stream
         .where((state) => state == PlayerState.playing)
-        .withLatestFrom3<QuestionType, int, double, Map>(
-            questionType.stream, index.stream, volume.stream,
-            (state, questionType, index, volume) {
-      final question =
-          this.state.questions[questionType].elvis.elementAt(index);
-      final startedAt = question.isRecord &&
-              question.startedAt.length == question.endedAt.length
-          ? [...question.startedAt, DateTime.now()]
-          : null;
+        .withLatestFrom3<QuestionType, int, double, Map>(questionType.stream, index.stream, volume.stream, (state, questionType, index, volume) {
+      final question = this.state.questions[questionType].elvis.elementAt(index);
+      final startedAt = question.isRecord && question.startedAt.length == question.endedAt.length ? [...question.startedAt, DateTime.now()] : null;
 
       return {
         QuestionType: questionType,
@@ -119,10 +111,7 @@ class MainPageController extends GetController<MainPageModel> {
     var questionType = this.questionType.value;
     var index = this.index.value;
     final question = state.questions[questionType].elvis.elementAt(index);
-    final endedAt =
-        question.isRecord && question.startedAt.length > question.endedAt.length
-            ? [...question.endedAt, DateTime.now()]
-            : null;
+    final endedAt = question.isRecord && question.startedAt.length > question.endedAt.length ? [...question.endedAt, DateTime.now()] : null;
 
     onChange(
       questionType,
@@ -141,12 +130,9 @@ class MainPageController extends GetController<MainPageModel> {
         final avg = scores.fold<double>(0, (a, c) => a + c) ~/ scores.length;
         final acc = (questions.firstOrNull?.maxSliderScore).elvis ~/ 10;
         final sorted = scores.toList()..sort();
-        final range = List.generate((scores.length / 2).ceil(),
-            (i) => sorted[i + (scores.length / 2).floor()] - sorted[i]);
+        final range = List.generate((scores.length / 2).ceil(), (i) => sorted[i + (scores.length / 2).floor()] - sorted[i]);
 
-        if (((scores.any((x) => x > avg + acc || x < avg - acc)) &&
-                (range.every((y) => y > acc / 2))) ||
-            keyIndex == 0) {
+        if (((scores.any((x) => x > avg + acc || x < avg - acc)) && (range.every((y) => y > acc / 2))) || keyIndex == 0) {
           // 다음 퀘스천 타입으로 넘어갈 수 있을 때
           if (keyIndex < state.questions.keys.length - 1) {
             questionType = state.questions.keys.elementAt(keyIndex + 1);
@@ -169,10 +155,8 @@ class MainPageController extends GetController<MainPageModel> {
     disabled = index == 0 || questionType == QuestionType.check;
     this.questionType.value = questionType;
 
-    final videoEndedAt = state.videoStartedAt.millisecondsSinceEpoch !=
-                defaultDateTime.millisecondsSinceEpoch &&
-            state.videoEndedAt.millisecondsSinceEpoch ==
-                defaultDateTime.millisecondsSinceEpoch &&
+    final videoEndedAt = state.videoStartedAt.millisecondsSinceEpoch != defaultDateTime.millisecondsSinceEpoch &&
+            state.videoEndedAt.millisecondsSinceEpoch == defaultDateTime.millisecondsSinceEpoch &&
             questionType != QuestionType.none
         ? DateTime.now()
         : null;
@@ -199,8 +183,13 @@ class MainPageController extends GetController<MainPageModel> {
       videoEndedAt: videoEndedAt,
     ));
 
-    await videoPlayerController.pause();
-    await audioPlayer.stop();
+    if (videoPlayerController.value.isPlaying) {
+      await videoPlayerController.pause();
+    }
+
+    if (playerState.value == PlayerState.playing) {
+      await audioPlayer.stop();
+    }
 
     final nextQuestion = state.questions[questionType].elvis.elementAt(index);
     isCheck.value = nextQuestion.volumes.isCheck;
@@ -226,16 +215,7 @@ class MainPageController extends GetController<MainPageModel> {
     videoPlayerController.dispose();
     multipleEditingController.dispose();
     textEditingController.dispose();
-    [
-      playerState,
-      volume,
-      isCheck,
-      isLoad,
-      isOption,
-      isVideoComplete,
-      videoBuffered,
-      videoPlayed
-    ].forEach((x) => x.close());
+    [playerState, volume, isCheck, isLoad, isOption, isVideoComplete, videoBuffered, videoPlayed].forEach((x) => x.close());
     super.onClose();
   }
 
@@ -246,9 +226,7 @@ class MainPageController extends GetController<MainPageModel> {
 
       videoPlayed.value = position / duration;
 
-      videoStatus.value = videoPlayerController.value.isPlaying
-          ? VideoStatus.play
-          : VideoStatus.pause;
+      videoStatus.value = videoPlayerController.value.isPlaying ? VideoStatus.play : VideoStatus.pause;
     } else {
       videoStatus.value = VideoStatus.empty;
     }
@@ -256,30 +234,11 @@ class MainPageController extends GetController<MainPageModel> {
 
   void onResult(SurveyResult surveyResult) async {
     if (state.isReliability && state.isConsistency) {
-      final gender = surveyResult.results
-              .where((x) => x.id == MainPage.genderIdentifier)
-              .firstOrNull
-              ?.results
-              .firstOrNull
-              ?.valueIdentifier ??
-          '';
-      final age = surveyResult.results
-              .where((x) => x.id == MainPage.ageIdentifier)
-              .firstOrNull
-              ?.results
-              .firstOrNull
-              ?.valueIdentifier ??
-          '';
-      final prequestion = surveyResult.results
-              .where((x) => x.id == MainPage.prequestionIdentifier)
-              .firstOrNull
-              ?.results
-              .firstOrNull
-              ?.valueIdentifier ??
-          '';
+      final gender = surveyResult.results.where((x) => x.id == MainPage.genderIdentifier).firstOrNull?.results.firstOrNull?.valueIdentifier ?? '';
+      final age = surveyResult.results.where((x) => x.id == MainPage.ageIdentifier).firstOrNull?.results.firstOrNull?.valueIdentifier ?? '';
+      final prequestion = surveyResult.results.where((x) => x.id == MainPage.prequestionIdentifier).firstOrNull?.results.firstOrNull?.valueIdentifier ?? '';
 
-      CollectionReference userCollection =
-          FirebaseFirestore.instance.collection('user');
+      CollectionReference userCollection = FirebaseFirestore.instance.collection('user');
       final userDocument = await userCollection.add({
         'uid': uid,
         'age': int.tryParse(age) ?? 0,
@@ -296,8 +255,7 @@ class MainPageController extends GetController<MainPageModel> {
         'createdAt': DateTime.now(),
       });
 
-      CollectionReference resultCollection =
-          FirebaseFirestore.instance.collection('result');
+      CollectionReference resultCollection = FirebaseFirestore.instance.collection('result');
       await resultCollection.add(
         {
           'user_id': userDocument.id,
@@ -324,34 +282,14 @@ class MainPageController extends GetController<MainPageModel> {
 
       //await Get.toNamed('/complete');
       //html.window.open('https://ko.research.net/r/JF2TNYL?uid=$uid', '_self');
-    html.window.open('https://www.google.com', '_self');
-
+      html.window.open('https://www.google.com', '_self');
     } else {
       // 신뢰성 체크 실패 시
-      final gender = surveyResult.results
-              .where((x) => x.id == MainPage.genderIdentifier)
-              .firstOrNull
-              ?.results
-              .firstOrNull
-              ?.valueIdentifier ??
-          '';
-      final age = surveyResult.results
-              .where((x) => x.id == MainPage.ageIdentifier)
-              .firstOrNull
-              ?.results
-              .firstOrNull
-              ?.valueIdentifier ??
-          '';
-      final prequestion = surveyResult.results
-              .where((x) => x.id == MainPage.prequestionIdentifier)
-              .firstOrNull
-              ?.results
-              .firstOrNull
-              ?.valueIdentifier ??
-          '';
+      final gender = surveyResult.results.where((x) => x.id == MainPage.genderIdentifier).firstOrNull?.results.firstOrNull?.valueIdentifier ?? '';
+      final age = surveyResult.results.where((x) => x.id == MainPage.ageIdentifier).firstOrNull?.results.firstOrNull?.valueIdentifier ?? '';
+      final prequestion = surveyResult.results.where((x) => x.id == MainPage.prequestionIdentifier).firstOrNull?.results.firstOrNull?.valueIdentifier ?? '';
 
-      CollectionReference userCollection =
-          FirebaseFirestore.instance.collection('user');
+      CollectionReference userCollection = FirebaseFirestore.instance.collection('user');
       final userDocument = await userCollection.add({
         'uid': uid,
         'age': int.tryParse(age) ?? 0,
@@ -368,8 +306,7 @@ class MainPageController extends GetController<MainPageModel> {
         'createdAt': DateTime.now(),
       });
 
-      CollectionReference resultCollection =
-          FirebaseFirestore.instance.collection('result');
+      CollectionReference resultCollection = FirebaseFirestore.instance.collection('result');
       await resultCollection.add(
         {
           'user_id': userDocument.id,
@@ -409,11 +346,7 @@ class MainPageController extends GetController<MainPageModel> {
       onChange(questionType, index, score: value);
 
       textEditingController.text = value.floor().toString();
-      final ratioR = (sin(((value - (questionModel.maxSliderScore * 0.5)) /
-                      questionModel.maxSliderScore) *
-                  pi) *
-              0.5) +
-          0.5;
+      final ratioR = (sin(((value - (questionModel.maxSliderScore * 0.5)) / questionModel.maxSliderScore) * pi) * 0.5) + 0.5;
       final r = max(2, (min(1, ratioR) * 255).floor());
       color.value = Color.fromRGBO(r, 0, 257 - r, 1);
     }
@@ -437,21 +370,17 @@ class MainPageController extends GetController<MainPageModel> {
                 x.key,
                 x.key == questionType
                     ? [
-                        ...x.value
-                            .toList()
-                            .asMap()
-                            .entries
-                            .map((z) => z.key == index
-                                ? z.value.copyWith(
-                                    file: file,
-                                    score: score,
-                                    maxSliderScore: maxSliderScore,
-                                    maxTextScore: maxTextScore,
-                                    volumes: volumes,
-                                    startedAt: startedAt,
-                                    endedAt: endedAt,
-                                  )
-                                : z.value),
+                        ...x.value.toList().asMap().entries.map((z) => z.key == index
+                            ? z.value.copyWith(
+                                file: file,
+                                score: score,
+                                maxSliderScore: maxSliderScore,
+                                maxTextScore: maxTextScore,
+                                volumes: volumes,
+                                startedAt: startedAt,
+                                endedAt: endedAt,
+                              )
+                            : z.value),
                       ]
                     : x.value,
               )),
@@ -470,14 +399,11 @@ class MainPageController extends GetController<MainPageModel> {
     final questionType = this.questionType.value;
     final index = this.index.value;
 
-    final text = textEditingController.value.text.isset
-        ? double.tryParse(textEditingController.value.text) ?? -1.0
-        : -1.0;
+    final text = textEditingController.value.text.isset ? double.tryParse(textEditingController.value.text) ?? -1.0 : -1.0;
     final questionModel = state.questions[questionType][index];
 
     if (questionModel is QuestionModel && questionModel.volumes.isCheck) {
-      final maxScore =
-          max(questionModel.maxTextScore, questionModel.maxSliderScore);
+      final maxScore = max(questionModel.maxTextScore, questionModel.maxSliderScore);
 
       if (text >= 0) {
         // 스킵하지 않고 텍스트 컨트롤러의 값이 있을 때
@@ -492,12 +418,8 @@ class MainPageController extends GetController<MainPageModel> {
           );
         }
 
-        final ratioR = (sin(((min(score, questionModel.maxSliderScore) -
-                            (questionModel.maxSliderScore * 0.5)) /
-                        questionModel.maxSliderScore) *
-                    pi) *
-                0.5) +
-            0.5;
+        final ratioR =
+            (sin(((min(score, questionModel.maxSliderScore) - (questionModel.maxSliderScore * 0.5)) / questionModel.maxSliderScore) * pi) * 0.5) + 0.5;
         final r = max(2, (min(1, ratioR) * 255).floor());
         color.value = Color.fromRGBO(r, 0, 257 - r, 1);
       } else if (questionModel.score >= 0) {
@@ -542,8 +464,7 @@ class MainPageController extends GetController<MainPageModel> {
     if (videoStatus.value == VideoStatus.play) {
       await videoPlayerController.pause();
     } else {
-      if (state.videoStartedAt.millisecondsSinceEpoch ==
-          defaultDateTime.millisecondsSinceEpoch) {
+      if (state.videoStartedAt.millisecondsSinceEpoch == defaultDateTime.millisecondsSinceEpoch) {
         change(state.copyWith(
           videoStartedAt: DateTime.now(),
         ));
@@ -576,12 +497,9 @@ class MainPageController extends GetController<MainPageModel> {
 
   void onPlay(QuestionType questionType, int id) async {
     if (playerState.value != PlayerState.playing) {
-      final question = state.questions[questionType].elvis
-          .where((x) => x.id == id)
-          .firstOrNull;
+      final question = state.questions[questionType].elvis.where((x) => x.id == id).firstOrNull;
       // final source = AssetSource((question?.file).elvis);
       final source = audioPlayer.source;
-
 
       if (question is QuestionModel) {
         // 현재 재생중인 문항을 한 번 더 클릭했을 때
@@ -594,7 +512,6 @@ class MainPageController extends GetController<MainPageModel> {
           await audioPlayer.resume();
         }
       }
-
     }
   }
 
@@ -602,11 +519,7 @@ class MainPageController extends GetController<MainPageModel> {
     change(
       state.copyWith(
         agrees: [
-          ...state.agrees
-              .toList()
-              .asMap()
-              .entries
-              .map((x) => x.key == index ? value.elvis : x.value),
+          ...state.agrees.toList().asMap().entries.map((x) => x.key == index ? value.elvis : x.value),
         ],
       ),
     );
