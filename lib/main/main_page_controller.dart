@@ -48,7 +48,11 @@ class MainPageController extends GetController<MainPageModel> {
   late final Rx<PlayerState> playerState = PlayerState.stopped.obs
     ..bindStream(audioPlayer.onPlayerStateChanged.delayWhen((x) {
       return rx.Rx.timer(x, Duration(seconds: [PlayerState.stopped, PlayerState.completed].contains(x) ? 1 : 0));
-    }));
+    }));//정지상태나 완료상태일때 1초 기다리게 하고 그 이외의 상태에서는 0초 기다림
+
+  /*
+    ..bindStream(audioPlayer.onPlayerStateChanged);
+   */
 
   final Rx<double> volume = 1.0.obs;
   final Rx<QuestionType> questionType = QuestionType.none.obs;
